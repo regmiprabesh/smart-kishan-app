@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "166211859943",
+    "project_id": "smart-kishan-31fe6",
+    "storage_bucket": "smart-kishan-31fe6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166211859943:android:2e1c9a63d929007cc93942",
+        "android_client_info": {
+          "package_name": "com.example.smart_kishan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqeMeZsRN01JRSve2blTZErZboAUdUMTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
