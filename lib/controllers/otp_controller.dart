@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/routes/app_routes.dart';
 import 'package:smart_kishan/screens/auth/services/remote_auth_services.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
+import 'package:smart_kishan/helpers/app_snackbar.dart';
 
 class OTPController extends GetxController {
   static OTPController instance = Get.find();
@@ -15,151 +14,114 @@ class OTPController extends GetxController {
   RxBool otpVerifying = false.obs;
   RxBool otpSending = false.obs;
 
-  late Timer resendTimer;
+  Timer? resendTimer;
   RxInt start = 60.obs;
-  RxString phoneNumber = ''.obs;
-  RxString otpVerificationId = ''.obs;
+  RxString phoneNumber = ''.obs; // +977XXXXXXXXXX, for display
+  RxString rawPhone = ''.obs; // 10-digit, sent to backend
+
+  RxString verificationToken = ''.obs;
+
+  String _otpPurpose = 'register';
+
+  void startResendTimer() {
+    resendTimer?.cancel();
+    start(60);
+    otpResending(true); // disables button + shows countdown
+    resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (start.value <= 1) {
+        timer.cancel();
+        start(0);
+        otpResending(false); // re-enables the resend button
+      } else {
+        start(start.value - 1);
+      }
+    });
+  }
 
   void requestOtp({required String phone, String? route}) async {
+    if (otpLoading.value) return;
+    final bool isForgotPassword = route == AppRoute.forgotPasswordScreen;
+    _otpPurpose = isForgotPassword ? 'reset' : 'register'; // ← add
     try {
       otpLoading(true);
-      var result =
-          await RemoteAuthService().checkRegistration(phone: '+977$phone');
-          print(result.body);
-      if (result.statusCode == 200) {
-        otpSending(true);
-        await firebaseAuth.FirebaseAuth.instance.verifyPhoneNumber(
-          phoneNumber: '+977$phone',
-          verificationCompleted:
-              (firebaseAuth.PhoneAuthCredential credential) {},
-          verificationFailed: (firebaseAuth.FirebaseAuthException e) {
-            otpSending(false);
-            if (e.code == 'invalid-phone-number') {
-              ScaffoldMessenger.of(Get.overlayContext!)
-                  .showSnackBar(const SnackBar(
-                      backgroundColor: kErrorColor,
-                      content: Text(
-                        'कृपया आफ्नो सही फोन नम्बर प्रविष्ट गर्नुहोस्!',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w500),
-                      )));
-            }
-            if (e.code == 'invalid-verification-code') {
-              ScaffoldMessenger.of(Get.overlayContext!)
-                  .showSnackBar(const SnackBar(
-                      backgroundColor: kErrorColor,
-                      content: Text(
-                        ' प्रमाणीकरण कोड गलत भएको छ',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w500),
-                      )));
-            }
-          },
-          codeSent: (String verificationId, int? resendToken) {
-            otpSending(false);
-            Future.delayed(const Duration(seconds: 1), () {
-              phoneNumber('+977$phone');
-              otpVerificationId(verificationId);
-              Get.toNamed(AppRoute.otpScreen, arguments: route);
-            });
-          },
-          codeAutoRetrievalTimeout: (String verificationId) {},
-        );
-      } else if (result.statusCode == 409) {
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kErrorColor,
-            content: Text(
-              'यो फोन नम्बर पहिलेनै दर्ता भएको छ ।',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
-      } else if (result.statusCode == 420) {
-        var body = json.decode(result.body);
-        {
-          ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(SnackBar(
-              backgroundColor: kErrorColor,
-              content: Text(
-                body['message'],
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-              )));
-        }
+      otpSending(true);
+      var otpRes = await RemoteAuthService().sendOtp(
+        phone: phone,
+        purpose: isForgotPassword ? 'reset' : 'register',
+      );
+      otpSending(false);
+
+      if (otpRes.statusCode == 200) {
+        phoneNumber('+977$phone');
+        rawPhone(phone);
+        startResendTimer();
+        showSuccessSnackbar(l10n.otpSent);
+        Get.toNamed(AppRoute.otpScreen, arguments: route);
+      } else if (otpRes.statusCode == 409) {
+        showErrorSnackbar(l10n.phoneAlreadyRegistered);
+      } else if (otpRes.statusCode == 404) {
+        showErrorSnackbar(l10n.phoneNotRegistered);
+      } else if (otpRes.statusCode == 429) {
+        var body = json.decode(otpRes.body);
+        int seconds = body['retry_after'] ?? 60;
+        showErrorSnackbar(l10n.otpThrottled(localizedNumber(seconds)));
+      } else {
+        var body = json.decode(otpRes.body);
+        showErrorSnackbar(l10n.otpSendFailed);
       }
     } catch (e) {
-      otpLoading(false);
+      showErrorSnackbar(l10n.genericError);
     } finally {
       otpLoading(false);
+      otpSending(false);
     }
   }
 
   void resendOtp() async {
+    if (otpResending.value) return;
+    startResendTimer();
     try {
-      otpResending(true);
-      await firebaseAuth.FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: phoneNumber.value,
-        verificationCompleted: (firebaseAuth.PhoneAuthCredential credential) {},
-        verificationFailed: (firebaseAuth.FirebaseAuthException e) {
-          if (e.code == 'invalid-phone-number') {
-            ScaffoldMessenger.of(Get.overlayContext!)
-                .showSnackBar(const SnackBar(
-                    backgroundColor: kErrorColor,
-                    content: Text(
-                      'कृपया आफ्नो सही फोन नम्बर प्रविष्ट गर्नुहोस्!',
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                    )));
-          }
-          if (e.code == 'invalid-verification-code') {
-            ScaffoldMessenger.of(Get.overlayContext!)
-                .showSnackBar(const SnackBar(
-                    backgroundColor: kErrorColor,
-                    content: Text(
-                      'प्रमाणीकरण कोड गलत भएको छ',
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                    )));
-          }
-        },
-        codeSent: (verificationId, forceResendingToken) {
-          otpVerificationId(verificationId);
-          ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-              backgroundColor: kSuccessColor,
-              content: Text(
-                'OTP कोड पुन तपाईंको फोन नम्बरमा पठाइएको छ । !',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-              )));
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {},
+      var otpRes = await RemoteAuthService().sendOtp(
+        phone: rawPhone.value,
+        purpose: _otpPurpose,
       );
-      resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (start.value == 0) {
-          start(60);
-          timer.cancel();
-          otpResending(false);
-        } else {
-          start(start.value - 1);
-        }
-      });
+      if (otpRes.statusCode == 200) {
+        showSuccessSnackbar(l10n.otpResent);
+      } else {
+        resendTimer?.cancel();
+        otpResending(false);
+        var body = json.decode(otpRes.body);
+        showErrorSnackbar(l10n.otpSendFailed);
+      }
     } catch (e) {
-      print(e);
-    } finally {}
+      resendTimer?.cancel();
+      otpResending(false);
+      showErrorSnackbar(l10n.genericError);
+    }
   }
 
   void verifyOtp({required String otpCode, String? route}) async {
     otpVerifying(true);
+    final bool isForgotPassword = route == AppRoute.forgotPasswordScreen;
     try {
-      await firebaseAuth.FirebaseAuth.instance
-          .signInWithCredential(firebaseAuth.PhoneAuthProvider.credential(
-              verificationId: otpVerificationId.value, smsCode: otpCode))
-          .then((value) async {
-        Get.toNamed(AppRoute.signUpScreen);
-      });
+      var res = await RemoteAuthService().verifyOtp(
+        phone: rawPhone.value,
+        otp: otpCode,
+        purpose: isForgotPassword ? 'reset' : 'register',
+      );
+      if (res.statusCode == 200) {
+        var body = json.decode(res.body);
+        verificationToken(body['verification_token'] ?? ''); // both flows
+        if (isForgotPassword) {
+          Get.offNamed(AppRoute.resetPasswordScreen);
+        } else {
+          Get.toNamed(AppRoute.signUpScreen);
+        }
+      } else {
+        showErrorSnackbar(l10n.otpInvalid);
+      }
     } catch (e) {
-      ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-          backgroundColor: kErrorColor,
-          content: Text(
-            ' प्रमाणीकरण कोड गलत भएको छ',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-          )));
+      showErrorSnackbar(l10n.genericError);
     } finally {
       otpVerifying(false);
     }

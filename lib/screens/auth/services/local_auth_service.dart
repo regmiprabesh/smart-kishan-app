@@ -28,12 +28,18 @@ class LocalAuthService {
   Future<String?> getUser() async => _localStorage.getString('user');
 
   Future<void> clear() async {
-    await _localStorage.clear();
-    await _securedStrorage.deleteAll();
+    await _localStorage.remove('user');
+    await _localStorage.remove('appMode');
+    await _securedStrorage.delete(key: 'jwt');
   }
 
   Future<String?> getToken() async => await _securedStrorage.read(key: 'jwt');
 
   String? getFirstLaunch() => _localStorage.getString('firstLaunch');
 
+  Future<void> setMode({required String mode}) async {
+    await _localStorage.setString('appMode', mode);
+  }
+
+  String? getMode() => _localStorage.getString('appMode');
 }

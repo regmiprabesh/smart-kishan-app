@@ -5,6 +5,7 @@ import 'package:smart_kishan/screens/auth/edit_profile_screen.dart';
 import 'package:smart_kishan/screens/auth/forgot_password_screen.dart';
 import 'package:smart_kishan/screens/auth/otp_verification_screen.dart';
 import 'package:smart_kishan/screens/auth/phone_register_screen.dart';
+import 'package:smart_kishan/screens/auth/reset_password_screen.dart';
 import 'package:smart_kishan/screens/auth/signin_screen.dart';
 import 'package:smart_kishan/screens/auth/signup_screen.dart';
 import 'package:smart_kishan/screens/auth/update_location_screen.dart';
@@ -112,6 +113,11 @@ class AppPage {
       name: AppRoute.forgotPasswordScreen,
       page: () => const ForgotPasswordScreen(),
     ),
+    GetPage(
+      name: AppRoute.resetPasswordScreen,
+      page: () => const ResetPasswordScreen(),
+    ),
+
     GetPage(
       name: AppRoute.dashboard,
       page: () => const DashboardScreen(),

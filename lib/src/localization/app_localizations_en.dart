@@ -107,6 +107,62 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestOTP => 'Request OTP';
 
   @override
+  String get wrongPhonePassword => 'Wrong phone / password';
+
+  @override
+  String get accountCreated => 'Your account has been created successfully!';
+
+  @override
+  String get passwordResetSuccess =>
+      'Password changed successfully. Please sign in.';
+
+  @override
+  String get passwordResetFailed => 'Could not change password.';
+
+  @override
+  String get logoutFailed => 'Something went wrong! Please try again.';
+
+  @override
+  String get otpSent => 'A verification code has been sent to your phone.';
+
+  @override
+  String get otpResent =>
+      'A new verification code has been sent to your phone.';
+
+  @override
+  String get phoneAlreadyRegistered =>
+      'This phone number is already registered.';
+
+  @override
+  String get phoneNotRegistered => 'This phone number is not registered.';
+
+  @override
+  String otpThrottled(String seconds) {
+    return 'Please wait $seconds seconds before requesting another code.';
+  }
+
+  @override
+  String get otpSendFailed => 'Could not send the verification code.';
+
+  @override
+  String get otpInvalid => 'The verification code is incorrect.';
+
+  @override
+  String get genericError => 'Something went wrong. Please try again.';
+
+  @override
+  String loginThrottled(String seconds) {
+    return 'Too many attempts. Please wait $seconds seconds and try again.';
+  }
+
+  @override
+  String get sessionExpired => 'Your session has expired. Please log in again.';
+
+  @override
+  String get noInternet =>
+      'Couldn\'t connect. Please check your internet connection and try again.';
+
+  @override
   String get alreadyAccount => 'Already have an account?';
 
   @override

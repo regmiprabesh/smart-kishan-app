@@ -107,6 +107,61 @@ class AppLocalizationsNe extends AppLocalizations {
   String get requestOTP => 'OTP अनुरोध गर्नुहोस्';
 
   @override
+  String get wrongPhonePassword => 'गलत फोन / पासवर्ड';
+
+  @override
+  String get accountCreated => 'तपाईंको खाता सफलतापूर्वक सिर्जना गरिएको छ!';
+
+  @override
+  String get passwordResetSuccess =>
+      'पासवर्ड सफलतापूर्वक परिवर्तन भयो । कृपया लगइन गर्नुहोस् ।';
+
+  @override
+  String get passwordResetFailed => 'पासवर्ड परिवर्तन गर्न सकिएन ।';
+
+  @override
+  String get logoutFailed => 'केहि गलत भयो ! फेरि प्रयास गर्नुहोस';
+
+  @override
+  String get otpSent => 'OTP कोड तपाईंको फोन नम्बरमा पठाइएको छ।';
+
+  @override
+  String get otpResent => 'OTP कोड पुन: तपाईंको फोन नम्बरमा पठाइएको छ।';
+
+  @override
+  String get phoneAlreadyRegistered => 'यो फोन नम्बर पहिलेनै दर्ता भएको छ।';
+
+  @override
+  String get phoneNotRegistered => 'यो फोन नम्बर दर्ता भएको छैन।';
+
+  @override
+  String otpThrottled(String seconds) {
+    return 'पुन: कोड पठाउनु अघि कृपया $seconds सेकेन्ड पर्खनुहोस्।';
+  }
+
+  @override
+  String get otpSendFailed => 'OTP पठाउन सकिएन।';
+
+  @override
+  String get otpInvalid => 'प्रमाणीकरण कोड गलत भएको छ।';
+
+  @override
+  String get genericError => 'केही समस्या भयो। कृपया फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String loginThrottled(String seconds) {
+    return 'धेरै पटक प्रयास गरियो। कृपया $seconds सेकेन्ड पर्खेर पुन: प्रयास गर्नुहोस्।';
+  }
+
+  @override
+  String get sessionExpired =>
+      'तपाईंको सत्र समाप्त भयो। कृपया पुन: लगइन गर्नुहोस्।';
+
+  @override
+  String get noInternet =>
+      'जडान गर्न सकिएन। कृपया आफ्नो इन्टरनेट जाँच गरी पुन: प्रयास गर्नुहोस्।';
+
+  @override
   String get alreadyAccount => 'पहिले नै एउटा खाता छ ? ';
 
   @override

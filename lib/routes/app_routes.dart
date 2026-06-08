@@ -9,7 +9,8 @@ class AppRoute {
   static String signUpScreen = '/signUpScreen';
   static String signInScreen = '/signInScreen';
   static String forgotPasswordScreen = '/forgotPassword';
-  static String updatePhoneScreen = '/forgotPassword';
+  static String resetPasswordScreen = '/resetPasswordScreen';
+  static String updatePhoneScreen = '/updatePhoneScreen';
 
   static String dashboard = '/dashboard';
 

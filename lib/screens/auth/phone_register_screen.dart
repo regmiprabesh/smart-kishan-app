@@ -269,8 +269,7 @@ class _PhoneRegisterScreenState extends State<PhoneRegisterScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
                                   Text(
-                                    AppLocalizations.of(context)!
-                                        .alreadyAccount,
+                                    '${AppLocalizations.of(context)!.alreadyAccount} ',
                                     style: TextStyle(
                                         fontSize:
                                             getProportionateScreenWidth(14)),

@@ -79,7 +79,7 @@ class User {
   String? updatedAt;
   String? createdAt;
   String? image;
-
+  String? mode;
   // NEW FIELDS for location
   String? address;
   int? provinceId;
@@ -119,26 +119,26 @@ class User {
     return addressParts.isNotEmpty ? addressParts.join(', ') : null;
   }
 
-  User({
-    this.id,
-    this.name,
-    this.email,
-    this.phone,
-    this.password,
-    this.parentId,
-    this.updatedAt,
-    this.createdAt,
-    this.image,
-    this.address,
-    this.provinceId,
-    this.districtId,
-    this.municipalityId,
-    this.wardId,
-    this.province,
-    this.district,
-    this.municipality,
-    this.ward,
-  });
+  User(
+      {this.id,
+      this.name,
+      this.email,
+      this.phone,
+      this.password,
+      this.parentId,
+      this.updatedAt,
+      this.createdAt,
+      this.image,
+      this.address,
+      this.provinceId,
+      this.districtId,
+      this.municipalityId,
+      this.wardId,
+      this.province,
+      this.district,
+      this.municipality,
+      this.ward,
+      this.mode});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -149,7 +149,7 @@ class User {
     image = json['image'];
     updatedAt = json['updated_at'];
     createdAt = json['created_at'];
-
+    mode = json['mode'];
     // NEW: Parse location fields
     address = json['address'];
     provinceId = json['province_id'];

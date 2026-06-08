@@ -1,15 +1,15 @@
 import 'dart:convert';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/app_controller.dart';
-import 'package:smart_kishan/controllers/user_controller.dart';
 import 'package:smart_kishan/models/user.dart';
 import 'package:smart_kishan/routes/app_routes.dart';
 import 'package:smart_kishan/screens/auth/services/local_auth_service.dart';
 import 'package:smart_kishan/screens/auth/services/remote_auth_services.dart';
 import 'package:smart_kishan/size_config.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
+import 'package:smart_kishan/helpers/app_snackbar.dart';
+import 'package:smart_kishan/helpers/app_mode.dart';
 
 class AuthController extends GetxController {
   static AuthController instance = Get.find();
@@ -19,13 +19,14 @@ class AuthController extends GetxController {
 
   Rxn<User> user = Rxn<User>();
 
-  // Add a getter for easy access to current user
   Rx<User?> get currentUser => user;
 
   RxBool isRegisterLoading = false.obs;
   RxBool authStatusLoading = false.obs;
 
   String? fcmToken;
+
+  RxBool isResetLoading = false.obs;
 
   @override
   void onInit() async {
@@ -49,7 +50,6 @@ class AuthController extends GetxController {
         phone: '+977$phone',
         password: password,
       );
-      print(result.body);
       if (result.statusCode == 200) {
         var body = jsonDecode(result.body);
         String token = body['token'];
@@ -58,22 +58,26 @@ class AuthController extends GetxController {
         await _localAuthService.addUser(
             user: jsonEncode(body['user']).toString());
         user(getUser);
-        Get.offAllNamed(AppRoute.dashboard);
+        // seed local mode cache from the server's value
+        final mode = (getUser.mode != null && getUser.mode!.isNotEmpty)
+            ? getUser.mode!
+            : AppMode.farmer;
+        await _localAuthService.setMode(mode: mode);
+        Get.offAllNamed(routeForMode(mode));
+        // if (getUser.mode != null && getUser.mode!.isNotEmpty) {
+        //   await _localAuthService.setMode(mode: getUser.mode!);
+        // }
+        // Get.offAllNamed(routeForMode(_localAuthService.getMode()));
         getData();
+      } else if (result.statusCode == 429) {
+        var body = json.decode(result.body);
+        int seconds = body['retry_after'] ?? 60;
+        showErrorSnackbar(l10n.loginThrottled(localizedNumber(seconds)));
       } else if (result.statusCode == 403) {
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kErrorColor,
-            content: Text(
-              'गलत फोन / पासवर्ड',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
+        showErrorSnackbar(l10n.wrongPhonePassword);
       } else {
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kErrorColor,
-            content: Text(
-              'केहि गलत भयो ! फेरि प्रयास गर्नुहोस',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
+        print('Sign In Failed: ${result.statusCode} - ${result.body}');
+        showErrorSnackbar(l10n.genericError);
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -89,14 +93,14 @@ class AuthController extends GetxController {
   checkAuthStatus() async {
     try {
       authStatusLoading(true);
-
       String? token = await _localAuthService.getToken();
       String? userData = await _localAuthService.getUser();
       if (userData != null && token != null) {
         Map<String, dynamic> userMap = json.decode(userData);
         User userInfo = User.fromJson(userMap);
         user(userInfo);
-        Get.offAllNamed(AppRoute.dashboard);
+        // route to the last-used mode (cached locally, offline-safe)
+        Get.offAllNamed(routeForMode(_localAuthService.getMode()));
       } else {
         Get.offNamed(AppRoute.signInScreen);
         return;
@@ -110,11 +114,12 @@ class AuthController extends GetxController {
     }
   }
 
-  void signUp(
-      {required String fullName,
-      required String password,
-      required String passwordConfirmation,
-      String? email}) async {
+  void signUp({
+    required String fullName,
+    required String password,
+    required String passwordConfirmation,
+    String? email,
+  }) async {
     if (isRegisterLoading.value) return;
     try {
       isRegisterLoading(true);
@@ -122,33 +127,33 @@ class AuthController extends GetxController {
         'name': fullName,
         'email': email,
         'password': password,
-        'confirm_password': passwordConfirmation,
+        'password_confirmation': passwordConfirmation,
         'phone': otpController.phoneNumber.value,
-        'phone_verification_id': otpController.otpVerificationId.value,
-        'fcm_token': fcmToken
+        'verification_token': otpController.verificationToken.value,
+        'fcm_token': fcmToken,
       });
       if (result.statusCode == 200) {
         var body = jsonDecode(result.body);
         String token = body['token'];
         await _localAuthService.addToken(token: token);
-        Get.offAllNamed(AppRoute.dashboard);
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kSuccessColor,
-            content: Text(
-              'तपाईंको खाता सफलतापूर्वक सिर्जना गरिएको छ!',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
         User userData = User.fromJson(body['user']);
         await _localAuthService.addUser(
             user: jsonEncode(body['user']).toString());
         user(userData);
+        // seed local mode cache (new accounts default to farmer on the backend)
+        final mode = (userData.mode != null && userData.mode!.isNotEmpty)
+            ? userData.mode!
+            : AppMode.farmer;
+        await _localAuthService.setMode(mode: mode);
+        Get.offAllNamed(routeForMode(mode));
+        // if (userData.mode != null && userData.mode!.isNotEmpty) {
+        //   await _localAuthService.setMode(mode: userData.mode!);
+        // }
+        // Get.offAllNamed(routeForMode(_localAuthService.getMode()));
+        showSuccessSnackbar(l10n.accountCreated);
       } else {
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kErrorColor,
-            content: Text(
-              'केहि गलत भयो ! फेरि प्रयास गर्नुहोस',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
+        print('Sign Up Failed: ${result.statusCode} - ${result.body}');
+        showErrorSnackbar(l10n.genericError);
       }
     } catch (e) {
       isRegisterLoading(false);
@@ -157,16 +162,13 @@ class AuthController extends GetxController {
     }
   }
 
-  // Update Profile
   Future<bool> updateProfile({
     required String name,
     required String email,
     required String phone,
   }) async {
     try {
-      String? token = await _localAuthService.getToken();
       var result = await _remoteAuthService.updateProfile(
-        token: token!,
         name: name,
         email: email,
         phone: phone,
@@ -186,7 +188,6 @@ class AuthController extends GetxController {
     }
   }
 
-  // Update Password
   Future<bool> updatePassword({
     required String currentPassword,
     required String newPassword,
@@ -200,7 +201,6 @@ class AuthController extends GetxController {
         newPassword: newPassword,
         confirmPassword: confirmPassword,
       );
-
       if (result.statusCode == 200) {
         return true;
       }
@@ -211,7 +211,6 @@ class AuthController extends GetxController {
     }
   }
 
-  // Update Location
   Future<bool> updateLocation({
     required String address,
     required int provinceId,
@@ -229,8 +228,6 @@ class AuthController extends GetxController {
         municipalityId: municipalityId,
         wardId: wardId,
       );
-      print(result.body);
-
       if (result.statusCode == 200) {
         var body = jsonDecode(result.body);
         User updatedUser = User.fromJson(body['user']);
@@ -246,7 +243,6 @@ class AuthController extends GetxController {
     }
   }
 
-  // Upload Profile Image
   Future<bool> uploadProfileImage(String imagePath) async {
     try {
       String? token = await _localAuthService.getToken();
@@ -254,8 +250,6 @@ class AuthController extends GetxController {
         token: token!,
         imagePath: imagePath,
       );
-      print(result.body);
-
       if (result.statusCode == 200) {
         var body = jsonDecode(result.body);
         User updatedUser = User.fromJson(body['user']);
@@ -274,8 +268,7 @@ class AuthController extends GetxController {
   void logout() async {
     try {
       authStatusLoading(true);
-      String? token = await _localAuthService.getToken();
-      var result = await RemoteAuthService().logout(token: token!);
+      var result = await RemoteAuthService().logout();
       if (result.statusCode == 200) {
         Get.offAllNamed(AppRoute.signInScreen);
         await _localAuthService.clear();
@@ -283,17 +276,69 @@ class AuthController extends GetxController {
         user.value = null;
         await clearCache();
       } else {
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kErrorColor,
-            content: Text(
-              'Something went wrong! Please Try Again',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
+        showErrorSnackbar(l10n.logoutFailed);
       }
     } catch (e) {
       authStatusLoading(false);
     } finally {
       authStatusLoading(false);
+    }
+  }
+
+  void resetPassword({
+    required String password,
+    required String confirmPassword,
+  }) async {
+    if (isResetLoading.value) return;
+    if (password != confirmPassword) {
+      showErrorSnackbar(l10n.passwordsDoNotMatch);
+      return;
+    }
+    try {
+      isResetLoading(true);
+      var result = await _remoteAuthService.resetPassword(
+        phone: otpController.rawPhone.value,
+        verificationToken: otpController.verificationToken.value,
+        password: password,
+        passwordConfirmation: confirmPassword,
+      );
+      if (result.statusCode == 200) {
+        otpController.verificationToken('');
+        Get.offAllNamed(AppRoute.signInScreen);
+        showSuccessSnackbar(l10n.passwordResetSuccess);
+      } else {
+        var body = jsonDecode(result.body);
+        showErrorSnackbar(body['message'] != null
+            ? body['message'] as String
+            : l10n.passwordResetFailed);
+      }
+    } catch (e) {
+      debugPrint('Reset Password Error: $e');
+    } finally {
+      isResetLoading(false);
+    }
+  }
+
+  Future<void> forceExpiredLogout() async {
+    await _localAuthService.clear();
+    user.value = null;
+    if (Get.currentRoute != AppRoute.signInScreen) {
+      Get.offAllNamed(AppRoute.signInScreen);
+    }
+    showErrorSnackbar(l10n.sessionExpired);
+  }
+
+  Future<void> switchMode(String mode) async {
+    await _localAuthService.setMode(mode: mode);
+    if (user.value != null) {
+      user.value!.mode = mode;
+      user.refresh();
+    }
+    Get.offAllNamed(routeForMode(mode));
+    try {
+      await _remoteAuthService.updateMode(mode: mode); // background sync
+    } catch (_) {
+      // offline: local cache already updated, will resync on next switch/login
     }
   }
 
@@ -305,7 +350,6 @@ class AuthController extends GetxController {
     farmlandController.reset();
     buyProductsController.reset();
     buyersGroupController.reset();
-    //cropCategoryController.reset();
     customerOrdersController.reset();
     productCartController.reset();
     searchHistoryController.reset();
@@ -314,9 +358,6 @@ class AuthController extends GetxController {
     vendorOrdersController.reset();
     weatherController.reset();
     deliveryAddressController.reset();
-    // Get.deleteAll();
-
-    // Get.reset();
   }
 
   getData() {
@@ -339,7 +380,6 @@ class AuthController extends GetxController {
     buyProductsController.getAllProducts();
     buyProductsController.getFeaturedProducts();
     buyProductsController.getDeliveryLocations();
-    buyProductsController.getPaymentTypes();
     buyersGroupController.getBuyersGroups();
     cropCategoryController.getCropCategories();
     deliveryAddressController.getDeliveryAddress();

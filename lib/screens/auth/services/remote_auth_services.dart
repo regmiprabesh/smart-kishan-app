@@ -1,26 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:smart_kishan/constant.dart';
+import 'package:smart_kishan/helpers/app_http_client.dart';
 
 class RemoteAuthService {
-  var client = http.Client();
-
-  Future<dynamic> checkRegistration({
-    required String phone,
-  }) async {
-    var data = {"phone": phone};
-    var response = await client.post(
-      Uri.parse('$apiUrl/auth/checkUser'),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      body: jsonEncode(data),
-    );
-    return response;
-  }
+  var client = AppHttpClient();
 
   Future<dynamic> signIn({
     required String phone,
@@ -50,12 +35,11 @@ class RemoteAuthService {
     return response;
   }
 
-  Future<dynamic> logout({required String token}) async {
+  Future<dynamic> logout() async {
     var response = await client.get(
       Uri.parse('$apiUrl/auth/logout'),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer $token"
       },
     );
     return response;
@@ -63,7 +47,6 @@ class RemoteAuthService {
 
   // Update Profile
   Future<dynamic> updateProfile({
-    required String token,
     required String name,
     required String email,
     required String phone,
@@ -77,7 +60,6 @@ class RemoteAuthService {
       Uri.parse('$apiUrl/users/update-profile'),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
       },
       body: jsonEncode(body),
     );
@@ -257,5 +239,69 @@ class RemoteAuthService {
       print('Error fetching wards: $e');
       return {'success': false, 'data': []};
     }
+  }
+
+  Future<dynamic> sendOtp({
+    required String phone,
+    required String purpose, // 'register' or 'reset'
+  }) async {
+    var response = await client.post(
+      Uri.parse('$apiUrl/auth/send-otp'),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: jsonEncode({"phone": phone, "purpose": purpose}),
+    );
+    return response;
+  }
+
+  Future<dynamic> verifyOtp({
+    required String phone,
+    required String otp,
+    String? purpose,
+  }) async {
+    var body = {"phone": phone, "otp": otp};
+    if (purpose != null) body["purpose"] = purpose;
+    var response = await client.post(
+      Uri.parse('$apiUrl/auth/verify-otp'),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: jsonEncode(body),
+    );
+    return response;
+  }
+
+  Future<dynamic> resetPassword({
+    required String phone,
+    required String verificationToken,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    var response = await client.post(
+      Uri.parse('$apiUrl/auth/reset-password'),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: jsonEncode({
+        "phone": phone,
+        "verification_token": verificationToken,
+        "password": password,
+        "password_confirmation": passwordConfirmation,
+      }),
+    );
+    return response;
+  }
+
+  Future<dynamic> updateMode({required String mode}) async {
+    var response = await client.post(
+      Uri.parse('$apiUrl/auth/mode'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"mode": mode}),
+    );
+    return response;
   }
 }

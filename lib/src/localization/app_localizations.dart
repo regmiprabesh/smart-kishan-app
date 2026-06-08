@@ -284,6 +284,102 @@ abstract class AppLocalizations {
   /// **'Request OTP'**
   String get requestOTP;
 
+  /// No description provided for @wrongPhonePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong phone / password'**
+  String get wrongPhonePassword;
+
+  /// No description provided for @accountCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been created successfully!'**
+  String get accountCreated;
+
+  /// No description provided for @passwordResetSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed successfully. Please sign in.'**
+  String get passwordResetSuccess;
+
+  /// No description provided for @passwordResetFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not change password.'**
+  String get passwordResetFailed;
+
+  /// No description provided for @logoutFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong! Please try again.'**
+  String get logoutFailed;
+
+  /// No description provided for @otpSent.
+  ///
+  /// In en, this message translates to:
+  /// **'A verification code has been sent to your phone.'**
+  String get otpSent;
+
+  /// No description provided for @otpResent.
+  ///
+  /// In en, this message translates to:
+  /// **'A new verification code has been sent to your phone.'**
+  String get otpResent;
+
+  /// No description provided for @phoneAlreadyRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'This phone number is already registered.'**
+  String get phoneAlreadyRegistered;
+
+  /// No description provided for @phoneNotRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'This phone number is not registered.'**
+  String get phoneNotRegistered;
+
+  /// No description provided for @otpThrottled.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait {seconds} seconds before requesting another code.'**
+  String otpThrottled(String seconds);
+
+  /// No description provided for @otpSendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send the verification code.'**
+  String get otpSendFailed;
+
+  /// No description provided for @otpInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'The verification code is incorrect.'**
+  String get otpInvalid;
+
+  /// No description provided for @genericError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get genericError;
+
+  /// No description provided for @loginThrottled.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please wait {seconds} seconds and try again.'**
+  String loginThrottled(String seconds);
+
+  /// No description provided for @sessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please log in again.'**
+  String get sessionExpired;
+
+  /// No description provided for @noInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t connect. Please check your internet connection and try again.'**
+  String get noInternet;
+
   /// No description provided for @alreadyAccount.
   ///
   /// In en, this message translates to:
