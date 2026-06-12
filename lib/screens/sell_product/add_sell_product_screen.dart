@@ -720,7 +720,7 @@ class _AddSellProductStepsState extends State<AddSellProductSteps> {
                       child: Row(
                         children: [
                           Text(
-                            unit.name!,
+                            unit.getName(Get.locale?.languageCode ?? 'en'),
                             style: const TextStyle(color: kCardTitleColor),
                           ),
                         ],

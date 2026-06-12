@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/auth_controller.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/languages/langauge_constants.dart';
 import 'package:smart_kishan/size_config.dart';
 
@@ -51,10 +52,10 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
 
       if (result) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: kSuccessColor,
             content: Text(
-              'Password updated successfully',
+              l10n.passwordUpdatedSuccessfully,
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
             ),
           ),
@@ -62,10 +63,10 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
         Get.back();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: kErrorColor,
             content: Text(
-              'Failed to update password',
+              l10n.passwordUpdateFailed,
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
             ),
           ),
@@ -73,10 +74,10 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: kErrorColor,
           content: Text(
-            'An error occurred',
+            l10n.genericError,
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
           ),
         ),

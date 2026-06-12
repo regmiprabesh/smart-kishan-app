@@ -402,7 +402,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                             return DropdownMenuItem<String>(
                                               value: unit.id.toString(),
                                               child: Text(
-                                                unit.name!,
+                                                unit.getName(
+                                                    Get.locale?.languageCode ??
+                                                        'en'),
                                                 style: TextStyle(
                                                   color: kCardTitleColor,
                                                   fontSize:
@@ -568,8 +570,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                 stock:
                                     int.tryParse(_productStockController.text),
                                 unitId: _selectedUnit,
-                                date: DateTime.now().toString(),
                                 isSellable: _isSellable,
+                                createdDate: DateTime.now().toString(),
                               ));
                             }
                           }

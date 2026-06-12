@@ -134,6 +134,12 @@
       "languageVersion": "2.17"
     },
     {
+      "name": "decimal",
+      "rootUri": "file:///Users/prabeshregmi/.pub-cache/hosted/pub.dev/decimal-3.2.4",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
       "name": "dots_indicator",
       "rootUri": "file:///Users/prabeshregmi/.pub-cache/hosted/pub.dev/dots_indicator-4.0.1",
       "packageUri": "lib/",
@@ -548,6 +554,12 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "google_fonts",
+      "rootUri": "file:///Users/prabeshregmi/.pub-cache/hosted/pub.dev/google_fonts-6.3.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.9"
+    },
+    {
       "name": "gpt_markdown",
       "rootUri": "file:///Users/prabeshregmi/.pub-cache/hosted/pub.dev/gpt_markdown-1.1.7",
       "packageUri": "lib/",
@@ -900,6 +912,12 @@
       "rootUri": "file:///Users/prabeshregmi/.pub-cache/hosted/pub.dev/pub_semver-2.2.0",
       "packageUri": "lib/",
       "languageVersion": "3.4"
+    },
+    {
+      "name": "rational",
+      "rootUri": "file:///Users/prabeshregmi/.pub-cache/hosted/pub.dev/rational-2.2.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
     },
     {
       "name": "rxdart",

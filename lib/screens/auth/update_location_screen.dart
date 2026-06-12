@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/auth_controller.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/languages/langauge_constants.dart';
 import 'package:smart_kishan/screens/auth/services/remote_auth_services.dart';
 import 'package:smart_kishan/size_config.dart';
@@ -200,10 +201,10 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
       );
       if (result) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: kSuccessColor,
             content: Text(
-              'Location updated successfully',
+              l10n.locationUpdatedSuccessfully,
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
             ),
           ),
@@ -212,10 +213,10 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
         Get.back(result: true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: kErrorColor,
             content: Text(
-              'Failed to update location',
+              l10n.locationUpdateFailed,
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
             ),
           ),
@@ -223,10 +224,10 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: kErrorColor,
           content: Text(
-            'An error occurred',
+            l10n.genericError,
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
           ),
         ),
@@ -410,6 +411,7 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
                       TextFormField(
                         controller: _addressController,
                         maxLines: 3,
+                        style: Theme.of(context).textTheme.labelLarge,
                         decoration: InputDecoration(
                           hintText: t.enterAddress,
                           filled: true,
@@ -506,13 +508,14 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
           : DropdownButtonHideUnderline(
               child: DropdownButton<int>(
                 value: value,
-                hint: Text(hint),
+                hint: Text(hint, style: Theme.of(context).textTheme.labelLarge),
                 isExpanded: true,
                 icon: const Icon(Icons.arrow_drop_down, color: kPrimaryColor),
                 items: items.map<DropdownMenuItem<int>>((item) {
                   return DropdownMenuItem<int>(
                     value: item['id'],
-                    child: Text(_getMultilingualName(item)),
+                    child: Text(_getMultilingualName(item),
+                        style: Theme.of(context).textTheme.labelLarge),
                   );
                 }).toList(),
                 onChanged: enabled ? onChanged : null,

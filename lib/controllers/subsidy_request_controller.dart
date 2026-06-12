@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:smart_kishan/models/subsidyRequest.dart';
-import 'package:smart_kishan/screens/auth/services/local_auth_service.dart';
 import 'package:smart_kishan/screens/subsidy_requests/services/remote_subsidy_request_service.dart';
 
 class SubsidyRequestController extends GetxController {
@@ -14,12 +13,9 @@ class SubsidyRequestController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool isSubmitting = false.obs;
 
-  final LocalAuthService _localAuthService = LocalAuthService();
-
   @override
   void onInit() async {
     super.onInit();
-    await _localAuthService.init();
     getMyRequests();
   }
 
@@ -33,9 +29,7 @@ class SubsidyRequestController extends GetxController {
   Future<void> getMyRequests() async {
     try {
       isLoading(true);
-      String? token = await _localAuthService.getToken();
-      var result =
-          await RemoteSubsidyRequestService().getMyRequests(token: token!);
+      var result = await RemoteSubsidyRequestService().getMyRequests();
 
       if (result != null && result.statusCode == 200) {
         var body = jsonDecode(result.body);
@@ -64,10 +58,8 @@ class SubsidyRequestController extends GetxController {
   }) async {
     try {
       isSubmitting(true);
-      String? token = await _localAuthService.getToken();
 
       var result = await RemoteSubsidyRequestService().submitRequest(
-        token: token!,
         titleEn: titleEn,
         titleNe: titleNe,
         descriptionEn: descriptionEn,
@@ -95,10 +87,7 @@ class SubsidyRequestController extends GetxController {
   // Cancel/Delete a pending request
   Future<bool> cancelRequest(int requestId) async {
     try {
-      String? token = await _localAuthService.getToken();
-
       var result = await RemoteSubsidyRequestService().cancelRequest(
-        token: token!,
         requestId: requestId,
       );
 

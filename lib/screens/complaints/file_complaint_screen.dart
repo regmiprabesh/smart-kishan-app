@@ -386,7 +386,7 @@ class _FileComplaintScreenState extends State<FileComplaintScreen> {
         elevation: 0,
         title: Text(
           t.fileComplaint,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
@@ -434,7 +434,7 @@ class _FileComplaintScreenState extends State<FileComplaintScreen> {
                               t.reportYourIssue,
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 20,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -792,7 +792,7 @@ class _FileComplaintScreenState extends State<FileComplaintScreen> {
                   label,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 12,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                     color: isSelected ? category['color'] : Colors.grey[700],
                   ),

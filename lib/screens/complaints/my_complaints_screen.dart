@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/helpers/complaint_helpers.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/routes/app_routes.dart';
 import 'package:smart_kishan/controllers/complaint_controller.dart';
 import 'package:smart_kishan/models/complaint.dart';
@@ -44,7 +45,7 @@ class _MyComplaintsScreenState extends State<MyComplaintsScreen>
         elevation: 0,
         title: Text(
           t.myComplaints,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
         bottom: TabBar(
           controller: _tabController,
@@ -317,7 +318,7 @@ class _MyComplaintsScreenState extends State<MyComplaintsScreen>
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          _formatDate(complaint.createdAt),
+                          _formatDate(complaint.createdAt, l10n.localeName),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],
@@ -407,13 +408,10 @@ class _MyComplaintsScreenState extends State<MyComplaintsScreen>
     }
   }
 
-  String _formatDate(String? dateString) {
-    if (dateString == null) return 'N/A';
-    try {
-      final date = DateTime.parse(dateString);
-      return DateFormat('MMM dd, yyyy').format(date);
-    } catch (e) {
-      return 'N/A';
-    }
+  String _formatDate(String? rawDate, String localeName) {
+    if (rawDate == null || rawDate.isEmpty) return '';
+    final dt = DateTime.tryParse(rawDate);
+    if (dt == null) return rawDate;
+    return DateFormat('EEEE, dd MMMM, yyyy', localeName).format(dt);
   }
 }

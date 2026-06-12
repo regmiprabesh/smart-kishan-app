@@ -1,234 +1,125 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/models/unit.dart';
 import 'package:smart_kishan/models/product.dart';
-import 'package:smart_kishan/screens/products/services/local_product_service.dart';
 import 'package:smart_kishan/screens/auth/services/local_auth_service.dart';
 import 'package:smart_kishan/screens/products/services/remote_product_service.dart';
 
 class ProductController extends GetxController {
-  static ProductController instance = Get.find();
+  static ProductController get instance => Get.find();
 
-  RxList<Product> products = List<Product>.empty(growable: true).obs;
-  RxList<Unit> units = List<Unit>.empty(growable: true).obs;
+  final RxList<Product> products = <Product>[].obs;
+  final RxList<Unit> units = <Unit>[].obs;
 
-  RxList<Product> sellableProducts = List<Product>.empty(growable: true).obs;
-  RxList<Product> nonSellableProducts = List<Product>.empty(growable: true).obs;
-  // RxList<Unit> units = [
-  //   Unit(id: 1, name: 'ग्राम'),
-  //   Unit(id: 2, name: 'किलोग्राम'),
-  //   Unit(id: 3, name: 'लिटर'),
-  //   Unit(id: 4, name: 'क्यारेट'),
-  //   Unit(id: 5, name: 'टुक्रा')
-  // ].obs;
+  final RxList<Product> sellableProducts = <Product>[].obs;
+  final RxList<Product> nonSellableProducts = <Product>[].obs;
 
-  final _localProductService = LocalProductService();
-
-  RxBool isEdit = false.obs;
-
-  // Rx<String> selectedUnitId = ''.obs;
-
-  Rx<Product> selectedProduct = Product().obs;
-  RxBool isProductsLoading = false.obs;
+  final RxBool isEdit = false.obs;
+  final Rx<Product> selectedProduct = Product().obs;
+  final RxBool isProductsLoading = false.obs;
 
   final LocalAuthService _localAuthService = LocalAuthService();
 
   @override
   void onInit() async {
     super.onInit();
-    // selectedUnitId('');
     await _localAuthService.init();
-    await _localProductService.init();
     getProducts();
     getUnits();
-    // getProductsOffline();
+  }
+
+  void _updateSellableLists() {
+    sellableProducts.assignAll(
+      products.where((e) => e.isSellable == 1 || e.isSellable == 3).toList(),
+    );
+    nonSellableProducts.assignAll(
+      products.where((e) => e.isSellable == 2 || e.isSellable == 3).toList(),
+    );
   }
 
   void getUnits() async {
     try {
-      var result = await RemoteProductService().getUnits();
+      final result = await RemoteProductService().getUnits();
       if (result != null) {
-        var body = jsonDecode(result.body);
+        final body = jsonDecode(result.body);
         units.assignAll(unitListFromJson(jsonEncode(body['data'])));
       }
     } catch (e) {
-      print('No Internet Connection');
-    } finally {
-      isProductsLoading(false);
+      debugPrint('getUnits error: $e');
     }
   }
 
   void getProducts() async {
     try {
       isProductsLoading(true);
-      String? token = await _localAuthService.getToken();
-      var result = await RemoteProductService().getProducts(token: token!);
+      final result = await RemoteProductService().getProducts();
+      print(result.body);
       if (result != null) {
-        var body = jsonDecode(result.body);
+        final body = jsonDecode(result.body);
         products.assignAll(productListFromJson(jsonEncode(body['data'])));
-        products.refresh();
-        sellableProducts(products
-            .where(
-                (element) => element.isSellable == 1 || element.isSellable == 3)
-            .toList());
-        nonSellableProducts(products
-            .where(
-                (element) => element.isSellable == 2 || element.isSellable == 3)
-            .toList());
+        _updateSellableLists();
       }
     } catch (e) {
-      // print(e);
-      print('No Internet Connection');
+      debugPrint('getProducts error: $e');
     } finally {
       isProductsLoading(false);
     }
   }
 
-  getProductsOffline() async {
-    try {
-      var data = await _localProductService.readProducts();
-      products.assignAll(productListFromJson(jsonEncode(data)));
-    } catch (e) {
-      print(e);
-    } finally {}
-  }
-
   Future<bool> addProduct(Product product) async {
     try {
       isProductsLoading(true);
-      String? token = await _localAuthService.getToken();
-      var result = await RemoteProductService()
-          .addProduct(token: token!, data: product.toJson());
+      final result =
+          await RemoteProductService().addProduct(data: product.toJson());
       if (result.statusCode == 200) {
-        var body = jsonDecode(result.body);
-        var newProduct = Product.fromJson(body['data']);
-        products.add(newProduct);
-        sellableProducts(products
-            .where(
-                (element) => element.isSellable == 1 || element.isSellable == 3)
-            .toList());
-        nonSellableProducts(products
-            .where(
-                (element) => element.isSellable == 2 || element.isSellable == 3)
-            .toList());
+        final body = jsonDecode(result.body);
+        products.add(Product.fromJson(body['data']));
+        _updateSellableLists();
         Get.back();
+        return true;
       }
     } catch (e) {
-      print(e);
+      debugPrint('addProduct error: $e');
     } finally {
       isProductsLoading(false);
     }
     return false;
   }
 
-  addProductOffline(Product product) async {
-    try {
-      var result = await _localProductService.saveProduct(product);
-      if (result > 0) {
-        Get.back();
-        await getProductsOffline();
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kSuccessColor,
-            content: Text(
-              'उत्पादन सफलतापूर्वक थपियो!',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
-      }
-    } catch (e) {
-      print(e);
-    } finally {}
-  }
-
   void updateProduct(Product product) async {
     try {
       isProductsLoading(true);
-      String? token = await _localAuthService.getToken();
-      var result = await RemoteProductService().updateProduct(
-          token: token!, data: product.toJson(), id: product.id!);
-      print(result.body);
+      final result = await RemoteProductService()
+          .updateProduct(data: product.toJson(), id: product.id!);
       if (result.statusCode == 200) {
-        products[products.indexWhere((element) => element.id == product.id)] =
-            product;
-        sellableProducts(products
-            .where(
-                (element) => element.isSellable == 1 || element.isSellable == 3)
-            .toList());
-        nonSellableProducts(products
-            .where(
-                (element) => element.isSellable == 2 || element.isSellable == 3)
-            .toList());
-        // updateNoteOffline(note);
+        final i = products.indexWhere((e) => e.id == product.id);
+        if (i != -1)
+          products[i] = Product.fromJson(jsonDecode(result.body)['data']);
+        _updateSellableLists();
         Get.back();
       }
     } catch (e) {
-      print(e);
+      debugPrint('updateProduct error: $e');
     } finally {
       isProductsLoading(false);
     }
-  }
-
-  updateProductOffline(Product product) async {
-    try {
-      var result = await _localProductService.updateProduct(product);
-      if (result > 0) {
-        Get.back();
-        await getProductsOffline();
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kSuccessColor,
-            content: Text(
-              'उत्पादन सफलतापूर्वक अपडेट गरियो!',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
-      }
-    } catch (e) {
-      print(e);
-    } finally {}
   }
 
   void deleteProduct(int id) async {
     try {
       isProductsLoading(true);
-      String? token = await _localAuthService.getToken();
-      var result =
-          await RemoteProductService().deleteProduct(token: token!, id: id);
+      final result = await RemoteProductService().deleteProduct(id: id);
       if (result.statusCode == 200) {
-        products.removeWhere((element) => element.id == id);
+        products.removeWhere((e) => e.id == id);
+        _updateSellableLists();
         Get.back();
       }
     } catch (e) {
-      print(e);
+      debugPrint('deleteProduct error: $e');
     } finally {
       isProductsLoading(false);
     }
-  }
-
-  deleteProductOffline(int id) async {
-    try {
-      var result = await _localProductService.deleteProduct(id);
-      if (result > 0) {
-        Get.back();
-        getProductsOffline();
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kSuccessColor,
-            content: Text(
-              'उत्पादन सफलतापूर्वक मेटाइयो!',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
-      }
-    } catch (e) {
-    } finally {}
-  }
-
-  void reset() {
-    units.clear();
-    sellableProducts.clear();
-    nonSellableProducts.clear();
-    isEdit(false);
-    selectedProduct(null);
-    isProductsLoading(false);
-    products.clear();
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/app_controller.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/models/note.dart';
 import 'package:smart_kishan/size_config.dart';
 import 'package:smart_kishan/widgets/input_text_field.dart';
@@ -21,43 +22,35 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
   Note selectedNote = Note();
 
-  Color getColor(Set<MaterialState> states) {
-    const Set<MaterialState> interactiveStates = <MaterialState>{
-      MaterialState.pressed,
-      MaterialState.hovered,
-      MaterialState.focused,
-    };
-    if (states.any(interactiveStates.contains)) {
-      return kSecondaryColor;
+  @override
+  void initState() {
+    super.initState();
+    if (noteController.isEdit.value) {
+      selectedNote = noteController.selectedNote.value;
+      _noteTitleController.text = selectedNote.title ?? '';
+      _noteDescriptionController.text = selectedNote.description ?? '';
+      _notePriorityController.text = selectedNote.priority?.toString() ?? '';
     }
-    return kPrimaryColor;
   }
 
   @override
-  void initState() {
-    if (noteController.isEdit.value) {
-      setState(() {
-        selectedNote = noteController.selectedNote.value;
-      });
-      _noteTitleController.text = selectedNote.title!;
-      _noteDescriptionController.text = selectedNote.description!;
-      _notePriorityController.text =
-          selectedNote.priority != null ? selectedNote.priority.toString() : '';
-    }
-    // TODO: implement initState
-    super.initState();
+  void dispose() {
+    _noteTitleController.dispose();
+    _noteDescriptionController.dispose();
+    _notePriorityController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isEdit = noteController.isEdit.value;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
         title: Text(
-            noteController.isEdit.value
-                ? 'नोट अपडेट गर्नुहोस्'
-                : 'नोट थप्नुहोस्',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          isEdit ? l10n.updateNote : l10n.addNote,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -69,81 +62,67 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  'नोटको शीर्षक',
+                  l10n.noteTitle,
                   style: TextStyle(
                     fontSize: getProportionateScreenWidth(13),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(
-                  height: 5,
-                ),
+                const SizedBox(height: 5),
                 InputTextField(
                   textEditingController: _noteTitleController,
-                  title: 'नोटको शीर्षक प्रविष्टि गर्नुहोस्',
+                  title: l10n.enterNoteTitle,
                   validation: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'कृपया आफ्नो नोटको शीर्षक प्रविष्टि गर्नुहोस्';
+                      return l10n.pleaseEnterNoteTitle;
                     }
                     if (value.length < 3) {
-                      return "नोटको शीर्षक कम्तिमा पनि ३ अक्षरको हुनुपर्छ";
+                      return l10n.noteTitleMinLength;
                     }
                     return null;
                   },
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Text(
-                  'नोटको विवरण',
+                  l10n.noteDescription,
                   style: TextStyle(
                     fontSize: getProportionateScreenWidth(13),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(
-                  height: 5,
-                ),
+                const SizedBox(height: 5),
                 InputTextField(
                   textEditingController: _noteDescriptionController,
-                  title: 'नोटको विवरण प्रविष्टि गर्नुहोस्',
+                  title: l10n.enterNoteDescription,
                   maxLines: 4,
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Text(
-                  'नोटको प्राथमिकता',
+                  l10n.notePriority,
                   style: TextStyle(
                     fontSize: getProportionateScreenWidth(13),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(
-                  height: 5,
-                ),
+                const SizedBox(height: 5),
                 InputTextField(
                   textEditingController: _notePriorityController,
-                  title: 'नोटको प्राथमिकता प्रविष्टि गर्नुहोस्',
+                  title: l10n.enterNotePriority,
                   textInputType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly
                   ],
                 ),
-                SizedBox(
-                  height: getProportionateScreenWidth(20),
-                ),
+                SizedBox(height: getProportionateScreenWidth(20)),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: kPrimaryColor,
-                      minimumSize: Size(
-                          double.infinity, getProportionateScreenWidth(40))),
-                  child: noteController.isEdit.value
-                      ? const Text('अपडेट गर्नुहोस्')
-                      : const Text('थप्नुहोस्'),
+                    backgroundColor: kPrimaryColor,
+                    minimumSize:
+                        Size(double.infinity, getProportionateScreenWidth(40)),
+                  ),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      if (noteController.isEdit.value) {
+                      if (isEdit) {
                         noteController.updateNote(Note(
                           id: selectedNote.id!,
                           title: _noteTitleController.text,
@@ -152,17 +131,18 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                         ));
                       } else {
                         noteController.addNote(
-                            Note(
-                              title: _noteTitleController.text,
-                              description: _noteDescriptionController.text,
-                              priority:
-                                  int.tryParse(_notePriorityController.text),
-                              date: DateTime.now().toString(),
-                            ),
-                            false);
+                          Note(
+                            title: _noteTitleController.text,
+                            description: _noteDescriptionController.text,
+                            priority:
+                                int.tryParse(_notePriorityController.text),
+                            date: DateTime.now().toString(),
+                          ),
+                        );
                       }
                     }
                   },
+                  child: Text(isEdit ? l10n.update : l10n.add),
                 ),
               ],
             ),

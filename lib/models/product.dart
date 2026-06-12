@@ -11,7 +11,7 @@ class Product {
   String? description;
   int? isSellable;
   int? userId;
-  String? date;
+  String? createdDate;
   Product(
       {this.id,
       this.name,
@@ -20,7 +20,7 @@ class Product {
       this.description,
       this.isSellable,
       this.userId,
-      this.date});
+      this.createdDate});
 
   Product.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -30,7 +30,7 @@ class Product {
     description = json['description'];
     isSellable = json['is_sellable'];
     userId = json['user_id'];
-    date = json['date'];
+    createdDate = json['created_at'];
   }
 
   Map<String, dynamic> toJson() {
@@ -42,7 +42,7 @@ class Product {
     data['description'] = description;
     data['is_sellable'] = isSellable;
     data['user_id'] = userId;
-    data['date'] = date;
+    data['created_at'] = createdDate;
     return data;
   }
 }

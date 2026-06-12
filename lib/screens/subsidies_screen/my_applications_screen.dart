@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/subsidy_controller..dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/languages/langauge_constants.dart';
 import 'package:smart_kishan/screens/subsidies_screen/application_details_screen.dart';
 import 'package:smart_kishan/size_config.dart';
@@ -69,15 +70,11 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
     }
   }
 
-  String formatDate(String? date) {
-    final t = translation(context);
-    if (date == null) return t.noInfo;
-    try {
-      final dateTime = DateTime.parse(date);
-      return DateFormat('MMM dd, yyyy').format(dateTime);
-    } catch (e) {
-      return date;
-    }
+  String _formatDate(String? rawDate, String localeName) {
+    if (rawDate == null || rawDate.isEmpty) return '';
+    final dt = DateTime.tryParse(rawDate);
+    if (dt == null) return rawDate;
+    return DateFormat('EEEE, dd MMMM, yyyy', localeName).format(dt);
   }
 
   void _showWithdrawDialog(int subsidyId, String subsidyTitle) {
@@ -548,7 +545,7 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
                       ),
                     ),
                     Text(
-                      formatDate(appliedAt),
+                      _formatDate(appliedAt, l10n.localeName),
                       style: TextStyle(
                         fontSize: 12,
                         color: kCardTitleColor,
@@ -667,12 +664,15 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
             ),
           ),
           SizedBox(height: 28),
-          Text(
-            t.noApplicationsYet,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: kCardTitleColor,
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Text(
+              t.noApplicationsYet,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: kCardTitleColor,
+              ),
             ),
           ),
           SizedBox(height: 10),

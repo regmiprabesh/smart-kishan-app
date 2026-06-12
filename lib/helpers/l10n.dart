@@ -5,9 +5,10 @@ import 'package:smart_kishan/src/localization/app_localizations.dart';
 
 AppLocalizations get l10n => AppLocalizations.of(Get.context!)!;
 
-String localizedNumber(int value) {
+String get localeCode => Localizations.localeOf(Get.context!).languageCode;
+
+String localizedNumber(Object value) {
+  final str = value.toString();
   final code = Localizations.localeOf(Get.context!).languageCode;
-  return code == 'ne'
-      ? convertToNepaliNumber(value.toString())
-      : value.toString();
+  return code == 'ne' ? convertToNepaliNumber(str) : str;
 }

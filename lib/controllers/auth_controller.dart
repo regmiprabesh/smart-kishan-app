@@ -68,7 +68,7 @@ class AuthController extends GetxController {
         //   await _localAuthService.setMode(mode: getUser.mode!);
         // }
         // Get.offAllNamed(routeForMode(_localAuthService.getMode()));
-        getData();
+        //getData();
       } else if (result.statusCode == 429) {
         var body = json.decode(result.body);
         int seconds = body['retry_after'] ?? 60;
@@ -265,24 +265,24 @@ class AuthController extends GetxController {
     }
   }
 
-  void logout() async {
+  Future<void> logout() async {
     try {
       authStatusLoading(true);
-      var result = await RemoteAuthService().logout();
-      if (result.statusCode == 200) {
-        Get.offAllNamed(AppRoute.signInScreen);
-        await _localAuthService.clear();
-        await authController.updateFirstLaunch();
-        user.value = null;
-        await clearCache();
-      } else {
+      final result = await RemoteAuthService().logout();
+      if (result.statusCode != 200) {
         showErrorSnackbar(l10n.logoutFailed);
+        return;
       }
     } catch (e) {
-      authStatusLoading(false);
+      debugPrint('Logout API error: $e');
+      // network issue: continue with local logout anyway
     } finally {
       authStatusLoading(false);
     }
+
+    await _localAuthService.clear();
+    user.value = null;
+    Get.offAllNamed(AppRoute.signInScreen);
   }
 
   void resetPassword({
@@ -342,46 +342,46 @@ class AuthController extends GetxController {
     }
   }
 
-  clearCache() {
-    userController.reset();
-    productController.reset();
-    noteController.reset();
-    dailyActivityController.reset();
-    farmlandController.reset();
-    buyProductsController.reset();
-    buyersGroupController.reset();
-    customerOrdersController.reset();
-    productCartController.reset();
-    searchHistoryController.reset();
-    sellProductController.reset();
-    vendorHomeController.reset();
-    vendorOrdersController.reset();
-    weatherController.reset();
-    deliveryAddressController.reset();
-  }
+  // clearCache() {
+  //   userController.reset();
+  //   productController.reset();
+  //   noteController.reset();
+  //   dailyActivityController.reset();
+  //   farmlandController.reset();
+  //   buyProductsController.reset();
+  //   buyersGroupController.reset();
+  //   customerOrdersController.reset();
+  //   productCartController.reset();
+  //   searchHistoryController.reset();
+  //   sellProductController.reset();
+  //   vendorHomeController.reset();
+  //   vendorOrdersController.reset();
+  //   weatherController.reset();
+  //   deliveryAddressController.reset();
+  // }
 
-  getData() {
-    noteController.getNotes();
-    productController.getUnits();
-    productController.getProducts();
-    dailyActivityController.getActivities();
-    userController.getMyUsers();
-    farmlandController.getFarmlands();
-    vendorHomeController.getVendorStats();
-    vendorOrdersController.getMyOrders();
-    sellProductController.getSellProducts();
-    sellProductController.getCropCategories();
-    sellProductController.getDeliveryLocations();
-    sellProductController.getPaymentTypes();
-    sellProductController.getUnits();
-    searchHistoryController.getSearchHistory();
-    productCartController.getMyCartItems();
-    customerOrdersController.getMyOrders();
-    buyProductsController.getAllProducts();
-    buyProductsController.getFeaturedProducts();
-    buyProductsController.getDeliveryLocations();
-    buyersGroupController.getBuyersGroups();
-    cropCategoryController.getCropCategories();
-    deliveryAddressController.getDeliveryAddress();
-  }
+  // getData() {
+  //   noteController.getNotes();
+  //   productController.getUnits();
+  //   productController.getProducts();
+  //   dailyActivityController.getActivities();
+  //   userController.getMyUsers();
+  //   farmlandController.getFarmlands();
+  //   vendorHomeController.getVendorStats();
+  //   vendorOrdersController.getMyOrders();
+  //   sellProductController.getSellProducts();
+  //   sellProductController.getCropCategories();
+  //   sellProductController.getDeliveryLocations();
+  //   sellProductController.getPaymentTypes();
+  //   sellProductController.getUnits();
+  //   searchHistoryController.getSearchHistory();
+  //   productCartController.getMyCartItems();
+  //   customerOrdersController.getMyOrders();
+  //   buyProductsController.getAllProducts();
+  //   buyProductsController.getFeaturedProducts();
+  //   buyProductsController.getDeliveryLocations();
+  //   buyersGroupController.getBuyersGroups();
+  //   cropCategoryController.getCropCategories();
+  //   deliveryAddressController.getDeliveryAddress();
+  // }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/subsidy_controller..dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/languages/langauge_constants.dart';
 import 'package:smart_kishan/models/multilingualField.dart';
 import 'package:smart_kishan/models/subsidy.dart';
@@ -127,15 +128,11 @@ class _ApplicationDetailsScreenState extends State<ApplicationDetailsScreen>
     }
   }
 
-  String formatDate(String? date) {
-    final t = translation(context);
-    if (date == null) return t.noInfo;
-    try {
-      final dateTime = DateTime.parse(date);
-      return DateFormat('MMMM dd, yyyy - hh:mm a').format(dateTime);
-    } catch (e) {
-      return date;
-    }
+  String _formatDate(String? rawDate, String localeName) {
+    if (rawDate == null || rawDate.isEmpty) return '';
+    final dt = DateTime.tryParse(rawDate);
+    if (dt == null) return rawDate;
+    return DateFormat('EEEE, dd MMMM, yyyy', localeName).format(dt);
   }
 
   String formatShortDate(String? date) {
@@ -389,7 +386,7 @@ class _ApplicationDetailsScreenState extends State<ApplicationDetailsScreen>
                   // Show title only when collapsed
                   title: isCollapsed
                       ? Text(
-                          '${t.applicationId ?? 'Application ID'}: #${widget.applicationId}',
+                          '${t.applicationId ?? 'Application ID'}: #${localizedNumber(widget.applicationId)}',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -458,7 +455,7 @@ class _ApplicationDetailsScreenState extends State<ApplicationDetailsScreen>
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
-                                  '${t.applicationId ?? 'Application ID'}: #${widget.applicationId}',
+                                  '${t.applicationId ?? 'Application ID'}: #${localizedNumber(widget.applicationId)}',
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: Colors.white.withOpacity(0.95),
@@ -568,7 +565,7 @@ class _ApplicationDetailsScreenState extends State<ApplicationDetailsScreen>
           _buildTimelineItem(
             icon: Icons.send_rounded,
             title: t.submitted ?? 'Submitted',
-            date: formatDate(widget.appliedAt),
+            date: _formatDate(widget.appliedAt, l10n.localeName),
             isCompleted: true,
           ),
           _buildTimelineDivider(isCompleted: widget.reviewedAt != null),
@@ -576,7 +573,7 @@ class _ApplicationDetailsScreenState extends State<ApplicationDetailsScreen>
             icon: Icons.rate_review_rounded,
             title: t.reviewed ?? 'Reviewed',
             date: widget.reviewedAt != null
-                ? formatDate(widget.reviewedAt)
+                ? _formatDate(widget.reviewedAt, l10n.localeName)
                 : t.pending,
             isCompleted: widget.reviewedAt != null,
           ),
@@ -686,20 +683,23 @@ class _ApplicationDetailsScreenState extends State<ApplicationDetailsScreen>
           SizedBox(height: 16),
           _buildInfoTile(
             label: t.fiscalYear ?? 'Fiscal Year',
-            value: widget.subsidy.fiscalYear ?? t.noInfo,
+            value: widget.subsidy.fiscalYear != null
+                ? localizedNumber(widget.subsidy.fiscalYear!)
+                : t.noInfo,
             icon: Icons.calendar_today,
           ),
           SizedBox(height: 16),
           _buildInfoTile(
             label: t.deadline ?? 'Deadline',
-            value: formatShortDate(widget.subsidy.deadline),
+            value: _formatDate(widget.subsidy.deadline, l10n.localeName),
             icon: Icons.event,
           ),
           if (widget.subsidy.budgetPerBeneficiary != null) ...[
             SizedBox(height: 16),
             _buildInfoTile(
               label: t.budgetPerBeneficiary ?? 'Budget Per Beneficiary',
-              value: 'NPR ${widget.subsidy.budgetPerBeneficiary}',
+              value:
+                  '${l10n.currencySymbol} ${localizedNumber(widget.subsidy.budgetPerBeneficiary.toString())}',
               icon: Icons.account_balance_wallet,
             ),
           ],

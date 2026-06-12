@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/app_controller.dart';
 import 'package:smart_kishan/controllers/subsidy_controller..dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/helpers/nepali_date_helper.dart';
 import 'package:smart_kishan/languages/langauge_constants.dart';
 import 'package:smart_kishan/models/subsidy.dart';
@@ -380,26 +382,33 @@ class SubsidyCard extends StatefulWidget {
 
 class _SubsidyCardState extends State<SubsidyCard> {
   bool isExpanded = false;
-  double rating = 4.5;
-  int totalRatings = 1247;
+  double rating = 0;
+  int totalRatings = 0;
+
+  String _formatDate(String? rawDate, String localeName) {
+    if (rawDate == null || rawDate.isEmpty) return '';
+    final dt = DateTime.tryParse(rawDate);
+    if (dt == null) return rawDate;
+    return DateFormat('EEEE, dd MMMM, yyyy', localeName).format(dt);
+  }
 
   String getDeadlineText() {
     final t = translation(context);
     final lang = widget.lang;
+    final raw = widget.subsidy.deadline;
 
-    if (widget.subsidy.deadline == null) return t.noDeadline;
+    if (raw == null || raw.isEmpty) return t.noDeadline;
 
-    // If Nepali language and Nepali date is available, use formatted Nepali date
-    if (lang == 'ne' && widget.subsidy.deadlineNepali != null) {
-      return NepaliDateHelper.formatNepaliDate(widget.subsidy.deadlineNepali);
+    if (lang == 'ne') {
+      final bsRaw = widget.subsidy.deadlineNepali;
+      if (bsRaw != null && bsRaw.isNotEmpty) {
+        return NepaliDateHelper.formatNepaliDate(bsRaw);
+      }
+      // No BS date — show the AD date with Nepali Unicode digits.
+      return convertToNepaliNumber(_formatDate(raw, 'ne'));
     }
 
-    try {
-      final deadline = DateTime.parse(widget.subsidy.deadline!);
-      return widget.subsidy.deadline!.split('T')[0];
-    } catch (e) {
-      return widget.subsidy.deadline ?? t.noInfo;
-    }
+    return _formatDate(raw, lang);
   }
 
   bool isDeadlinePassed() {
@@ -409,6 +418,26 @@ class _SubsidyCardState extends State<SubsidyCard> {
       return deadline.isBefore(DateTime.now());
     } catch (e) {
       return false;
+    }
+  }
+
+  String _getLocationInNepali(String? level) {
+    if (level == null) return '';
+    final t = translation(context);
+
+    switch (level.toLowerCase()) {
+      case 'central':
+        return t.central;
+      case 'province':
+        return t.provinceLevel;
+      case 'district':
+        return t.districtLevel;
+      case 'municipality':
+        return t.municipalityLevel;
+      case 'ward':
+        return t.wardLevel;
+      default:
+        return level;
     }
   }
 
@@ -533,7 +562,7 @@ class _SubsidyCardState extends State<SubsidyCard> {
                               border: Border.all(color: Colors.green[200]!),
                             ),
                             child: Text(
-                              'रू ${widget.subsidy.budgetPerBeneficiary}',
+                              '${l10n.currencySymbol} ${localizedNumber(widget.subsidy.budgetPerBeneficiary.toString())}',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
@@ -556,7 +585,7 @@ class _SubsidyCardState extends State<SubsidyCard> {
                                 Icon(Icons.star, color: Colors.amber, size: 16),
                                 SizedBox(width: 4),
                                 Text(
-                                  rating.toStringAsFixed(1),
+                                  localizedNumber(rating.toStringAsFixed(1)),
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.amber[700],
@@ -564,7 +593,7 @@ class _SubsidyCardState extends State<SubsidyCard> {
                                 ),
                                 SizedBox(width: 4),
                                 Text(
-                                  '($totalRatings)',
+                                  '(${localizedNumber(totalRatings)})',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey[600],
@@ -671,7 +700,8 @@ class _SubsidyCardState extends State<SubsidyCard> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              widget.subsidy.locationLevel!.toUpperCase(),
+                              _getLocationInNepali(
+                                  widget.subsidy.locationLevel),
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.grey[700],
@@ -1449,7 +1479,7 @@ class _RatingDialogState extends State<RatingDialog>
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'This action cannot be undone',
+                        l10n.actionCannotBeUndone,
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.orange[900],

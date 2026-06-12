@@ -1,135 +1,99 @@
-import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 import 'package:smart_kishan/constant.dart';
+import 'package:smart_kishan/helpers/app_http_client.dart';
 import 'package:smart_kishan/models/soildata.dart';
 
 class RemoteFarmlandService {
-  var client = http.Client();
+  final _client = AppHttpClient();
 
-  Future<dynamic> getSoilApiKey({required data}) async {
-    var remoteUrl = 'https://soil.narc.gov.np/api/token';
-    var response = await client.post(Uri.parse(remoteUrl),
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode(data));
-    return response;
+  static const _headers = {
+    'Content-type': 'application/json',
+    'Accept': 'application/json',
+  };
+
+  Future<http.Response> getFarmlands() async {
+    return await _client.get(
+      Uri.parse('$apiUrl/farmlands'),
+      headers: _headers,
+    );
   }
 
-  Future<dynamic> getSoilData(
+  Future<http.Response> addFarmland({
+    required Map<String, dynamic> data,
+    http.MultipartFile? image,
+  }) async {
+    final stringData = _toStringMap(data);
+    final request =
+        http.MultipartRequest('POST', Uri.parse('$apiUrl/farmlands'))
+          ..headers['Accept'] = 'application/json'
+          ..fields.addAll(stringData);
+    if (image != null) request.files.add(image);
+    return await _sendMultipart(request);
+  }
+
+  Future<http.Response> updateFarmland({
+    required Map<String, dynamic> data,
+    required int id,
+    http.MultipartFile? image,
+  }) async {
+    final stringData = _toStringMap(data);
+    final request =
+        http.MultipartRequest('POST', Uri.parse('$apiUrl/farmlands/update/$id'))
+          ..headers['Accept'] = 'application/json'
+          ..fields.addAll(stringData);
+    if (image != null) request.files.add(image);
+    return await _sendMultipart(request);
+  }
+
+  Future<http.Response> deleteFarmland({required int id}) async {
+    return await _client.delete(
+      Uri.parse('$apiUrl/farmlands/$id'),
+      headers: _headers,
+    );
+  }
+
+  Future<http.Response> getSoilApiKey(
+      {required Map<String, dynamic> data}) async {
+    return await _client.post(
+      Uri.parse('https://soil.narc.gov.np/api/token'),
+      headers: _headers,
+      body: data,
+    );
+  }
+
+  Future<http.Response> getSoilData(
       {required Coordinates data, String? token}) async {
-    var remoteUrl =
-        'https://soil.narc.gov.np/soil/soildata/?format=json&lat=${data.lat}&lon=${data.lng}';
-    var response = await client.get(
-      Uri.parse(remoteUrl),
+    return await _client.get(
+      Uri.parse(
+          'https://soil.narc.gov.np/soil/soildata/?format=json&lat=${data.lat}&lon=${data.lng}'),
       headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
+        ..._headers,
+        if (token != null) 'Authorization': 'Bearer $token',
       },
     );
-    return response;
   }
 
-  Future<dynamic> getFarmlands({required String token}) async {
-    var remoteUrl = '$apiUrl/farmlands';
-    var response = await client.get(
-      Uri.parse(remoteUrl),
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+  Future<http.Response> getRecommendedCrop(
+      {required Coordinates coordinate}) async {
+    return await _client.get(
+      Uri.parse(
+          'https://recommendation.safalstha.com.np/api/recommendation/data?lat=${coordinate.lat}&long=${coordinate.lng}'),
+      headers: _headers,
     );
-    return response;
   }
 
-  Future<dynamic> addFarmland(
-      {required String token,
-      required Map<String, dynamic> data,
-      http.MultipartFile? image}) async {
-    var remoteUrl = '$apiUrl/farmlands';
-    Map<String, String> headers = {
-      'Content-Type': 'multipart/form-data',
-      'Accept': 'application/json',
-      "Authorization": "Bearer $token"
-    };
-    Map<String, String> stringData =
-        data.map((key, value) => MapEntry(key, value?.toString() ?? ''));
-    if (stringData.containsKey('image')) {
-      stringData.removeWhere((key, value) => key == 'image');
-    }
-    if (image != null) {
-      var request = http.MultipartRequest('POST', Uri.parse(remoteUrl))
-        ..headers.addAll(headers)
-        ..fields.addAll(stringData)
-        ..files.add(image);
-      var streamedResponse = await request.send();
-      var response = await http.Response.fromStream(streamedResponse);
-      return response;
-    } else {
-      var request = http.MultipartRequest('POST', Uri.parse(remoteUrl))
-        ..headers.addAll(headers)
-        ..fields.addAll(stringData);
-      var streamedResponse = await request.send();
-      var response = await http.Response.fromStream(streamedResponse);
-      return response;
-    }
-  }
-
-  Future<dynamic> updateFarmland(
-      {required String token,
-      required Map<String, dynamic> data,
-      required int id,
-      http.MultipartFile? image}) async {
-    var remoteUrl = '$apiUrl/farmlands/update/$id';
-    Map<String, String> headers = {
-      'Content-Type': 'multipart/form-data',
-      'Accept': 'application/json',
-      "Authorization": "Bearer $token"
-    };
-    Map<String, String> stringData =
-        data.map((key, value) => MapEntry(key, value?.toString() ?? ''));
-    if (stringData.containsKey('image')) {
-      stringData.removeWhere((key, value) => key == 'image');
-    }
-    var request = http.MultipartRequest('POST', Uri.parse(remoteUrl))
-      ..headers.addAll(headers)
-      ..fields.addAll(stringData);
-    if (image != null) {
-      request.files.add(image);
-    }
-    var streamedResponse = await request.send();
-    var response = await http.Response.fromStream(streamedResponse);
-    return response;
-  }
-
-  Future<dynamic> deleteFarmland(
-      {required String token, required int id}) async {
-    var remoteUrl = '$apiUrl/farmlands/$id';
-    var response = await client.delete(
-      Uri.parse(remoteUrl),
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+  // Strips the 'image' key out and converts all values to String,
+  // since MultipartRequest.fields only accepts Map<String, String>.
+  Map<String, String> _toStringMap(Map<String, dynamic> data) {
+    return Map.fromEntries(
+      data.entries
+          .where((e) => e.key != 'image')
+          .map((e) => MapEntry(e.key, e.value?.toString() ?? '')),
     );
-    return response;
   }
 
-  Future<dynamic> getRecommendedCrop({required Coordinates coordinate}) async {
-    var remoteUrl =
-        'https://recommendation.safalstha.com.np/api/recommendation/data?lat=${coordinate.lat}&long=${coordinate.lng}';
-    var response = await client.get(
-      Uri.parse(remoteUrl),
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json',
-      },
-    );
-    return response;
+  Future<http.Response> _sendMultipart(http.MultipartRequest request) async {
+    final streamed = await _client.send(request);
+    return await http.Response.fromStream(streamed);
   }
 }

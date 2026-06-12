@@ -1,19 +1,18 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:smart_kishan/constant.dart';
+import 'package:smart_kishan/helpers/app_http_client.dart';
 
 class RemoteSubsidyRequestService {
-  var client = http.Client();
+  var client = AppHttpClient();
 
   // Get user's subsidy requests
-  Future<dynamic> getMyRequests({required String token}) async {
+  Future<dynamic> getMyRequests() async {
     var remoteUrl = '$apiUrl/subsidy-requests/my-requests';
     var response = await client.get(
       Uri.parse(remoteUrl),
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
     );
     return response;
@@ -21,7 +20,6 @@ class RemoteSubsidyRequestService {
 
   // Submit new subsidy request
   Future<dynamic> submitRequest({
-    required String token,
     required String titleEn,
     String? titleNe,
     required String descriptionEn,
@@ -65,7 +63,6 @@ class RemoteSubsidyRequestService {
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
       body: jsonEncode(requestBody),
     );
@@ -82,7 +79,6 @@ class RemoteSubsidyRequestService {
 
   // Get single request details
   Future<dynamic> getRequestDetails({
-    required String token,
     required int requestId,
   }) async {
     var remoteUrl = '$apiUrl/subsidy-requests/$requestId';
@@ -91,7 +87,6 @@ class RemoteSubsidyRequestService {
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
     );
     return response;
@@ -99,7 +94,6 @@ class RemoteSubsidyRequestService {
 
   // Cancel/Delete request
   Future<dynamic> cancelRequest({
-    required String token,
     required int requestId,
   }) async {
     var remoteUrl = '$apiUrl/subsidy-requests/$requestId/cancel';
@@ -108,7 +102,6 @@ class RemoteSubsidyRequestService {
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
     );
     return response;

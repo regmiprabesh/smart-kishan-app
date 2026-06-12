@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/helpers/complaint_helpers.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/models/complaint.dart';
 import 'package:smart_kishan/controllers/complaint_controller.dart';
 import 'package:smart_kishan/languages/langauge_constants.dart';
@@ -549,7 +550,7 @@ class _ComplaintDetailsScreenState extends State<ComplaintDetailsScreen>
                 ),
               ),
               Text(
-                _formatDate(complaint.createdAt),
+                _formatDate(complaint.createdAt, l10n.localeName),
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey[800],
@@ -644,7 +645,7 @@ class _ComplaintDetailsScreenState extends State<ComplaintDetailsScreen>
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '${complaint.latitude!.toStringAsFixed(6)}, ${complaint.longitude!.toStringAsFixed(6)}',
+                      '${localizedNumber(complaint.latitude!.toStringAsFixed(6))}, ${localizedNumber(complaint.longitude!.toStringAsFixed(6))}',
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.green[800],
@@ -709,7 +710,7 @@ class _ComplaintDetailsScreenState extends State<ComplaintDetailsScreen>
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Tap any file to view or download',
+                    l10n.tapAnyFileToViewOrDownload,
                     style: TextStyle(
                       fontSize: 12,
                       color: kPrimaryColor,
@@ -1038,7 +1039,7 @@ class _ComplaintDetailsScreenState extends State<ComplaintDetailsScreen>
                   ),
                 ),
                 Text(
-                  _formatDate(complaint.resolvedAt),
+                  _formatDate(complaint.resolvedAt, l10n.localeName),
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey[800],
@@ -1055,7 +1056,7 @@ class _ComplaintDetailsScreenState extends State<ComplaintDetailsScreen>
 
   Widget _buildCommentsSection(Complaint complaint, String lang, dynamic t) {
     return _buildCard(
-      title: t.commentsCount(complaint.comments!.length),
+      title: '${t.comments} (${localizedNumber(complaint.comments!.length)})',
       icon: Icons.comment_outlined,
       child: ListView.separated(
         padding: EdgeInsets.all(0),
@@ -1109,7 +1110,7 @@ class _ComplaintDetailsScreenState extends State<ComplaintDetailsScreen>
                                   size: 10, color: Colors.grey[500]),
                               const SizedBox(width: 4),
                               Text(
-                                _formatDate(comment.createdAt),
+                                _formatDate(comment.createdAt, l10n.localeName),
                                 style: TextStyle(
                                   fontSize: 10,
                                   color: Colors.grey[600],
@@ -1493,13 +1494,10 @@ class _ComplaintDetailsScreenState extends State<ComplaintDetailsScreen>
     }
   }
 
-  String _formatDate(String? dateString) {
-    if (dateString == null) return 'N/A';
-    try {
-      final date = DateTime.parse(dateString);
-      return DateFormat('MMM dd, yyyy • hh:mm a').format(date);
-    } catch (e) {
-      return 'N/A';
-    }
+  String _formatDate(String? dateString, String localeName) {
+    if (dateString == null || dateString.isEmpty) return 'N/A';
+    final date = DateTime.tryParse(dateString);
+    if (date == null) return 'N/A';
+    return DateFormat('MMM dd, yyyy • hh:mm a', localeName).format(date);
   }
 }

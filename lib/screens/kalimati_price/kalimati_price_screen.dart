@@ -2,20 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart'; // For formatting the date
 import 'package:smart_kishan/controllers/kalimati_price_controller.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 
 class KalimatiPriceScreen extends StatelessWidget {
+  String _formatDate(String? rawDate, String localeName) {
+    if (rawDate == null || rawDate.isEmpty) return '';
+    final dt = DateTime.tryParse(rawDate);
+    if (dt == null) return rawDate;
+    return DateFormat('EEEE, dd MMMM, yyyy', localeName).format(dt);
+  }
+
   @override
   Widget build(BuildContext context) {
     final KalimatiPriceController kalimatiPriceController =
         Get.find<KalimatiPriceController>();
 
     // Get the current date
-    String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    String formattedDate =
+        _formatDate(DateTime.now().toString(), l10n.localeName);
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Kalimati Prices'),
+        title: Text(l10n.kalimatiPriceList),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -41,12 +50,12 @@ class KalimatiPriceScreen extends StatelessWidget {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: DataTable(
-              columns: const [
-                DataColumn(label: Text('Commodity')),
-                DataColumn(label: Text('Unit')),
-                DataColumn(label: Text('Min Price')),
-                DataColumn(label: Text('Max Price')),
-                DataColumn(label: Text('Avg Price')),
+              columns: [
+                DataColumn(label: Text(l10n.commodity)),
+                DataColumn(label: Text(l10n.unit)),
+                DataColumn(label: Text(l10n.minPrice)),
+                DataColumn(label: Text(l10n.maxPrice)),
+                DataColumn(label: Text(l10n.avgPrice)),
               ],
               rows: kalimatiData.prices!.map((price) {
                 return DataRow(

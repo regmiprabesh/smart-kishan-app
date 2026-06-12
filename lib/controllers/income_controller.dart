@@ -1,201 +1,177 @@
-import 'dart:convert';
-
 import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:smart_kishan/controllers/app_controller.dart';
 import 'package:smart_kishan/models/activity.dart';
-import 'package:smart_kishan/screens/daily_activity/services/local_activity_service.dart';
 
 class IncomeController extends GetxController {
-  static IncomeController instance = Get.find();
+  static IncomeController get instance => Get.find();
 
-  RxList<Activity> activities = List<Activity>.empty(growable: true).obs;
-  RxList<Activity> incomeActivities = List<Activity>.empty(growable: true).obs;
+  static const int _dayCount = 7;
+  static const int _monthCount = 7;
+  static const int _yearCount = 5;
 
-  final _localActivityService = LocalActivityService();
-  RxList<Activity> profitableActivities =
-      List<Activity>.empty(growable: true).obs;
+  final RxList<Activity> activities = <Activity>[].obs;
+  final RxList<Activity> incomeActivities = <Activity>[].obs;
 
-  RxList<String> daysName = List<String>.empty(growable: true).obs;
-  RxList<String> monthsName = List<String>.empty(growable: true).obs;
-  RxList<String> yearsName = List<String>.empty(growable: true).obs;
+  // Axis labels (Nepali) for the currently selected filter.
+  final RxList<String> daysName = <String>[].obs;
+  final RxList<String> monthsName = <String>[].obs;
+  final RxList<String> yearsName = <String>[].obs;
+  final RxList<String> labels = <String>[].obs;
 
-  RxDouble minPlotX = 0.00.obs;
-  RxDouble maxPlotX = 0.00.obs;
-  RxDouble minPlotY = 0.00.obs;
-  RxDouble maxPlotY = 0.00.obs;
+  // Bucket keys that line up 1:1 with the label lists above.
+  final List<String> _dayKeys = [];
+  final List<String> _monthKeys = [];
+  final List<String> _yearKeys = [];
 
-  RxList<FlSpot> plots = List<FlSpot>.empty(growable: true).obs;
-  RxList<String> labels = List<String>.empty(growable: true).obs;
+  // Plot output.
+  final RxList<FlSpot> plots = <FlSpot>[].obs;
 
-  RxString selectedFilter = 'Daily'.obs;
+  final RxDouble minPlotX = 0.0.obs;
+  final RxDouble maxPlotX = 0.0.obs;
+  final RxDouble minPlotY = 0.0.obs;
+  final RxDouble maxPlotY = 0.0.obs;
+
+  final RxString selectedFilter = 'Daily'.obs;
+
+  // Date formatters reused across rebuilds.
+  static final DateFormat _dayKeyFmt = DateFormat('yyyy-MM-dd');
+  static final DateFormat _monthKeyFmt = DateFormat('yyyy-MM');
+  static final DateFormat _yearKeyFmt = DateFormat('yyyy');
 
   @override
-  void onInit() async {
+  void onInit() {
     super.onInit();
-    await _localActivityService.init();
-    await getDays();
-    await getMonths();
-    await getYears();
+    _buildDays();
+    _buildMonths();
+    _buildYears();
     getActivities(selectedFilter.value);
   }
 
-  getDays() async {
+  //  Bucket builders
+
+  void _buildDays() {
+    daysName.clear();
+    _dayKeys.clear();
+
     final now = DateTime.now();
-    final format = DateFormat('E', 'ne_NP');
-    for (var i = 1; i <= 7; i++) {
-      final nextDay = now.add(Duration(days: i));
-      String dayName = format.format(nextDay);
-      daysName.add(dayName);
+    final labelFmt = DateFormat('E', 'ne_NP');
+
+    for (var i = _dayCount - 1; i >= 0; i--) {
+      final day = DateTime(now.year, now.month, now.day - i);
+      daysName.add(labelFmt.format(day));
+      _dayKeys.add(_dayKeyFmt.format(day));
     }
   }
 
-  getMonths() async {
+  void _buildMonths() {
+    monthsName.clear();
+    _monthKeys.clear();
+
     final now = DateTime.now();
-    final format = DateFormat('MMM', 'ne_NP');
+    final labelFmt = DateFormat('MMM', 'ne_NP');
 
-    for (var i = 6; i <= 12; i++) {
-      final nextMonth = DateTime(now.year, now.month + i);
-      String monthName = format.format(nextMonth);
-      monthsName.add(monthName);
+    // Walk backwards from the current month. DateTime normalises a month
+    // index of 0 or below, so `now.month - i` safely rolls into prior years.
+    for (var i = _monthCount - 1; i >= 0; i--) {
+      final month = DateTime(now.year, now.month - i);
+      monthsName.add(labelFmt.format(month));
+      _monthKeys.add(_monthKeyFmt.format(month));
     }
   }
 
-  getYears() async {
-    int currentYear = DateTime.now().year;
-    for (int i = 4; i > 0; i--) {
-      yearsName.add((currentYear - i).toString());
+  void _buildYears() {
+    yearsName.clear();
+    _yearKeys.clear();
+
+    final currentYear = DateTime.now().year;
+    for (var i = _yearCount - 1; i >= 0; i--) {
+      final year = currentYear - i;
+      yearsName.add(year.toString());
+      _yearKeys.add(year.toString());
     }
-    yearsName.add(currentYear.toString());
   }
 
-  Future<List<FlSpot>> incomeByMonth(List<Activity> data) async {
-    var groupedData = groupBy<Activity, String>(
-      data,
-      (dataPoint) => DateFormat('MMM', 'ne_NP')
-          .format(DateTime.tryParse(dataPoint.date!)!),
+  //  Aggregation
+
+  /// Sums income for every activity that falls into each bucket, returning
+  /// one [FlSpot] per bucket (X = bucket index, Y = summed value).
+  List<FlSpot> _plot(
+    List<Activity> data,
+    List<String> bucketKeys,
+    DateFormat keyFmt,
+  ) {
+    final grouped = groupBy<Activity, String>(
+      data.where((a) => a.date != null),
+      (a) {
+        final dt = DateTime.tryParse(a.date!);
+        // Unparseable dates fall into an empty key that matches no bucket.
+        return dt == null ? '' : keyFmt.format(dt.toLocal());
+      },
     );
-    var allMonthsData = <String, List<Activity>>{};
-    List<double> incomeList = [];
-    List<FlSpot> monthlyPlots = [];
-    for (var month = 1; month <= 6; month++) {
-      var monthName = DateFormat('MMM', 'ne_NP').format(DateTime(2022, month));
-      allMonthsData[monthName] = groupedData[monthName] ?? [];
-    }
-    for (var month in monthsName) {
-      if (allMonthsData[month] != null && allMonthsData[month]!.isNotEmpty) {
-        List<Activity> activityInMonth = allMonthsData[month]!.toList();
-        double sum = 0;
-        for (int i = 0; i < activityInMonth.length; i++) {
-          sum += activityInMonth[i].income!;
-        }
-        incomeList.add(sum);
-      } else {
-        incomeList.add(0);
-      }
-    }
-    for (int j = 0; j < incomeList.length; j++) {
-      monthlyPlots.add(FlSpot(j.toDouble(), incomeList[j]));
-    }
-    minPlotX(0);
-    maxPlotX(monthsName.length - 1);
-    minPlotY(0);
-    maxPlotY(incomeList.max.toDouble());
-    return monthlyPlots;
+
+    return [
+      for (var i = 0; i < bucketKeys.length; i++)
+        FlSpot(
+          i.toDouble(),
+          (grouped[bucketKeys[i]] ?? const <Activity>[])
+              .fold<double>(0.0, (sum, a) => sum + (a.income ?? 0)),
+        ),
+    ];
   }
 
-  Future<List<FlSpot>> incomeByDays(List<Activity> data) async {
-    var groupedData = groupBy<Activity, String>(
-      data,
-      (dataPoint) =>
-          DateFormat('E', 'ne_NP').format(DateTime.tryParse(dataPoint.date!)!),
-    );
-    var allDaysData = <String, List<Activity>>{};
-    List<double> incomeList = [];
-    List<FlSpot> dailyPlots = [];
-    for (var day = 1; day <= 6; day++) {
-      var dayName = DateFormat('E', 'ne_NP').format(DateTime(2022, day));
-      allDaysData[dayName] = groupedData[dayName] ?? [];
-    }
-    for (var day in daysName) {
-      if (allDaysData[day] != null && allDaysData[day]!.isNotEmpty) {
-        List<Activity> activityInDay = allDaysData[day]!.toList();
-        double sum = 0;
-        for (int i = 0; i < activityInDay.length; i++) {
-          sum += activityInDay[i].income!;
-        }
-        incomeList.add(sum);
-      } else {
-        incomeList.add(0);
-      }
-    }
-    for (int j = 0; j < incomeList.length; j++) {
-      dailyPlots.add(FlSpot(j.toDouble(), incomeList[j]));
-    }
-    minPlotX(0);
-    maxPlotX(daysName.length - 1);
-    minPlotY(0);
-    maxPlotY(incomeList.max.toDouble());
-    return dailyPlots;
+  double _peak(List<FlSpot> spots) =>
+      spots.fold<double>(0.0, (max, s) => s.y > max ? s.y : max);
+
+  void _updatePlotBounds(List<String> keys, List<FlSpot> spots) {
+    minPlotX.value = 0;
+    maxPlotX.value = (keys.length - 1).toDouble();
+    minPlotY.value = 0;
+    maxPlotY.value = _peak(spots);
   }
 
-  Future<List<FlSpot>> incomeByYear(List<Activity> data) async {
-    int currentYear = DateTime.now().year;
-    Map<String, List<Activity>> groupedData = groupBy(data, (item) {
-      DateTime date = DateTime.parse(item.date!);
-      int year = date.year;
-      return (((year - currentYear) ~/ 5) * 5 + currentYear).toString();
-    });
-    List<double> incomeList = [];
-    List<FlSpot> yearlyPlots = [];
-    for (var year in yearsName) {
-      if (groupedData[year] != null && groupedData[year]!.isNotEmpty) {
-        List<Activity> activityInYear = groupedData[year]!.toList();
-        double sum = 0;
-        for (int i = 0; i < activityInYear.length; i++) {
-          sum += activityInYear[i].income!;
-        }
-        incomeList.add(sum);
-      } else {
-        incomeList.add(0);
-      }
-    }
-    for (int j = 0; j < incomeList.length; j++) {
-      yearlyPlots.add(FlSpot(j.toDouble(), incomeList[j]));
-    }
-    minPlotX(0);
-    maxPlotX(yearsName.length - 1);
-    minPlotY(0);
-    maxPlotY(incomeList.max.toDouble());
-    return yearlyPlots;
-  }
+  //  Public entry point
 
-  getActivities(String filter) async {
+  Future<void> getActivities(String filter) async {
     try {
-      // var data = await _localActivityService.readActivities();
-      // activities.assignAll(activityListFromJson(jsonEncode(data)));
-      var data = dailyActivityController.activities;
-      activities.assignAll(data);
-      List<Activity> incomeActivity =
-          activities.where((activity) => activity.income != null).toList();
-      incomeActivities(incomeActivity);
-      print(activities);
-      if (filter == 'Daily') {
-        plots.value = await incomeByDays(incomeActivity);
-        labels.value = daysName;
+      selectedFilter.value = filter;
+      activities.assignAll(dailyActivityController.activities);
+
+      final income = activities.where((a) => a.income != null).toList();
+      incomeActivities.assignAll(income);
+
+      late final List<String> keys;
+      late final DateFormat keyFmt;
+
+      switch (filter) {
+        case 'Monthly':
+          _buildMonths();
+          keys = _monthKeys;
+          keyFmt = _monthKeyFmt;
+          labels.assignAll(monthsName);
+          break;
+        case 'Yearly':
+          _buildYears();
+          keys = _yearKeys;
+          keyFmt = _yearKeyFmt;
+          labels.assignAll(yearsName);
+          break;
+        case 'Daily':
+        default:
+          _buildDays();
+          keys = _dayKeys;
+          keyFmt = _dayKeyFmt;
+          labels.assignAll(daysName);
       }
-      if (filter == 'Monthly') {
-        plots.value = await incomeByMonth(incomeActivity);
-        labels.value = monthsName;
-      }
-      if (filter == 'Yearly') {
-        plots.value = await incomeByYear(incomeActivity);
-        labels.value = yearsName;
-      }
+
+      final spots = _plot(income, keys, keyFmt);
+      plots.assignAll(spots);
+      _updatePlotBounds(keys, spots);
     } catch (e) {
-      print(e);
-    } finally {}
+      debugPrint('IncomeController.getActivities error: $e');
+    }
   }
 }

@@ -1,4 +1,6 @@
 {
+    "@@locale": "en",
+
     "appTitle": "Smart Kishan",
     "language": "Language",
     "selectLanguageMsg": "Please select your preferred language",
@@ -61,6 +63,213 @@
     "logout": "Logout",
     "home": "Home",
     "chart": "Chart",
+
+    "incomeAnalysis": "Income Analysis",
+    "@incomeAnalysis": {
+        "description": "AppBar title on the income screen"
+    },
+
+    "incomeChartDaily": "Daily Income Chart",
+    "@incomeChartDaily": {
+        "description": "Chart card title when the Daily filter is active"
+    },
+
+    "incomeChartMonthly": "Monthly Income Chart",
+    "@incomeChartMonthly": {
+        "description": "Chart card title when the Monthly filter is active"
+    },
+
+    "incomeChartYearly": "Yearly Income Chart",
+    "@incomeChartYearly": {
+        "description": "Chart card title when the Yearly filter is active"
+    },
+
+    "last7Days": "Last 7 days",
+    "@last7Days": {
+        "description": "Subtitle below the chart for the Daily filter"
+    },
+
+    "last7Months": "Last 7 months",
+    "@last7Months": {
+        "description": "Subtitle below the chart for the Monthly filter"
+    },
+
+    "last5Years": "Last 5 years",
+    "@last5Years": {
+        "description": "Subtitle below the chart for the Yearly filter"
+    },
+    "expenseAnalysis": "Expense Analysis",
+    "expenseChartDaily": "Daily Expense Chart",
+    "expenseChartMonthly": "Monthly Expense Chart",
+    "expenseChartYearly": "Yearly Expense Chart",
+
+    "chartScreenTitle": "Ledger Chart",
+    "chartTitleDaily": "Daily Income/Expense Chart",
+    "chartTitleMonthly": "Monthly Income/Expense Chart",
+    "chartTitleYearly": "Yearly Income/Expense Chart",
+    "currencySymbol": "Rs.",
+    "filterDaily": "Daily",
+    "filterMonthly": "Monthly",
+    "filterYearly": "Yearly",
+    "productListTitle": "Inventory",
+    "stockLabel": "Stock",
+    "noProductsFound": "You have no products yet!",
+    "noDateFound": "No Date Found",
+
+    "loadingCity": "Loading city...",
+    "goodDayForPesticide": "Today is a good day to apply pesticides.",
+    "badDayForPesticide": "Today is not a good day to apply pesticides.",
+    "weatherThunderstorm": "Thunderstorm",
+    "weatherDrizzle": "Drizzle",
+    "weatherRain": "Rain",
+    "weatherSnow": "Snow",
+    "weatherClear": "Clear",
+    "weatherClouds": "Cloudy",
+    "weatherMist": "Mist",
+    "weatherHaze": "Haze",
+    "weatherFog": "Fog",
+
+    "newNote": "New Note",
+    "addNote": "Add Note",
+    "updateNote": "Update Note",
+    "add": "Add",
+    "update": "Update",
+    "edit": "Edit",
+    "notesEmptyDescription": "Add notes to keep your important thoughts and information safe",
+    "deleteNoteConfirm": "Are you sure you want to delete this note? This action cannot be undone.",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{count} days ago",
+    "@daysAgo": {
+        "placeholders": { "count": { "type": "String" } }
+    },
+    "noteTitle": "Note Title",
+    "enterNoteTitle": "Enter note title",
+    "pleaseEnterNoteTitle": "Please enter your note title",
+    "noteTitleMinLength": "Note title must be at least 3 characters",
+    "noteDescription": "Note Description",
+    "enterNoteDescription": "Enter note description",
+    "notePriority": "Note Priority",
+    "enterNotePriority": "Enter note priority",
+
+    "governmentServices": "Government Services",
+    "quickActions": "Quick Actions",
+    "homeGovOfficesTitle": "Government Offices",
+    "homeGovOfficesSubtitle": "Find nearby agriculture offices and labs",
+    "homeGovOfficesBadge": "Locations",
+    "homeSubsidiesTitle": "Subsidies &\nBenefits",
+    "homeSubsidiesSubtitle": "Explore government subsidies",
+    "homeSubsidiesBadge": "Gov Support",
+    "homeComplaintsTitle": "File\nComplaints",
+    "homeComplaintsSubtitle": "Report your problems",
+    "homeComplaintsBadge": "Report Issues",
+    "homeSurveysTitle": "Surveys",
+    "homeSurveysSubtitle": "Share your feedback",
+    "homeSurveysBadge": "Feedback",
+
+    "serviceCenters": "Service Centers",
+    "listView": "List View",
+    "mapView": "Map View",
+    "filters": "Filters",
+    "currentLocationNotAvailable": "Current location not available",
+    "searchServiceCentersHint": "Search service centers...",
+    "loadingRoute": "Loading route...",
+    "nearestServiceCenters": "Nearest Service Centers",
+    "noServiceCentersFound": "No service centers found",
+    "tryAdjustingFilters": "Try adjusting your filters or search",
+    "km": "km",
+    "away": "away",
+    "routeLoaded": "Route loaded",
+    "notApplicable": "N/A",
+    "featured": "Featured",
+    "viewOnMap": "View on Map",
+    "details": "Details",
+    "filtersAndSort": "Filters & Sort",
+    "clearAll": "Clear All",
+    "distance": "Distance",
+    "name": "Name",
+    "rating": "Rating",
+    "newest": "Newest",
+    "searchRadius": "Search Radius",
+    "showFeaturedOnly": "Show Featured Only",
+    "applyFilters": "Apply Filters",
+    "serviceCenterNotFound": "Service center not found",
+    "basedOnUserReviews": "Based on user reviews",
+    "ratingSingular": "rating",
+    "ratingPlural": "ratings",
+    "reviewSingular": "review",
+    "reviewPlural": "reviews",
+    "contactInformation": "Contact Information",
+    "phone": "Phone",
+    "website": "Website",
+    "contactPerson": "Contact Person",
+    "directions": "Directions",
+    "wardNo": "Ward No: {no}",
+    "@wardNo": { "placeholders": { "no": { "type": "String" } } },
+    "operatingHours": "Operating Hours",
+    "servicesOffered": "Services Offered",
+    "yourRating": "Your Rating",
+    "editRating": "Edit Rating",
+    "helpOthersRate": "Help others by rating this service center",
+    "addYourRating": "Add Your Rating",
+    "rateServiceCenter": "Rate Service Center",
+    "writeReviewOptional": "Write a review (optional)",
+    "shareYourExperienceHint": "Share your experience...",
+    "submit": "Submit",
+    "editYourRating": "Edit Your Rating",
+    "deleteRatingQuestion": "Delete Rating?",
+    "deleteRatingReviewConfirm": "Are you sure you want to delete your rating and review? This action cannot be undone.",
+    "ratingSubmittedSuccess": "Rating submitted successfully!",
+    "ratingUpdatedSuccess": "Rating updated successfully!",
+    "youRatedThisCenter": "You rated this service center",
+    "recentReviews": "Recent Reviews",
+    "viewAllReviews": "View all {count} reviews",
+    "@viewAllReviews": { "placeholders": { "count": { "type": "String" } } },
+    "anonymous": "Anonymous",
+    "ago": "ago",
+    "minUnit": "min",
+    "hrUnit": "hr",
+    "dayUnit": "day",
+    "daysUnit": "days",
+    "weekUnit": "week",
+    "weeksUnit": "weeks",
+    "topRatedServiceCenters": "Top Rated Service Centers",
+    "basicInformation": "Basic Information",
+    "requestDetails": "Request Details",
+    "requestTarget": "Request Target",
+    "actionCannotBeUndone": "This action cannot be undone.",
+
+    "kalimatiPriceList": "Kalimati Price List",
+    "commodity": "Commodity",
+    "unit": "Unit",
+    "minPrice": "Min Price",
+    "maxPrice": "Max Price",
+    "avgPrice": "Avg Price",
+
+    "tapAnyFileToViewOrDownload": "Tap any file to view or download.",
+    "addUser": "Add User",
+    "noUsersYet": "You haven't added any users yet!",
+    "deleteUserConfirm": "Are you sure you want to delete this user?",
+    "addUserTitle": "Add User",
+    "updateUserTitle": "Update User",
+    "userFullName": "User's Full Name",
+    "enterUserFullName": "Enter user's full name",
+    "pleaseEnterUserFullName": "Please enter user's full name",
+    "pleaseEnterValidUserName": "Please enter a valid user name",
+    "userPhoneNumber": "User's Phone Number",
+    "enterUserPhoneNumber": "Enter user's phone number",
+    "pleaseEnterUserPhone": "Please enter user's phone number",
+    "pleaseEnterValidUserPhone": "Please enter a valid user phone number",
+    "userEmail": "User's Email Address",
+    "enterUserEmail": "Enter user's email address",
+    "userPassword": "User's Password",
+    "enterUserPassword": "Enter user's password",
+    "pleaseEnterUserPassword": "Please enter user's password",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "userConfirmPassword": "Confirm User's Password",
+    "confirmUserPassword": "Confirm user's password",
+    "confirmPasswordEmpty": "Confirm password field cannot be empty",
+
     "users": "Users",
     "profile": "Profile",
     "dailyActivities": "Daily \n Activity",
@@ -68,7 +277,7 @@
     "products": "Products",
     "expenses": "Expenses",
     "sales": "Sales",
-    "farmlands": "Farmlands",
+    "farmlands": "Farm\nLands",
     "notes": "Notes",
     "noNotesMsg": "You don't have any notes yet!",
     "c": "C",
@@ -319,6 +528,7 @@
     "descriptionHint": "Describe why this subsidy is needed...",
     "submitRequest": "Submit Request",
     "subsidyRequestSubmitted": "Subsidy request submitted successfully!",
+    
     
     "@ratingDialog": {},
     "tellOtherFarmers": "Tell other farmers about your experience with this subsidy...",
@@ -645,7 +855,7 @@
         }
         }
     },
-    
+    "comments": "Comments",
     "commentsCount": "Comments ({count})",
     "@commentsCount": {
         "placeholders": {
@@ -659,33 +869,82 @@
     "commentMinLength": "Comment must be at least 3 characters",
     "commentAddedSuccessfully": "Comment added successfully",
     "failedToAddComment": "Failed to add comment",
-    "send": "Send"
+    "send": "Send",
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    "surveys": "Surveys",
+    "survey": "Survey",
+    "available": "Available",
+    "completed": "Completed",
+    "startSurvey": "Start Survey",
+    "takeAgain": "Take Again",
+    "canRetake": "Can Retake",
+    "questionsCount": "{count} Questions",
+    "@questionsCount": { "placeholders": { "count": { "type": "String" } } },
+    "respondedTimes": "Responded {count}x",
+    "@respondedTimes": { "placeholders": { "count": { "type": "String" } } },
+    "estimatedMinutes": "~{min} min",
+    "@estimatedMinutes": { "placeholders": { "min": { "type": "String" } } },
+    "endsOn": "Ends: {date}",
+    "@endsOn": { "placeholders": { "date": { "type": "String" } } },
+    "noAvailableSurveys": "No Available Surveys",
+    "checkBackLater": "Check back later for new surveys",
+    "noCompletedSurveys": "No Completed Surveys",
+    "completeSurveysToSee": "Complete surveys to see them here",
+    "noSurveysAvailable": "No Surveys Available",
+    "noSurveysAvailableDesc": "There are no surveys available for you at the moment",
+    "pullDownToRefresh": "Pull down to refresh",
+    "surveyTypeCropProduction": "Crop Production",
+    "surveyTypeLivestockCensus": "Livestock Census",
+    "surveyTypeLandUsage": "Land Usage",
+    "surveyTypeFarmerSatisfaction": "Farmer Satisfaction",
+    "surveyTypeSubsidyImpact": "Subsidy Impact",
+    "surveyTypeTrainingNeeds": "Training Needs",
+    "surveyTypeMarketAccess": "Market Access",
+    "surveyTypeGeneral": "General Survey",
+    "noQuestionsFound": "No questions found in this survey",
+    "answerAllRequired": "Please answer all required questions",
+    "surveySubmittedSuccess": "Survey submitted successfully",
+    "surveySubmitFailed": "Failed to submit survey",
+    "validationError": "Validation Error",
+    "checkRequiredFields": "Please check all required fields",
+    "requiredQuestion": "Required Question",
+    "noSurveySelected": "No survey selected",
+    "loadingSurveyQuestions": "Loading survey questions...",
+    "noQuestionsAvailable": "No questions available for this survey",
+    "fileUploads": "File Uploads",
+    "locationInformation": "Location Information",
+    "instruction": "Instruction",
+    "requiredLabel": "Required",
+    "defaultEligibility": "Small and marginal farmers with up to 2 hectares of cultivated land",
+    "fileUploaded": "File uploaded successfully",
+    "enterYourAnswer": "Enter your answer",
+    "fieldRequired": "This field is required",
+    "minCharactersRequired": "Minimum {count} characters required",
+    "@minCharactersRequired": { "placeholders": { "count": { "type": "String" } } },
+    "enterNumber": "Enter a number",
+    "enterValidNumber": "Please enter a valid number",
+    "minValueIs": "Minimum value is {value}",
+    "@minValueIs": { "placeholders": { "value": { "type": "String" } } },
+    "maxValueIs": "Maximum value is {value}",
+    "@maxValueIs": { "placeholders": { "value": { "type": "String" } } },
+    "selectOption": "Select an option",
+    "pleaseSelectOption": "Please select an option",
+    "selectDate": "Select a date",
+    "ratingOutOf": "{rating} out of {max}",
+    "@ratingOutOf": { "placeholders": { "rating": { "type": "String" }, "max": { "type": "String" } } },
+    "allowedFileFormats": "PDF, JPG, PNG, DOC",
+    "maxFileSizeLabel": "Max 5 MB",
+    "changeFile": "Change File",
+    "currentLocation": "Current Location",
+    "currentLocationSet": "Current location has been set",
+    "locationSet": "Location Set",
+    "chooseOnMap": "Choose on Map",
+    "comingSoon": "Coming Soon",
+    "mapPickerComingSoon": "Map picker feature coming soon",
+    "latLngLabel": "Lat: {lat}, Lng: {lng}",
+    "@latLngLabel": { "placeholders": { "lat": { "type": "String" }, "lng": { "type": "String" } } },
+    "importantNoteLabel": "Important Note",
+    "surveyImportantNote": "All required questions must be answered before submission. Your responses will help improve agricultural services.",
+    "submitting": "Submitting...",
+    "submitSurvey": "Submit Survey"
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/app_controller.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/routes/app_routes.dart';
 import 'package:smart_kishan/size_config.dart';
 
@@ -19,9 +21,9 @@ class _NotesScreenState extends State<NotesScreen> {
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
         elevation: 0,
-        title: const Text(
-          'नोटहरू',
-          style: TextStyle(
+        title: Text(
+          l10n.notes,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
@@ -42,7 +44,7 @@ class _NotesScreenState extends State<NotesScreen> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        '${noteController.notes.length}',
+                        localizedNumber(noteController.notes.length),
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -61,9 +63,9 @@ class _NotesScreenState extends State<NotesScreen> {
         },
         backgroundColor: kPrimaryColor,
         icon: const Icon(Icons.add, size: 24),
-        label: const Text(
-          'नयाँ नोट',
-          style: TextStyle(
+        label: Text(
+          l10n.newNote,
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
@@ -253,7 +255,7 @@ class _NotesScreenState extends State<NotesScreen> {
               noteController.selectedNote(note);
               Get.toNamed(AppRoute.addNoteScreen);
             },
-            tooltip: 'सम्पादन गर्नुहोस्',
+            tooltip: l10n.edit,
             padding: const EdgeInsets.all(8),
             constraints: const BoxConstraints(),
           ),
@@ -272,7 +274,7 @@ class _NotesScreenState extends State<NotesScreen> {
               color: Colors.red,
             ),
             onPressed: () => _showDeleteDialog(context, note),
-            tooltip: 'मेटाउनुहोस्',
+            tooltip: l10n.delete,
             padding: const EdgeInsets.all(8),
             constraints: const BoxConstraints(),
           ),
@@ -304,17 +306,19 @@ class _NotesScreenState extends State<NotesScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              Text(
-                "मेटाउने पुष्टि गर्नुहोस्",
-                style: TextStyle(
-                  fontSize: getProportionateScreenWidth(16),
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: Text(
+                  l10n.confirmDelete,
+                  style: TextStyle(
+                    fontSize: getProportionateScreenWidth(16),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
           ),
           content: Text(
-            "तपाईं यो नोट मेटाउन निश्चित हुनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन।",
+            l10n.deleteNoteConfirm,
             style: TextStyle(
               fontSize: getProportionateScreenWidth(14),
               fontWeight: FontWeight.w400,
@@ -333,7 +337,7 @@ class _NotesScreenState extends State<NotesScreen> {
                 ),
               ),
               child: Text(
-                "रद्द गर्नुहोस्",
+                l10n.cancel,
                 style: TextStyle(
                   color: Colors.grey[700],
                   fontWeight: FontWeight.w600,
@@ -354,9 +358,9 @@ class _NotesScreenState extends State<NotesScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text(
-                "मेटाउनुहोस्",
-                style: TextStyle(
+              child: Text(
+                l10n.delete,
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -387,9 +391,9 @@ class _NotesScreenState extends State<NotesScreen> {
               ),
             ),
             SizedBox(height: getProportionateScreenHeight(24)),
-            const Text(
-              'तपाईंसँग हाल कुनै नोट छैन !',
-              style: TextStyle(
+            Text(
+              l10n.noNotesMsg,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF1a1a1a),
@@ -398,7 +402,7 @@ class _NotesScreenState extends State<NotesScreen> {
             ),
             SizedBox(height: getProportionateScreenHeight(8)),
             Text(
-              'आफ्ना महत्त्वपूर्ण विचार र जानकारी सुरक्षित राख्न नोट थप्नुहोस्',
+              l10n.notesEmptyDescription,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -424,9 +428,9 @@ class _NotesScreenState extends State<NotesScreen> {
                 Get.toNamed(AppRoute.addNoteScreen);
               },
               icon: const Icon(Icons.add_rounded, size: 24),
-              label: const Text(
-                'नोट थप गर्नुहोस्',
-                style: TextStyle(
+              label: Text(
+                l10n.addNote,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -444,15 +448,12 @@ class _NotesScreenState extends State<NotesScreen> {
       final now = DateTime.now();
       final difference = now.difference(date);
 
-      if (difference.inDays == 0) {
-        return 'आज';
-      } else if (difference.inDays == 1) {
-        return 'हिजो';
-      } else if (difference.inDays < 7) {
-        return '${difference.inDays} दिन अघि';
-      } else {
-        return '${date.day}/${date.month}/${date.year}';
+      if (difference.inDays == 0) return l10n.today;
+      if (difference.inDays == 1) return l10n.yesterday;
+      if (difference.inDays < 7) {
+        return l10n.daysAgo(localizedNumber(difference.inDays));
       }
+      return DateFormat('d/M/yyyy', localeCode).format(date);
     } catch (e) {
       return dateStr;
     }

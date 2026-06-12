@@ -1,13 +1,15 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/app_controller.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/routes/app_routes.dart';
 import 'package:smart_kishan/screens/dashboard/widgets/custom_drawer.dart';
 import 'package:smart_kishan/screens/dashboard/widgets/weather_card.dart';
 import 'package:smart_kishan/size_config.dart';
-import 'package:smart_kishan/src/localization/app_localizations.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -16,8 +18,8 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Items item1 = Items(
       id: 1,
-      title: AppLocalizations.of(context)!.dailyActivities,
-      count: "210",
+      title: l10n.dailyActivities,
+      count: "0",
       img: "assets/images/daily_activity.png",
       route: AppRoute.dailyActivityScreen,
       color: 0xFF4099FF,
@@ -25,8 +27,8 @@ class HomeScreen extends StatelessWidget {
 
     Items item2 = Items(
       id: 2,
-      title: AppLocalizations.of(context)!.inventoryBroken,
-      count: "15",
+      title: l10n.inventoryBroken,
+      count: "0",
       route: AppRoute.productsScreen,
       img: "assets/images/inventory.png",
       color: 0xFF2ED8B6,
@@ -34,28 +36,28 @@ class HomeScreen extends StatelessWidget {
 
     Items item3 = Items(
         id: 3,
-        title: AppLocalizations.of(context)!.sales,
-        count: "7",
+        title: l10n.sales,
+        count: "0",
         route: AppRoute.incomeScreen,
         img: "assets/images/sales.png",
         color: 0xFFFF5370);
     Items item4 = Items(
         id: 4,
-        title: AppLocalizations.of(context)!.expenses,
-        count: "4",
+        title: l10n.expenses,
+        count: "0",
         route: AppRoute.expenseScreen,
         img: "assets/images/expenses.png",
         color: 0xFFFFB64D);
     Items item5 = Items(
         id: 5,
-        title: AppLocalizations.of(context)!.farmlands,
+        title: l10n.farmlands,
         count: "0",
         route: AppRoute.farmlandScreen,
         img: "assets/images/farmland.png",
         color: 0xFFFF5370);
     Items item6 = Items(
       id: 6,
-      title: AppLocalizations.of(context)!.kalimatiPrice,
+      title: l10n.kalimatiPrice,
       route: AppRoute.kalimatiPriceScreen,
       img: "assets/images/price_list.png",
       color: 0xFF2ED8B6,
@@ -93,7 +95,7 @@ class HomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.welcomeBack,
+                  l10n.welcomeBack,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
@@ -103,9 +105,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  authController.user.value != null
-                      ? authController.user.value!.name!
-                      : 'Bikash Lamichane',
+                  authController.user.value?.name ?? '',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -180,9 +180,9 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 // Weather Card Overlapping the Green Background
-                Padding(
-                  padding: const EdgeInsets.only(top: 15),
-                  child: const WeatherCard(),
+                const Padding(
+                  padding: EdgeInsets.only(top: 15),
+                  child: WeatherCard(),
                 ),
               ],
             ),
@@ -209,7 +209,7 @@ class HomeScreen extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            AppLocalizations.of(context)!.notes,
+                            l10n.notes,
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -340,8 +340,7 @@ class HomeScreen extends StatelessWidget {
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
-                                          AppLocalizations.of(context)!
-                                              .noNotesMsg,
+                                          l10n.noNotesMsg,
                                           style: TextStyle(
                                             fontSize: 14,
                                             color: Colors.grey[500],
@@ -372,9 +371,9 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
-                          'सरकारी सेवाहरू',
-                          style: TextStyle(
+                        Text(
+                          l10n.governmentServices,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: Colors.black87,
@@ -393,12 +392,12 @@ class HomeScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 4),
                       children: [
-                        // Governemt Service Centers Card
+                        // Government Service Centers Card
                         _buildHorizontalFeatureCard(
                           context: context,
-                          title: 'Government Offices',
-                          subtitle: 'Find nearby agriculture offices and labs',
-                          badge: 'Locations',
+                          title: l10n.homeGovOfficesTitle,
+                          subtitle: l10n.homeGovOfficesSubtitle,
+                          badge: l10n.homeGovOfficesBadge,
                           icon: Icons.location_city,
                           gradientColors: [
                             Colors.blue[700]!,
@@ -413,9 +412,9 @@ class HomeScreen extends StatelessWidget {
                         // Subsidies Card
                         _buildHorizontalFeatureCard(
                           context: context,
-                          title: 'Subsidies &\nBenefits',
-                          subtitle: 'Explore government subsidies',
-                          badge: 'Gov Support',
+                          title: l10n.homeSubsidiesTitle,
+                          subtitle: l10n.homeSubsidiesSubtitle,
+                          badge: l10n.homeSubsidiesBadge,
                           icon: Icons.account_balance_wallet,
                           gradientColors: [kPrimaryColor, Colors.amber[600]!],
                           onTap: () => Get.toNamed(AppRoute.subsidyScreen),
@@ -425,9 +424,9 @@ class HomeScreen extends StatelessWidget {
                         // Complaints Card
                         _buildHorizontalFeatureCard(
                           context: context,
-                          title: 'File\nComplaints',
-                          subtitle: 'Report your problems',
-                          badge: 'Report Issues',
+                          title: l10n.homeComplaintsTitle,
+                          subtitle: l10n.homeComplaintsSubtitle,
+                          badge: l10n.homeComplaintsBadge,
                           icon: Icons.report_problem,
                           gradientColors: [
                             Colors.red[600]!,
@@ -440,9 +439,9 @@ class HomeScreen extends StatelessWidget {
                         // Surveys Card
                         _buildHorizontalFeatureCard(
                           context: context,
-                          title: 'Surveys',
-                          subtitle: 'Share your feedback',
-                          badge: 'Feedback',
+                          title: l10n.homeSurveysTitle,
+                          subtitle: l10n.homeSurveysSubtitle,
+                          badge: l10n.homeSurveysBadge,
                           icon: Icons.poll,
                           gradientColors: [
                             Colors.purple[600]!,
@@ -470,9 +469,9 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
-                          'द्रुत कार्यहरू',
-                          style: TextStyle(
+                        Text(
+                          l10n.quickActions,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: Colors.black87,
@@ -500,7 +499,7 @@ class HomeScreen extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
-                          color: Colors.red,
+                          color: Color(data.color),
                           child: InkWell(
                             onTap: () {
                               Get.toNamed(data.route);
@@ -549,44 +548,39 @@ class HomeScreen extends StatelessWidget {
                                       child: Obx(
                                         () => Text(
                                             data.id == 1
-                                                ? convertToNepaliNumber(
+                                                ? localizedNumber(
                                                     dailyActivityController
-                                                        .activities.length
-                                                        .toString())
+                                                        .activities.length)
                                                 : data.id == 2
-                                                    ? convertToNepaliNumber(
+                                                    ? localizedNumber(
                                                         productController
-                                                            .products.length
-                                                            .toString())
+                                                            .products.length)
                                                     : data.id == 3
-                                                        ? convertToNepaliNumber(
+                                                        ? localizedNumber(
                                                             incomeController
                                                                 .incomeActivities
-                                                                .length
-                                                                .toString())
+                                                                .length)
                                                         : data.id == 4
-                                                            ? convertToNepaliNumber(
+                                                            ? localizedNumber(
                                                                 expenseController
                                                                     .expenseActivities
-                                                                    .length
-                                                                    .toString())
+                                                                    .length)
                                                             : data.id == 6
                                                                 ? farmlandController
                                                                     .emptyString
                                                                     .value
-                                                                : convertToNepaliNumber(
+                                                                : localizedNumber(
                                                                     farmlandController
                                                                         .farmlands
-                                                                        .length
-                                                                        .toString()),
-                                            style: const TextStyle(
+                                                                        .length),
+                                            style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: 20,
+                                                fontSize: 17,
                                                 fontWeight: FontWeight.w600)),
                                       )),
                                   Container(
                                     margin: const EdgeInsets.only(
-                                        top: 10, right: 10),
+                                        top: 8, right: 10),
                                     alignment: Alignment.topRight,
                                     child: Text(data.title,
                                         textAlign: TextAlign.end,
@@ -656,10 +650,9 @@ class HomeScreen extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      AppLocalizations.of(context)!
-                                          .knowAboutCrops,
+                                      l10n.knowAboutCrops,
                                       style: const TextStyle(
-                                        fontSize: 20,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w700,
                                         color: Colors.white,
                                         shadows: [
@@ -696,18 +689,17 @@ class HomeScreen extends StatelessWidget {
                                               BorderRadius.circular(25),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
-                                              horizontal: 28,
+                                              horizontal: 25,
                                               vertical: 12,
                                             ),
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Text(
-                                                  AppLocalizations.of(context)!
-                                                      .clickHere,
+                                                  l10n.clickHere,
                                                   style: const TextStyle(
                                                     color: kPrimaryColor,
-                                                    fontSize: 15,
+                                                    fontSize: 14,
                                                     fontWeight: FontWeight.w600,
                                                   ),
                                                 ),

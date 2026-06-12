@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/subsidy_request_controller.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/languages/langauge_constants.dart';
 import 'package:smart_kishan/routes/app_routes.dart';
 import 'package:intl/intl.dart';
@@ -56,15 +57,15 @@ class _MySubsidyRequestsScreenState extends State<MySubsidyRequestsScreen> {
 
     switch (status.toLowerCase()) {
       case 'pending':
-        return t.pending ?? 'Pending';
+        return t.pending;
       case 'under_review':
-        return t.underReview ?? 'Under Review';
+        return t.underReview;
       case 'approved':
-        return t.approved ?? 'Approved';
+        return t.approved;
       case 'rejected':
-        return t.rejected ?? 'Rejected';
+        return t.rejected;
       case 'converted':
-        return t.converted ?? 'Converted';
+        return t.converted;
       default:
         return status;
     }
@@ -124,14 +125,11 @@ class _MySubsidyRequestsScreenState extends State<MySubsidyRequestsScreen> {
     }
   }
 
-  String _formatDate(String? date) {
-    if (date == null) return '';
-    try {
-      final dateTime = DateTime.parse(date);
-      return DateFormat('MMM dd, yyyy').format(dateTime);
-    } catch (e) {
-      return date;
-    }
+  String _formatDate(String? rawDate, String localeName) {
+    if (rawDate == null || rawDate.isEmpty) return '';
+    final dt = DateTime.tryParse(rawDate);
+    if (dt == null) return rawDate;
+    return DateFormat('EEEE, dd MMMM, yyyy', localeName).format(dt);
   }
 
   void _showCancelDialog(BuildContext context, int requestId, String title) {
@@ -164,7 +162,7 @@ class _MySubsidyRequestsScreenState extends State<MySubsidyRequestsScreen> {
               ),
               SizedBox(height: 24),
               Text(
-                t.confirmCancel ?? 'Cancel Request',
+                t.confirmCancel,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -174,7 +172,7 @@ class _MySubsidyRequestsScreenState extends State<MySubsidyRequestsScreen> {
               ),
               SizedBox(height: 12),
               Text(
-                '${t.cancelRequestMessage ?? "Are you sure you want to cancel this request?"}\n\n"$title"',
+                '${t.cancelRequestMessage}\n\n"$title"',
                 style: TextStyle(
                   fontSize: 15,
                   color: Colors.grey[600],
@@ -221,7 +219,7 @@ class _MySubsidyRequestsScreenState extends State<MySubsidyRequestsScreen> {
                                   Icon(Icons.check_circle, color: Colors.white),
                                   SizedBox(width: 12),
                                   Text(
-                                    t.requestCancelled ?? 'Request cancelled',
+                                    t.requestCancelled,
                                     style:
                                         TextStyle(fontWeight: FontWeight.w600),
                                   ),
@@ -238,8 +236,7 @@ class _MySubsidyRequestsScreenState extends State<MySubsidyRequestsScreen> {
                         } else if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(
-                                  t.cannotCancel ?? 'Cannot cancel request'),
+                              content: Text(t.cannotCancel),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -282,7 +279,7 @@ class _MySubsidyRequestsScreenState extends State<MySubsidyRequestsScreen> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
-          t.myRequests ?? 'My Subsidy Requests',
+          t.myRequests,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.green[600],
@@ -315,7 +312,7 @@ class _MySubsidyRequestsScreenState extends State<MySubsidyRequestsScreen> {
                 backgroundColor: Colors.green[600],
                 icon: Icon(Icons.add),
                 label: Text(
-                  t.requestNewSubsidy ?? 'New Request',
+                  t.requestNewSubsidy,
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
               )
@@ -349,7 +346,7 @@ class _MySubsidyRequestsScreenState extends State<MySubsidyRequestsScreen> {
             Text(
               t.noRequests ?? 'No Requests Yet',
               style: TextStyle(
-                fontSize: 22,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey[800],
               ),
@@ -550,7 +547,7 @@ class _MySubsidyRequestsScreenState extends State<MySubsidyRequestsScreen> {
                             size: 14, color: Colors.grey[600]),
                         SizedBox(width: 6),
                         Text(
-                          '${t.submitted ?? "Submitted"}: ${_formatDate(request.createdAt)}',
+                          '${t.submitted ?? "Submitted"}: ${_formatDate(request.createdAt, l10n.localeName)}',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],

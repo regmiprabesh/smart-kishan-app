@@ -74,10 +74,10 @@ import 'package:smart_kishan/screens/surveys/bindings/survey_binding.dart';
 import 'package:smart_kishan/screens/surveys/survey_list_screen.dart';
 import 'package:smart_kishan/screens/surveys/take_survey_screen.dart';
 import 'package:smart_kishan/screens/users/add_user_screen.dart';
-import 'package:smart_kishan/screens/users/binding/user_binding.dart';
 import 'package:smart_kishan/screens/users/users_screen.dart';
 import 'package:smart_kishan/screens/vendor/dashboard/bindings/dashboard_binding.dart';
 import 'package:smart_kishan/screens/vendor/dashboard/dashboard_screen.dart';
+import 'package:smart_kishan/screens/users/binding/user_binding.dart';
 
 class AppPage {
   static var list = [

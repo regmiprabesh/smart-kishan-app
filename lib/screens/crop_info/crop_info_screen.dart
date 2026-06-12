@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:smart_kishan/constant.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/models/cropInfo.dart';
 
 class CropInfoScreen extends StatefulWidget {
@@ -27,7 +28,7 @@ class _CropInfoScreenState extends State<CropInfoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(cropInfo.name!),
+          title: Text(cropInfo.getName(l10n.localeName)),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -73,7 +74,7 @@ class _CropInfoScreenState extends State<CropInfoScreen> {
                   child: Column(
                     children: [
                       Text(
-                        cropInfo.name!,
+                        cropInfo.getName(l10n.localeName),
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
@@ -81,7 +82,7 @@ class _CropInfoScreenState extends State<CropInfoScreen> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        cropInfo.description!,
+                        cropInfo.getDescription(l10n.localeName),
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -100,7 +101,8 @@ class _CropInfoScreenState extends State<CropInfoScreen> {
                             tilePadding: EdgeInsets.zero,
                             childrenPadding: EdgeInsets.zero,
                             title: Text(
-                              cropInfo.activity![index].title!,
+                              cropInfo.activity![index]
+                                  .getTitle(l10n.localeName),
                               style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600),
                             ),
@@ -111,7 +113,9 @@ class _CropInfoScreenState extends State<CropInfoScreen> {
                               //       fontSize: FontSize(13),
                               //       fontWeight: FontWeight.w500)
                               // }, data: cropInfo.activity![index].description!),
-                              Text(cropInfo.activity![index].description!,
+                              Text(
+                                  cropInfo.activity![index]
+                                      .getDescription(l10n.localeName),
                                   style: const TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,

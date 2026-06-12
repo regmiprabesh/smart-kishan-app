@@ -2,11 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:smart_kishan/models/subsidy.dart';
-import 'package:smart_kishan/screens/auth/services/local_auth_service.dart';
 import 'package:smart_kishan/screens/subsidies_screen/services/remote_subsidy_service.dart';
 
 class SubsidyController extends GetxController {
-  static SubsidyController instance = Get.find();
+  static SubsidyController get instance => Get.find();
 
   RxList<Subsidy> subsidies = List<Subsidy>.empty(growable: true).obs;
   RxList<Subsidy> myApplications = List<Subsidy>.empty(growable: true).obs;
@@ -17,12 +16,9 @@ class SubsidyController extends GetxController {
   RxBool isApplying = false.obs;
   RxBool isRating = false.obs;
 
-  final LocalAuthService _localAuthService = LocalAuthService();
-
   @override
   void onInit() async {
     super.onInit();
-    await _localAuthService.init();
     getSubsidies();
   }
 
@@ -37,8 +33,7 @@ class SubsidyController extends GetxController {
   Future<void> getSubsidies() async {
     try {
       isSubsidiesLoading(true);
-      String? token = await _localAuthService.getToken();
-      var result = await RemoteSubsidyService().getSubsidies(token: token!);
+      var result = await RemoteSubsidyService().getSubsidies();
       if (result != null && result.statusCode == 200) {
         var body = jsonDecode(result.body);
         subsidies.assignAll(subsidyListFromJson(jsonEncode(body['data'])));
@@ -54,9 +49,7 @@ class SubsidyController extends GetxController {
   Future<void> getMyApplications() async {
     try {
       isSubsidiesLoading(true);
-      String? token = await _localAuthService.getToken();
-      var result =
-          await RemoteSubsidyService().getMyApplications(token: token!);
+      var result = await RemoteSubsidyService().getMyApplications();
       print(result.body);
       if (result != null && result.statusCode == 200) {
         var body = jsonDecode(result.body);
@@ -78,10 +71,8 @@ class SubsidyController extends GetxController {
   }) async {
     try {
       isApplying(true);
-      String? token = await _localAuthService.getToken();
 
       var result = await RemoteSubsidyService().applyForSubsidy(
-        token: token!,
         subsidyId: subsidyId,
         notes: applicationNotes,
         documents: documents,
@@ -104,10 +95,7 @@ class SubsidyController extends GetxController {
   // Withdraw application
   Future<bool> withdrawApplication(int subsidyId) async {
     try {
-      String? token = await _localAuthService.getToken();
-
       var result = await RemoteSubsidyService().withdrawApplication(
-        token: token!,
         subsidyId: subsidyId,
       );
 
@@ -130,10 +118,8 @@ class SubsidyController extends GetxController {
   }) async {
     try {
       isRating(true);
-      String? token = await _localAuthService.getToken();
 
       var result = await RemoteSubsidyService().rateSubsidy(
-        token: token!,
         subsidyId: subsidyId,
         rating: rating,
         review: review,
@@ -155,10 +141,7 @@ class SubsidyController extends GetxController {
   // Get user's rating for a subsidy
   Future<Map<String, dynamic>?> getUserRating(int subsidyId) async {
     try {
-      String? token = await _localAuthService.getToken();
-
       var result = await RemoteSubsidyService().getUserRating(
-        token: token!,
         subsidyId: subsidyId,
       );
 
@@ -175,10 +158,7 @@ class SubsidyController extends GetxController {
   // Delete user's rating
   Future<bool> deleteRating(int subsidyId) async {
     try {
-      String? token = await _localAuthService.getToken();
-
       var result = await RemoteSubsidyService().deleteRating(
-        token: token!,
         subsidyId: subsidyId,
       );
 
@@ -190,13 +170,5 @@ class SubsidyController extends GetxController {
       print('Error deleting rating: $e');
     }
     return false;
-  }
-
-  void reset() {
-    subsidies.clear();
-    myApplications.clear();
-    selectedSubsidy.value = null;
-    isSubsidiesLoading(false);
-    isRating(false);
   }
 }

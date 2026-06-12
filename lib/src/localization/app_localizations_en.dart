@@ -197,6 +197,516 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chart => 'Chart';
 
   @override
+  String get incomeAnalysis => 'Income Analysis';
+
+  @override
+  String get incomeChartDaily => 'Daily Income Chart';
+
+  @override
+  String get incomeChartMonthly => 'Monthly Income Chart';
+
+  @override
+  String get incomeChartYearly => 'Yearly Income Chart';
+
+  @override
+  String get last7Days => 'Last 7 days';
+
+  @override
+  String get last7Months => 'Last 7 months';
+
+  @override
+  String get last5Years => 'Last 5 years';
+
+  @override
+  String get expenseAnalysis => 'Expense Analysis';
+
+  @override
+  String get expenseChartDaily => 'Daily Expense Chart';
+
+  @override
+  String get expenseChartMonthly => 'Monthly Expense Chart';
+
+  @override
+  String get expenseChartYearly => 'Yearly Expense Chart';
+
+  @override
+  String get chartScreenTitle => 'Ledger Chart';
+
+  @override
+  String get chartTitleDaily => 'Daily Income/Expense Chart';
+
+  @override
+  String get chartTitleMonthly => 'Monthly Income/Expense Chart';
+
+  @override
+  String get chartTitleYearly => 'Yearly Income/Expense Chart';
+
+  @override
+  String get currencySymbol => 'Rs.';
+
+  @override
+  String get filterDaily => 'Daily';
+
+  @override
+  String get filterMonthly => 'Monthly';
+
+  @override
+  String get filterYearly => 'Yearly';
+
+  @override
+  String get productListTitle => 'Inventory';
+
+  @override
+  String get stockLabel => 'Stock';
+
+  @override
+  String get noProductsFound => 'You have no products yet!';
+
+  @override
+  String get noDateFound => 'No Date Found';
+
+  @override
+  String get loadingCity => 'Loading city...';
+
+  @override
+  String get goodDayForPesticide => 'Today is a good day to apply pesticides.';
+
+  @override
+  String get badDayForPesticide =>
+      'Today is not a good day to apply pesticides.';
+
+  @override
+  String get weatherThunderstorm => 'Thunderstorm';
+
+  @override
+  String get weatherDrizzle => 'Drizzle';
+
+  @override
+  String get weatherRain => 'Rain';
+
+  @override
+  String get weatherSnow => 'Snow';
+
+  @override
+  String get weatherClear => 'Clear';
+
+  @override
+  String get weatherClouds => 'Cloudy';
+
+  @override
+  String get weatherMist => 'Mist';
+
+  @override
+  String get weatherHaze => 'Haze';
+
+  @override
+  String get weatherFog => 'Fog';
+
+  @override
+  String get newNote => 'New Note';
+
+  @override
+  String get addNote => 'Add Note';
+
+  @override
+  String get updateNote => 'Update Note';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get update => 'Update';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get notesEmptyDescription =>
+      'Add notes to keep your important thoughts and information safe';
+
+  @override
+  String get deleteNoteConfirm =>
+      'Are you sure you want to delete this note? This action cannot be undone.';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String daysAgo(String count) {
+    return '$count days ago';
+  }
+
+  @override
+  String get noteTitle => 'Note Title';
+
+  @override
+  String get enterNoteTitle => 'Enter note title';
+
+  @override
+  String get pleaseEnterNoteTitle => 'Please enter your note title';
+
+  @override
+  String get noteTitleMinLength => 'Note title must be at least 3 characters';
+
+  @override
+  String get noteDescription => 'Note Description';
+
+  @override
+  String get enterNoteDescription => 'Enter note description';
+
+  @override
+  String get notePriority => 'Note Priority';
+
+  @override
+  String get enterNotePriority => 'Enter note priority';
+
+  @override
+  String get governmentServices => 'Government Services';
+
+  @override
+  String get quickActions => 'Quick Actions';
+
+  @override
+  String get homeGovOfficesTitle => 'Government Offices';
+
+  @override
+  String get homeGovOfficesSubtitle =>
+      'Find nearby agriculture offices and labs';
+
+  @override
+  String get homeGovOfficesBadge => 'Locations';
+
+  @override
+  String get homeSubsidiesTitle => 'Subsidies &\nBenefits';
+
+  @override
+  String get homeSubsidiesSubtitle => 'Explore government subsidies';
+
+  @override
+  String get homeSubsidiesBadge => 'Gov Support';
+
+  @override
+  String get homeComplaintsTitle => 'File\nComplaints';
+
+  @override
+  String get homeComplaintsSubtitle => 'Report your problems';
+
+  @override
+  String get homeComplaintsBadge => 'Report Issues';
+
+  @override
+  String get homeSurveysTitle => 'Surveys';
+
+  @override
+  String get homeSurveysSubtitle => 'Share your feedback';
+
+  @override
+  String get homeSurveysBadge => 'Feedback';
+
+  @override
+  String get serviceCenters => 'Service Centers';
+
+  @override
+  String get listView => 'List View';
+
+  @override
+  String get mapView => 'Map View';
+
+  @override
+  String get filters => 'Filters';
+
+  @override
+  String get currentLocationNotAvailable => 'Current location not available';
+
+  @override
+  String get searchServiceCentersHint => 'Search service centers...';
+
+  @override
+  String get loadingRoute => 'Loading route...';
+
+  @override
+  String get nearestServiceCenters => 'Nearest Service Centers';
+
+  @override
+  String get noServiceCentersFound => 'No service centers found';
+
+  @override
+  String get tryAdjustingFilters => 'Try adjusting your filters or search';
+
+  @override
+  String get km => 'km';
+
+  @override
+  String get away => 'away';
+
+  @override
+  String get routeLoaded => 'Route loaded';
+
+  @override
+  String get notApplicable => 'N/A';
+
+  @override
+  String get featured => 'Featured';
+
+  @override
+  String get viewOnMap => 'View on Map';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get filtersAndSort => 'Filters & Sort';
+
+  @override
+  String get clearAll => 'Clear All';
+
+  @override
+  String get distance => 'Distance';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get rating => 'Rating';
+
+  @override
+  String get newest => 'Newest';
+
+  @override
+  String get searchRadius => 'Search Radius';
+
+  @override
+  String get showFeaturedOnly => 'Show Featured Only';
+
+  @override
+  String get applyFilters => 'Apply Filters';
+
+  @override
+  String get serviceCenterNotFound => 'Service center not found';
+
+  @override
+  String get basedOnUserReviews => 'Based on user reviews';
+
+  @override
+  String get ratingSingular => 'rating';
+
+  @override
+  String get ratingPlural => 'ratings';
+
+  @override
+  String get reviewSingular => 'review';
+
+  @override
+  String get reviewPlural => 'reviews';
+
+  @override
+  String get contactInformation => 'Contact Information';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get website => 'Website';
+
+  @override
+  String get contactPerson => 'Contact Person';
+
+  @override
+  String get directions => 'Directions';
+
+  @override
+  String wardNo(String no) {
+    return 'Ward No: $no';
+  }
+
+  @override
+  String get operatingHours => 'Operating Hours';
+
+  @override
+  String get servicesOffered => 'Services Offered';
+
+  @override
+  String get yourRating => 'Your Rating';
+
+  @override
+  String get editRating => 'Edit Rating';
+
+  @override
+  String get helpOthersRate => 'Help others by rating this service center';
+
+  @override
+  String get addYourRating => 'Add Your Rating';
+
+  @override
+  String get rateServiceCenter => 'Rate Service Center';
+
+  @override
+  String get writeReviewOptional => 'Write a review (optional)';
+
+  @override
+  String get shareYourExperienceHint => 'Share your experience...';
+
+  @override
+  String get submit => 'Submit';
+
+  @override
+  String get editYourRating => 'Edit Your Rating';
+
+  @override
+  String get deleteRatingQuestion => 'Delete Rating?';
+
+  @override
+  String get deleteRatingReviewConfirm =>
+      'Are you sure you want to delete your rating and review? This action cannot be undone.';
+
+  @override
+  String get ratingSubmittedSuccess => 'Rating submitted successfully!';
+
+  @override
+  String get ratingUpdatedSuccess => 'Rating updated successfully!';
+
+  @override
+  String get youRatedThisCenter => 'You rated this service center';
+
+  @override
+  String get recentReviews => 'Recent Reviews';
+
+  @override
+  String viewAllReviews(String count) {
+    return 'View all $count reviews';
+  }
+
+  @override
+  String get anonymous => 'Anonymous';
+
+  @override
+  String get ago => 'ago';
+
+  @override
+  String get minUnit => 'min';
+
+  @override
+  String get hrUnit => 'hr';
+
+  @override
+  String get dayUnit => 'day';
+
+  @override
+  String get daysUnit => 'days';
+
+  @override
+  String get weekUnit => 'week';
+
+  @override
+  String get weeksUnit => 'weeks';
+
+  @override
+  String get topRatedServiceCenters => 'Top Rated Service Centers';
+
+  @override
+  String get basicInformation => 'Basic Information';
+
+  @override
+  String get requestDetails => 'Request Details';
+
+  @override
+  String get requestTarget => 'Request Target';
+
+  @override
+  String get actionCannotBeUndone => 'This action cannot be undone.';
+
+  @override
+  String get kalimatiPriceList => 'Kalimati Price List';
+
+  @override
+  String get commodity => 'Commodity';
+
+  @override
+  String get unit => 'Unit';
+
+  @override
+  String get minPrice => 'Min Price';
+
+  @override
+  String get maxPrice => 'Max Price';
+
+  @override
+  String get avgPrice => 'Avg Price';
+
+  @override
+  String get tapAnyFileToViewOrDownload => 'Tap any file to view or download.';
+
+  @override
+  String get addUser => 'Add User';
+
+  @override
+  String get noUsersYet => 'You haven\'t added any users yet!';
+
+  @override
+  String get deleteUserConfirm => 'Are you sure you want to delete this user?';
+
+  @override
+  String get addUserTitle => 'Add User';
+
+  @override
+  String get updateUserTitle => 'Update User';
+
+  @override
+  String get userFullName => 'User\'s Full Name';
+
+  @override
+  String get enterUserFullName => 'Enter user\'s full name';
+
+  @override
+  String get pleaseEnterUserFullName => 'Please enter user\'s full name';
+
+  @override
+  String get pleaseEnterValidUserName => 'Please enter a valid user name';
+
+  @override
+  String get userPhoneNumber => 'User\'s Phone Number';
+
+  @override
+  String get enterUserPhoneNumber => 'Enter user\'s phone number';
+
+  @override
+  String get pleaseEnterUserPhone => 'Please enter user\'s phone number';
+
+  @override
+  String get pleaseEnterValidUserPhone =>
+      'Please enter a valid user phone number';
+
+  @override
+  String get userEmail => 'User\'s Email Address';
+
+  @override
+  String get enterUserEmail => 'Enter user\'s email address';
+
+  @override
+  String get userPassword => 'User\'s Password';
+
+  @override
+  String get enterUserPassword => 'Enter user\'s password';
+
+  @override
+  String get pleaseEnterUserPassword => 'Please enter user\'s password';
+
+  @override
+  String get passwordMinLength => 'Password must be at least 8 characters';
+
+  @override
+  String get userConfirmPassword => 'Confirm User\'s Password';
+
+  @override
+  String get confirmUserPassword => 'Confirm user\'s password';
+
+  @override
+  String get confirmPasswordEmpty => 'Confirm password field cannot be empty';
+
+  @override
   String get users => 'Users';
 
   @override
@@ -218,7 +728,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sales => 'Sales';
 
   @override
-  String get farmlands => 'Farmlands';
+  String get farmlands => 'Farm\nLands';
 
   @override
   String get notes => 'Notes';
@@ -1400,9 +1910,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myRequests => 'My Requests';
 
   @override
-  String get requestDetails => 'Request Details';
-
-  @override
   String get noRequests => 'No Requests Yet';
 
   @override
@@ -1753,6 +2260,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get comments => 'Comments';
+
+  @override
   String commentsCount(int count) {
     return 'Comments ($count)';
   }
@@ -1774,4 +2284,223 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get send => 'Send';
+
+  @override
+  String get surveys => 'Surveys';
+
+  @override
+  String get survey => 'Survey';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get completed => 'Completed';
+
+  @override
+  String get startSurvey => 'Start Survey';
+
+  @override
+  String get takeAgain => 'Take Again';
+
+  @override
+  String get canRetake => 'Can Retake';
+
+  @override
+  String questionsCount(String count) {
+    return '$count Questions';
+  }
+
+  @override
+  String respondedTimes(String count) {
+    return 'Responded ${count}x';
+  }
+
+  @override
+  String estimatedMinutes(String min) {
+    return '~$min min';
+  }
+
+  @override
+  String endsOn(String date) {
+    return 'Ends: $date';
+  }
+
+  @override
+  String get noAvailableSurveys => 'No Available Surveys';
+
+  @override
+  String get checkBackLater => 'Check back later for new surveys';
+
+  @override
+  String get noCompletedSurveys => 'No Completed Surveys';
+
+  @override
+  String get completeSurveysToSee => 'Complete surveys to see them here';
+
+  @override
+  String get noSurveysAvailable => 'No Surveys Available';
+
+  @override
+  String get noSurveysAvailableDesc =>
+      'There are no surveys available for you at the moment';
+
+  @override
+  String get pullDownToRefresh => 'Pull down to refresh';
+
+  @override
+  String get surveyTypeCropProduction => 'Crop Production';
+
+  @override
+  String get surveyTypeLivestockCensus => 'Livestock Census';
+
+  @override
+  String get surveyTypeLandUsage => 'Land Usage';
+
+  @override
+  String get surveyTypeFarmerSatisfaction => 'Farmer Satisfaction';
+
+  @override
+  String get surveyTypeSubsidyImpact => 'Subsidy Impact';
+
+  @override
+  String get surveyTypeTrainingNeeds => 'Training Needs';
+
+  @override
+  String get surveyTypeMarketAccess => 'Market Access';
+
+  @override
+  String get surveyTypeGeneral => 'General Survey';
+
+  @override
+  String get noQuestionsFound => 'No questions found in this survey';
+
+  @override
+  String get answerAllRequired => 'Please answer all required questions';
+
+  @override
+  String get surveySubmittedSuccess => 'Survey submitted successfully';
+
+  @override
+  String get surveySubmitFailed => 'Failed to submit survey';
+
+  @override
+  String get validationError => 'Validation Error';
+
+  @override
+  String get checkRequiredFields => 'Please check all required fields';
+
+  @override
+  String get requiredQuestion => 'Required Question';
+
+  @override
+  String get noSurveySelected => 'No survey selected';
+
+  @override
+  String get loadingSurveyQuestions => 'Loading survey questions...';
+
+  @override
+  String get noQuestionsAvailable => 'No questions available for this survey';
+
+  @override
+  String get fileUploads => 'File Uploads';
+
+  @override
+  String get locationInformation => 'Location Information';
+
+  @override
+  String get instruction => 'Instruction';
+
+  @override
+  String get requiredLabel => 'Required';
+
+  @override
+  String get defaultEligibility =>
+      'Small and marginal farmers with up to 2 hectares of cultivated land';
+
+  @override
+  String get fileUploaded => 'File uploaded successfully';
+
+  @override
+  String get enterYourAnswer => 'Enter your answer';
+
+  @override
+  String get fieldRequired => 'This field is required';
+
+  @override
+  String minCharactersRequired(String count) {
+    return 'Minimum $count characters required';
+  }
+
+  @override
+  String get enterNumber => 'Enter a number';
+
+  @override
+  String get enterValidNumber => 'Please enter a valid number';
+
+  @override
+  String minValueIs(String value) {
+    return 'Minimum value is $value';
+  }
+
+  @override
+  String maxValueIs(String value) {
+    return 'Maximum value is $value';
+  }
+
+  @override
+  String get selectOption => 'Select an option';
+
+  @override
+  String get pleaseSelectOption => 'Please select an option';
+
+  @override
+  String get selectDate => 'Select a date';
+
+  @override
+  String ratingOutOf(String rating, String max) {
+    return '$rating out of $max';
+  }
+
+  @override
+  String get allowedFileFormats => 'PDF, JPG, PNG, DOC';
+
+  @override
+  String get maxFileSizeLabel => 'Max 5 MB';
+
+  @override
+  String get currentLocation => 'Current Location';
+
+  @override
+  String get currentLocationSet => 'Current location has been set';
+
+  @override
+  String get locationSet => 'Location Set';
+
+  @override
+  String get chooseOnMap => 'Choose on Map';
+
+  @override
+  String get comingSoon => 'Coming Soon';
+
+  @override
+  String get mapPickerComingSoon => 'Map picker feature coming soon';
+
+  @override
+  String latLngLabel(String lat, String lng) {
+    return 'Lat: $lat, Lng: $lng';
+  }
+
+  @override
+  String get importantNoteLabel => 'Important Note';
+
+  @override
+  String get surveyImportantNote =>
+      'All required questions must be answered before submission. Your responses will help improve agricultural services.';
+
+  @override
+  String get submitting => 'Submitting...';
+
+  @override
+  String get submitSurvey => 'Submit Survey';
 }

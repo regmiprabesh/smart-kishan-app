@@ -3,33 +3,32 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:smart_kishan/constant.dart';
+import 'package:smart_kishan/helpers/app_http_client.dart';
 
 class RemoteSubsidyService {
-  var client = http.Client();
+  var client = AppHttpClient();
 
   // Get all available subsidies for farmer based on their location
-  Future<dynamic> getSubsidies({required String token}) async {
+  Future<dynamic> getSubsidies() async {
     var remoteUrl = '$apiUrl/farmer/subsidies';
     var response = await client.get(
       Uri.parse(remoteUrl),
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
     );
     return response;
   }
 
   // Get user's subsidy applications
-  Future<dynamic> getMyApplications({required String token}) async {
+  Future<dynamic> getMyApplications() async {
     var remoteUrl = '$apiUrl/farmer/subsidy-applications';
     var response = await client.get(
       Uri.parse(remoteUrl),
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
     );
     return response;
@@ -37,7 +36,6 @@ class RemoteSubsidyService {
 
 // Apply for a subsidy
   Future<dynamic> applyForSubsidy({
-    required String token,
     required int subsidyId,
     required String notes,
     Map<String, File?>? documents,
@@ -48,10 +46,9 @@ class RemoteSubsidyService {
     // Create multipart request
     var request = http.MultipartRequest('POST', Uri.parse(remoteUrl));
 
-    // Add headers
+    // Add headers (Authorization is added automatically by AppHttpClient)
     request.headers.addAll({
       'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
     });
 
     // Add application notes
@@ -102,7 +99,9 @@ class RemoteSubsidyService {
     print('================================');
 
     try {
-      var streamedResponse = await request.send();
+      // Route through AppHttpClient so the JWT token, 401 handling,
+      // and offline/timeout logic are applied
+      var streamedResponse = await client.send(request);
       var response = await http.Response.fromStream(streamedResponse);
 
       print('Response status: ${response.statusCode}');
@@ -120,7 +119,6 @@ class RemoteSubsidyService {
 
   // Withdraw application
   Future<dynamic> withdrawApplication({
-    required String token,
     required int subsidyId,
   }) async {
     var remoteUrl = '$apiUrl/farmer/subsidies/$subsidyId/withdraw';
@@ -129,7 +127,6 @@ class RemoteSubsidyService {
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
     );
     return response;
@@ -137,7 +134,6 @@ class RemoteSubsidyService {
 
   // Rate a subsidy
   Future<dynamic> rateSubsidy({
-    required String token,
     required int subsidyId,
     required int rating,
     String? review,
@@ -149,7 +145,6 @@ class RemoteSubsidyService {
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
         'rating': rating,
@@ -170,7 +165,6 @@ class RemoteSubsidyService {
 
   // Get ratings for a subsidy
   Future<dynamic> getSubsidyRatings({
-    required String token,
     required int subsidyId,
   }) async {
     var remoteUrl = '$apiUrl/farmer/subsidies/$subsidyId/ratings';
@@ -179,7 +173,6 @@ class RemoteSubsidyService {
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
     );
     return response;
@@ -187,7 +180,6 @@ class RemoteSubsidyService {
 
   // Get user's rating for a subsidy
   Future<dynamic> getUserRating({
-    required String token,
     required int subsidyId,
   }) async {
     var remoteUrl = '$apiUrl/farmer/subsidies/$subsidyId/my-rating';
@@ -196,7 +188,6 @@ class RemoteSubsidyService {
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
     );
     return response;
@@ -204,7 +195,6 @@ class RemoteSubsidyService {
 
   // Delete user's rating
   Future<dynamic> deleteRating({
-    required String token,
     required int subsidyId,
   }) async {
     var remoteUrl = '$apiUrl/farmer/subsidies/$subsidyId/my-rating';
@@ -213,7 +203,6 @@ class RemoteSubsidyService {
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
     );
     return response;

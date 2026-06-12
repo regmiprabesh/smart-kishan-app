@@ -8,7 +8,6 @@ List<Note> noteListFromJson(String val) =>
 
 class Note {
   int? id;
-  // int? noteId;
   String? title;
   String? description;
   int? priority;
@@ -18,7 +17,6 @@ class Note {
 
   Note(
       {this.id,
-      // this.noteId,
       this.title,
       this.description,
       this.priority,
@@ -27,7 +25,7 @@ class Note {
       this.user});
 
   Note.fromJson(Map<String, dynamic> json) {
-    id = json['note_id'];
+    id = json['id'];
     title = json['title'];
     description = json['description'];
     priority = json['priority'];

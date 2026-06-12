@@ -12,105 +12,87 @@ import 'src/settings/settings_controller.dart';
 import 'src/settings/settings_service.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:smart_kishan/src/localization/app_localizations.dart';
+import 'package:smart_kishan/helpers/text_theme_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // Set up the SettingsController, which will glue user settings to multiple
-  // Flutter Widgets.
+
   final settingsController = SettingsController(SettingsService());
-
-  // Load the user's preferred theme while the splash screen is displayed.
-  // This prevents a sudden theme change when the app is first displayed.
   await settingsController.loadSettings();
-
-  // Run the app and pass in the SettingsController. The app listens to the
-  // SettingsController for changes, then passes it further down to the
-  // SettingsView.
 
   Get.put(AuthController());
 
-  initializeDateFormatting('ne_NP', null).then((_) => runApp(MyApp()));
-  // runApp(MyApp());
-  // runApp(PhoneRegisterScreen());
+  await initializeDateFormatting('ne_NP', null);
+  await initializeDateFormatting('en', null);
+
+  runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-
-  static void setLocale(BuildContext context, Locale newLocale) {
-    _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
-    state?.setLocale(newLocale);
-  }
-}
-
-class _MyAppState extends State<MyApp> {
-  Locale? _locale;
-
-  setLocale(Locale locale) {
-    setState(() {
-      _locale = locale;
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    getLocale().then((locale) => {setLocale(locale)});
-    super.didChangeDependencies();
+  // Call this from anywhere in the app to switch locale.
+  static void setLocale(Locale locale) {
+    Get.updateLocale(locale);
   }
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      locale: _locale,
-      useInheritedMediaQuery: true,
-      getPages: AppPage.list,
-      initialRoute: AppRoute.splashScreen,
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          scaffoldBackgroundColor: Colors.white,
-          dialogTheme: const DialogThemeData(
-            surfaceTintColor: Colors.transparent,
-          ),
-          canvasColor: kCanvasColor,
-          elevatedButtonTheme: ElevatedButtonThemeData(
+    return FutureBuilder<Locale>(
+      future: getLocale(),
+      initialData: const Locale('ne', 'NP'),
+      builder: (context, snapshot) {
+        final locale = snapshot.data ?? const Locale('ne', 'NP');
+        return GetMaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: locale,
+          useInheritedMediaQuery: true,
+          getPages: AppPage.list,
+          initialRoute: AppRoute.splashScreen,
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: kPrimaryColor),
+            textTheme: TextThemeHelper.getTextTheme(locale),
+            scaffoldBackgroundColor: Colors.white,
+            dialogTheme: const DialogThemeData(
+              surfaceTintColor: Colors.transparent,
+            ),
+            canvasColor: kCanvasColor,
+            elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
-            backgroundColor: kPrimaryColor, // Set the background color
-            foregroundColor: Colors.white, // Set the text color
-          )),
-          floatingActionButtonTheme: const FloatingActionButtonThemeData(
-            backgroundColor: kPrimaryColor, // Set the FAB background color
-            foregroundColor: Colors.white, // Set the icon/text color
-          ),
-          // fontFamily: 'Poppins',
-          primaryColor: kPrimaryColor,
-          appBarTheme: const AppBarTheme(
+                backgroundColor: kPrimaryColor,
+                foregroundColor: Colors.white,
+              ),
+            ),
+            floatingActionButtonTheme: const FloatingActionButtonThemeData(
               backgroundColor: kPrimaryColor,
-              foregroundColor: Colors.white, // Set text/icon color for AppBar
+              foregroundColor: Colors.white,
+            ),
+            primaryColor: kPrimaryColor,
+            appBarTheme: const AppBarTheme(
+              backgroundColor: kPrimaryColor,
+              foregroundColor: Colors.white,
               surfaceTintColor: Colors.white,
               titleTextStyle:
-                  TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-          primaryColorDark: kSecondaryColor),
-      onInit: () async {
-        Get.put<AuthController>(
-          AuthController(),
-          permanent: true,
+                  TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            primaryColorDark: kSecondaryColor,
+          ),
+          onInit: () async {
+            Get.put<AuthController>(
+              AuthController(),
+              permanent: true,
+            );
+            Get.put<OTPController>(
+              OTPController(),
+              permanent: true,
+            );
+          },
         );
-        Get.put<OTPController>(
-          OTPController(),
-          permanent: true,
-        );
-        // Get.put<SyncController>(
-        //   SyncController(),
-        //   permanent: true,
-        // );
       },
     );
   }

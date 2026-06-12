@@ -133,8 +133,8 @@ class _AddBuyersGroupScreenState extends State<AddBuyersGroupScreen> {
         }
       } else {
         bool success = await buyersGroupController.addBuyersGroup(
-            BuyersGroup(name: _groupNameController.text, buyers: _addedBuyers),
-            false);
+          BuyersGroup(name: _groupNameController.text, buyers: _addedBuyers),
+        );
         if (success) {
           ScaffoldMessenger.of(context)
             ..removeCurrentSnackBar()

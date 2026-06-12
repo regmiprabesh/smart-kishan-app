@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/survey_controller.dart';
-import 'package:smart_kishan/languages/langauge_constants.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/models/survey.dart';
 import 'package:smart_kishan/routes/app_routes.dart';
 import 'package:intl/intl.dart';
@@ -56,21 +56,21 @@ class _SurveysListScreenState extends State<SurveysListScreen>
   String _getSurveyTypeName(String? type) {
     switch (type?.toLowerCase()) {
       case 'crop_production':
-        return 'Crop Production';
+        return l10n.surveyTypeCropProduction;
       case 'livestock_census':
-        return 'Livestock Census';
+        return l10n.surveyTypeLivestockCensus;
       case 'land_usage':
-        return 'Land Usage';
+        return l10n.surveyTypeLandUsage;
       case 'farmer_satisfaction':
-        return 'Farmer Satisfaction';
+        return l10n.surveyTypeFarmerSatisfaction;
       case 'subsidy_impact':
-        return 'Subsidy Impact';
+        return l10n.surveyTypeSubsidyImpact;
       case 'training_needs':
-        return 'Training Needs';
+        return l10n.surveyTypeTrainingNeeds;
       case 'market_access':
-        return 'Market Access';
+        return l10n.surveyTypeMarketAccess;
       default:
-        return 'General Survey';
+        return l10n.surveyTypeGeneral;
     }
   }
 
@@ -99,7 +99,6 @@ class _SurveysListScreenState extends State<SurveysListScreen>
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context);
     final lang = locale.languageCode;
-    final t = translation(context);
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -107,7 +106,7 @@ class _SurveysListScreenState extends State<SurveysListScreen>
         backgroundColor: kPrimaryColor,
         elevation: 0,
         title: Text(
-          'Surveys',
+          l10n.surveys,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         bottom: TabBar(
@@ -124,9 +123,9 @@ class _SurveysListScreenState extends State<SurveysListScreen>
             color: Colors.white,
           ),
           tabs: [
-            Tab(text: 'All'),
-            Tab(text: 'Available'),
-            Tab(text: 'Completed'),
+            Tab(text: l10n.all),
+            Tab(text: l10n.available),
+            Tab(text: l10n.completed),
           ],
         ),
       ),
@@ -149,19 +148,18 @@ class _SurveysListScreenState extends State<SurveysListScreen>
         return TabBarView(
           controller: _tabController,
           children: [
-            _buildSurveysList(allSurveys, lang, t, 'all'),
-            _buildSurveysList(availableSurveys, lang, t, 'available'),
-            _buildSurveysList(completedSurveys, lang, t, 'completed'),
+            _buildSurveysList(allSurveys, lang, 'all'),
+            _buildSurveysList(availableSurveys, lang, 'available'),
+            _buildSurveysList(completedSurveys, lang, 'completed'),
           ],
         );
       }),
     );
   }
 
-  Widget _buildSurveysList(
-      List<Survey> surveys, String lang, dynamic t, String listType) {
+  Widget _buildSurveysList(List<Survey> surveys, String lang, String listType) {
     if (surveys.isEmpty) {
-      return _buildEmptyState(t, listType);
+      return _buildEmptyState(listType);
     }
 
     return RefreshIndicator(
@@ -171,13 +169,13 @@ class _SurveysListScreenState extends State<SurveysListScreen>
         padding: const EdgeInsets.all(16),
         itemCount: surveys.length,
         itemBuilder: (context, index) {
-          return _buildSurveyCard(surveys[index], lang, t);
+          return _buildSurveyCard(surveys[index], lang);
         },
       ),
     );
   }
 
-  Widget _buildSurveyCard(Survey survey, String lang, dynamic t) {
+  Widget _buildSurveyCard(Survey survey, String lang) {
     final canRespond = survey.canRespond;
     final hasResponded = survey.hasResponded ?? false;
     final allowMultiple = survey.allowMultipleSubmissions ?? false;
@@ -236,7 +234,7 @@ class _SurveysListScreenState extends State<SurveysListScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            survey.surveyCode ?? 'N/A',
+                            survey.surveyCode ?? l10n.notApplicable,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],
@@ -272,7 +270,7 @@ class _SurveysListScreenState extends State<SurveysListScreen>
                           ),
                         ),
                         child: Text(
-                          'REQUIRED',
+                          l10n.required,
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
@@ -323,31 +321,34 @@ class _SurveysListScreenState extends State<SurveysListScreen>
                     ),
                     _buildInfoChip(
                       Icons.quiz,
-                      '${survey.totalQuestions ?? 0} Questions',
+                      l10n.questionsCount(
+                          localizedNumber(survey.totalQuestions ?? 0)),
                       Colors.blue,
                     ),
                     if (survey.estimatedDurationMinutes != null)
                       _buildInfoChip(
                         Icons.timer,
-                        '~${survey.estimatedDurationMinutes} min',
+                        l10n.estimatedMinutes(
+                            localizedNumber(survey.estimatedDurationMinutes!)),
                         Colors.orange,
                       ),
                     if (hasResponded && !allowMultiple)
                       _buildInfoChip(
                         Icons.check_circle,
-                        'Completed',
+                        l10n.completed,
                         Colors.green,
                       ),
                     if (hasResponded && allowMultiple)
                       _buildInfoChip(
                         Icons.replay,
-                        'Responded ${survey.responseCount ?? 1}x',
+                        l10n.respondedTimes(
+                            localizedNumber(survey.responseCount ?? 1)),
                         Colors.purple,
                       ),
                     if (allowMultiple && canRespond)
                       _buildInfoChip(
                         Icons.refresh,
-                        'Can Retake',
+                        l10n.canRetake,
                         Colors.purple,
                       ),
                   ],
@@ -365,7 +366,7 @@ class _SurveysListScreenState extends State<SurveysListScreen>
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'Ends: ${_formatDate(survey.endDate)}',
+                        l10n.endsOn(_formatDate(survey.endDate)),
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.orange[700],
@@ -401,8 +402,8 @@ class _SurveysListScreenState extends State<SurveysListScreen>
                     ),
                     label: Text(
                       hasResponded
-                          ? (allowMultiple ? 'Take Again' : 'Completed')
-                          : 'Start Survey',
+                          ? (allowMultiple ? l10n.takeAgain : l10n.completed)
+                          : l10n.startSurvey,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -462,25 +463,25 @@ class _SurveysListScreenState extends State<SurveysListScreen>
     );
   }
 
-  Widget _buildEmptyState(dynamic t, String listType) {
+  Widget _buildEmptyState(String listType) {
     String title;
     String subtitle;
     IconData icon;
 
     switch (listType) {
       case 'available':
-        title = 'No Available Surveys';
-        subtitle = 'Check back later for new surveys';
+        title = l10n.noAvailableSurveys;
+        subtitle = l10n.checkBackLater;
         icon = Icons.assignment_outlined;
         break;
       case 'completed':
-        title = 'No Completed Surveys';
-        subtitle = 'Complete surveys to see them here';
+        title = l10n.noCompletedSurveys;
+        subtitle = l10n.completeSurveysToSee;
         icon = Icons.check_circle_outline;
         break;
       default:
-        title = 'No Surveys Available';
-        subtitle = 'There are no surveys available for you at the moment';
+        title = l10n.noSurveysAvailable;
+        subtitle = l10n.noSurveysAvailableDesc;
         icon = Icons.assignment_outlined;
     }
 
@@ -518,7 +519,7 @@ class _SurveysListScreenState extends State<SurveysListScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Pull down to refresh',
+              l10n.pullDownToRefresh,
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[500],
@@ -531,12 +532,12 @@ class _SurveysListScreenState extends State<SurveysListScreen>
   }
 
   String _formatDate(String? dateString) {
-    if (dateString == null) return 'N/A';
+    if (dateString == null) return l10n.notApplicable;
     try {
       final date = DateTime.parse(dateString);
-      return DateFormat('MMM dd, yyyy').format(date);
+      return DateFormat('MMM dd, yyyy', localeCode).format(date);
     } catch (e) {
-      return 'N/A';
+      return l10n.notApplicable;
     }
   }
 }

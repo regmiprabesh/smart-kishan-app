@@ -1,292 +1,174 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/models/farmland.dart';
 import 'package:smart_kishan/models/recommendedCrop.dart';
 import 'package:smart_kishan/models/soildata.dart';
 import 'package:smart_kishan/models/weather_model.dart';
 import 'package:smart_kishan/screens/auth/services/local_auth_service.dart';
-import 'package:smart_kishan/screens/farmland/services/local_farmland_service.dart';
 import 'package:smart_kishan/screens/farmland/services/remote_farmland_service.dart';
 import 'package:smart_kishan/screens/weather/services/remote_weather_service.dart';
-import 'package:smart_kishan/sync_service.dart';
 import 'package:http/http.dart' as http;
 
 class FarmlandController extends GetxController {
-  static FarmlandController instance = Get.find();
+  static FarmlandController get instance => Get.find();
 
-  RxList<Farmland> farmlands = List<Farmland>.empty(growable: true).obs;
+  final RxList<Farmland> farmlands = <Farmland>[].obs;
 
-  RxList<Farmland> offlineFarmlands = List<Farmland>.empty(growable: true).obs;
+  final RxBool isEdit = false.obs;
+  final Rx<Farmland> selectedFarmland = Farmland().obs;
+  final RxBool isFarmlandsLoading = false.obs;
 
-  final _localFarmlandService = LocalFarmlandService();
-
-  RxBool isEdit = false.obs;
-
-  Rx<Farmland> selectedFarmland = Farmland().obs;
-
-  RxBool isFarmlandsLoading = false.obs;
+  final RxString selectedFarmlandImage = ''.obs;
+  final RxString networkFarmlandImage = ''.obs;
+  final RxString emptyString = ''.obs;
 
   final LocalAuthService _localAuthService = LocalAuthService();
-  final SyncService _syncService = SyncService();
-  RxString selectedFarmlandImage = ''.obs;
-  RxString networkFarmlandImage = ''.obs;
-  RxString emptyString = ''.obs;
 
   @override
   void onInit() async {
     super.onInit();
     await _localAuthService.init();
-    await _localFarmlandService.init();
-    await _syncService.init();
     getFarmlands();
-    // getFarmlandsOffline();
   }
 
   @override
   void onClose() {
     farmlands.clear();
-    offlineFarmlands.clear();
     super.onClose();
   }
-
-  Comparator<Farmland> sortById = (a, b) => b.id!.compareTo(a.id!);
 
   void getFarmlands() async {
     try {
       isFarmlandsLoading(true);
-      String? token = await _localAuthService.getToken();
-      var result = await RemoteFarmlandService().getFarmlands(token: token!);
+      final result = await RemoteFarmlandService().getFarmlands();
       if (result != null) {
-        var body = jsonDecode(result.body);
+        final body = jsonDecode(result.body);
         farmlands.assignAll(farmlandListFromJson(jsonEncode(body['data'])));
-        print(farmlands);
-        // var data = await _localFarmlandService.readFarmlands();
-        // offlineFarmlands.assignAll(farmlandListFromJson(jsonEncode(data)));
       }
     } catch (e) {
-      print(e);
-      print('No Internet Connection');
-      // getFarmlandsOffline();
-      // } finally {
-      //   isFarmlandsLoading(false);
-    }
-  }
-
-  getFarmlandsOffline() async {
-    try {
-      var data = await _localFarmlandService.readFarmlands();
-      farmlands.assignAll(farmlandListFromJson(jsonEncode(data)));
-      offlineFarmlands.assignAll(farmlandListFromJson(jsonEncode(data)));
-      // You can sort the list by id like this
-      farmlands.sort(sortById);
-    } catch (e) {
-      print(e);
-    } finally {}
-  }
-
-  Future<bool> addFarmland(Farmland farmland, bool isSync) async {
-    // try {
-    isFarmlandsLoading(true);
-    String? token = await _localAuthService.getToken();
-    var image;
-    if (farmland.image != null) {
-      image = await http.MultipartFile.fromPath('image', farmland.image!);
-    }
-    var result = await RemoteFarmlandService()
-        .addFarmland(token: token!, data: farmland.toJson(), image: image);
-    if (result.statusCode == 200) {
-      var body = jsonDecode(result.body);
-      var newFarmland = Farmland.fromJson(body['data']);
-      farmlands.add(newFarmland);
-      Get.back();
-    }
-    // } catch (e) {
-    // if (isSync) {
-    //   return false;
-    // }
-    // int? farmlandId = await addFarmlandOffline(farmland);
-    // Sync data =
-    //     Sync(objectID: farmlandId!, objectType: 'Farmland', changeType: 'create');
-    // _syncService.addSyncData(data);
-    // return false;
-    // } finally {
-    //   isFarmlandsLoading(false);
-    // }
-    return false;
-  }
-
-  Future<int?>? addFarmlandOffline(Farmland farmland) async {
-    try {
-      var result = await _localFarmlandService.saveFarmland(farmland);
-      // print(result);
-      if (result > 0) {
-        Get.back();
-        await getFarmlandsOffline();
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kSuccessColor,
-            content: Text(
-              'नोट सफलतापूर्वक थपियो!',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
-        return result;
-      }
-    } catch (e) {
-      print(e);
-    } finally {}
-    return null;
-  }
-
-  void updateFarmland(Farmland farmland) async {
-    // try {
-    isFarmlandsLoading(true);
-    String? token = await _localAuthService.getToken();
-    var image;
-    if (farmland.image != null) {
-      image = await http.MultipartFile.fromPath('image', farmland.image!);
-    }
-    var result = await RemoteFarmlandService().updateFarmland(
-        token: token!, data: farmland.toJson(), id: farmland.id!, image: image);
-    print(result.body);
-    if (result.statusCode == 200) {
-      var body = jsonDecode(result.body);
-      Farmland updatedData = Farmland.fromJson(body['data']);
-      farmlands[farmlands
-          .indexWhere((element) => element.id == updatedData.id)] = updatedData;
-      farmlands.refresh();
-      // updateFarmlandOffline(farmland);
-      Get.back();
-      Get.back();
-    }
-    // } catch (e) {
-    //   // updateFarmlandOffline(farmland);
-    // } finally {
-    //   isFarmlandsLoading(false);
-    // }
-  }
-
-  updateFarmlandOffline(Farmland farmland, [bool? isSync]) async {
-    try {
-      var result = await _localFarmlandService.updateFarmland(farmland);
-      if (result > 0) {
-        Get.back();
-        await getFarmlandsOffline();
-        if (isSync != null && isSync) {
-          return;
-        }
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kSuccessColor,
-            content: Text(
-              'नोट सफलतापूर्वक अद्यावधिक गरियो!',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
-      }
-    } catch (e) {
-      print(e);
-    } finally {}
-  }
-
-  void deleteFarmland(int id) async {
-    try {
-      isFarmlandsLoading(true);
-      String? token = await _localAuthService.getToken();
-      var result =
-          await RemoteFarmlandService().deleteFarmland(token: token!, id: id);
-      if (result.statusCode == 200) {
-        farmlands.removeWhere((element) => element.id == id);
-        // deleteFarmlandOffline(id);
-        Get.back();
-      }
-    } catch (e) {
-      // deleteFarmlandOffline(id);
+      debugPrint('getFarmlands error: $e');
     } finally {
       isFarmlandsLoading(false);
     }
   }
 
-  deleteFarmlandOffline(int id) async {
+  Future<bool> addFarmland(Farmland farmland) async {
     try {
-      var result = await _localFarmlandService.deleteFarmland(id);
-      if (result > 0) {
+      isFarmlandsLoading(true);
+      http.MultipartFile? image;
+      if (farmland.image != null) {
+        image = await http.MultipartFile.fromPath('image', farmland.image!);
+      }
+      final result = await RemoteFarmlandService()
+          .addFarmland(data: farmland.toJson(), image: image);
+      print(result.body);
+      if (result.statusCode == 200) {
+        final body = jsonDecode(result.body);
+        farmlands.add(Farmland.fromJson(body['data']));
         Get.back();
-        getFarmlandsOffline();
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kSuccessColor,
-            content: Text(
-              'नोट सफलतापूर्वक मेटाइयो!',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
+        return true;
       }
     } catch (e) {
-    } finally {}
+      debugPrint('addFarmland error: $e');
+    } finally {
+      isFarmlandsLoading(false);
+    }
+    return false;
+  }
+
+  void updateFarmland(Farmland farmland) async {
+    try {
+      isFarmlandsLoading(true);
+      http.MultipartFile? image;
+      if (farmland.image != null) {
+        image = await http.MultipartFile.fromPath('image', farmland.image!);
+      }
+      final result = await RemoteFarmlandService().updateFarmland(
+          data: farmland.toJson(), id: farmland.id!, image: image);
+      if (result.statusCode == 200) {
+        final updatedData = Farmland.fromJson(jsonDecode(result.body)['data']);
+        final i = farmlands.indexWhere((e) => e.id == updatedData.id);
+        if (i != -1) farmlands[i] = updatedData;
+        Get.back();
+        Get.back();
+      }
+    } catch (e) {
+      debugPrint('updateFarmland error: $e');
+    } finally {
+      isFarmlandsLoading(false);
+    }
+  }
+
+  void deleteFarmland(int id) async {
+    try {
+      isFarmlandsLoading(true);
+      final result = await RemoteFarmlandService().deleteFarmland(id: id);
+      if (result.statusCode == 200) {
+        farmlands.removeWhere((e) => e.id == id);
+        Get.back();
+      }
+    } catch (e) {
+      debugPrint('deleteFarmland error: $e');
+    } finally {
+      isFarmlandsLoading(false);
+    }
   }
 
   Future<Map<String, double>?> getMyLatLng() async {
-    double lat = 27.649853363922848;
-    double lng = 85.32217108129528;
+    const double lat = 27.649853363922848;
+    const double lng = 85.32217108129528;
     return {'lat': lat, 'lng': lng};
   }
 
-  Future<String>? getSoilApiKey() async {
-    var result = await RemoteFarmlandService().getSoilApiKey(data: {
-      'email': 'regmiprabesh@gmail.com',
-      'password': 'fVWZN3gcG2PnqM@'
-    });
-    String token = '';
+  Future<String> getSoilApiKey() async {
     try {
-      var body = jsonDecode(result.body);
-      token = body['access'];
-    } catch (e) {}
-    return token;
+      final result = await RemoteFarmlandService().getSoilApiKey(data: {
+        'email': 'regmiprabesh@gmail.com',
+        'password': 'fVWZN3gcG2PnqM@'
+      });
+      final body = jsonDecode(result.body);
+      return body['access'] as String? ?? '';
+    } catch (e) {
+      debugPrint('getSoilApiKey error: $e');
+      return '';
+    }
   }
 
-  Future<SoilData?>? getSoilProperty(Coordinates? coordinates) async {
-    if (coordinates != null &&
-        coordinates.lat != null &&
-        coordinates.lng != null) {
-      String? token = await getSoilApiKey();
-      var result = await RemoteFarmlandService()
-          .getSoilData(data: coordinates, token: token);
-      var body = jsonDecode(result.body);
-      SoilData soilData = SoilData.fromJson(body);
-      return soilData;
+  Future<SoilData?> getSoilProperty(Coordinates? coordinates) async {
+    if (coordinates?.lat == null || coordinates?.lng == null) return null;
+    try {
+      final token = await getSoilApiKey();
+      final result = await RemoteFarmlandService()
+          .getSoilData(data: coordinates!, token: token);
+      return SoilData.fromJson(jsonDecode(result.body));
+    } catch (e) {
+      debugPrint('getSoilProperty error: $e');
+      return null;
     }
-    return null;
   }
 
   Future<Weather?> getCurrentWeather() async {
     try {
-      var result = await RemoteWeatherService().getWeather(
+      final result = await RemoteWeatherService().getWeather(
           Coordinates(lat: 27.650061458918543, lng: 85.32219631281998));
-      Weather? weather = Weather.fromJson(jsonDecode(result.body));
-      return weather;
+      return Weather.fromJson(jsonDecode(result.body));
     } catch (e) {
-      print(e);
+      debugPrint('getCurrentWeather error: $e');
+      return null;
     }
-    return null;
-  }
-
-  void reset() {
-    farmlands.clear();
-    offlineFarmlands.clear();
-    isEdit(false);
-    selectedFarmland(null);
-    isFarmlandsLoading(false);
   }
 
   Future<RecommendedCropData?> getRecommendedCrop(
       {required Coordinates coordinate}) async {
     try {
-      var result = await RemoteFarmlandService().getRecommendedCrop(
+      final result = await RemoteFarmlandService().getRecommendedCrop(
           coordinate: Coordinates(lat: coordinate.lat, lng: coordinate.lng));
-      var data = jsonDecode(result.body);
-      RecommendedCropData recommendedCrop = RecommendedCropData.fromJson(data);
-      return recommendedCrop;
+      return RecommendedCropData.fromJson(jsonDecode(result.body));
     } catch (e) {
-      print(e);
+      debugPrint('getRecommendedCrop error: $e');
+      return null;
     }
-    return null;
   }
 }

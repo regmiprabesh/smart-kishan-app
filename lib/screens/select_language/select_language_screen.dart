@@ -190,9 +190,8 @@ class _SelectLanguageScreenState extends State<SelectLanguageScreen> {
                                       Language.languageList()[index]
                                           .languageCode);
                                 });
-                                MyApp.setLocale(
-                                    context,
-                                    Locale(Language.languageList()[index]
+                                MyApp.setLocale(Locale(
+                                    Language.languageList()[index]
                                         .languageCode));
                               },
                               child: Container(

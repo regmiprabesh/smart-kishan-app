@@ -1,12 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/service_center_controller.dart';
-import 'package:smart_kishan/languages/langauge_constants.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:smart_kishan/size_config.dart';
 import 'package:smart_kishan/routes/app_routes.dart';
 import 'package:smart_kishan/models/service_center.dart';
 
@@ -45,12 +43,12 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
     // Auto-expand sheet when map view loads AND fit to nearest center
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (showMapView && controller.currentPosition.value != null) {
-        Future.delayed(Duration(milliseconds: 500), () {
+        Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) {
             setState(() {
               isSheetExpanded = true;
             });
-            _fitMapToShowNearestCenter(); // Add this line
+            _fitMapToShowNearestCenter();
           }
         });
       }
@@ -60,7 +58,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
     ever(controller.isServiceCentersLoading, (isLoading) {
       if (!isLoading && mounted && showMapView) {
         // Once loading is complete, fit map to nearest center
-        Future.delayed(Duration(milliseconds: 300), () {
+        Future.delayed(const Duration(milliseconds: 300), () {
           if (mounted) {
             _fitMapToShowNearestCenter();
           }
@@ -145,12 +143,12 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
     );
 
     // Fit map to show both points with padding
-    Future.delayed(Duration(milliseconds: 300), () {
+    Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
         _mapController.fitCamera(
           CameraFit.bounds(
             bounds: bounds,
-            padding: EdgeInsets.all(100), // Adjust padding as needed
+            padding: const EdgeInsets.all(100),
           ),
         );
       }
@@ -177,9 +175,9 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
         SnackBar(
           content: Row(
             children: [
-              Icon(Icons.info_outline, color: Colors.white),
-              SizedBox(width: 12),
-              Expanded(child: Text('Current location not available')),
+              const Icon(Icons.info_outline, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(child: Text(l10n.currentLocationNotAvailable)),
             ],
           ),
           backgroundColor: Colors.orange[700],
@@ -192,7 +190,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
   }
 
   void _moveToServiceCenter(ServiceCenter center) async {
-    controller.clearRoute(); // Add this to clear old route first
+    controller.clearRoute(); // Clear old route first
 
     _mapController.move(
       LatLng(center.latitude, center.longitude),
@@ -213,7 +211,6 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
       final currentPos = controller.currentPosition.value!;
       final nearest = nearestCenters.first;
 
-      // Calculate bounds to include both user location and nearest center
       final bounds = LatLngBounds(
         LatLng(
           currentPos.latitude < nearest.latitude
@@ -233,12 +230,11 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
         ),
       );
 
-      // Fit map to show both points with some padding
-      Future.delayed(Duration(milliseconds: 100), () {
+      Future.delayed(const Duration(milliseconds: 100), () {
         _mapController.fitCamera(
           CameraFit.bounds(
             bounds: bounds,
-            padding: EdgeInsets.all(180),
+            padding: const EdgeInsets.all(180),
           ),
         );
       });
@@ -246,24 +242,47 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
   }
 
   List<ServiceCenter> _getTop5NearestCenters() {
-    final centers =
-        controller.serviceCenters.where((c) => c.distance != null).toList();
-    centers.sort((a, b) => a.distance!.compareTo(b.distance!));
+    final centers = controller.serviceCenters.toList();
+
+    switch (controller.sortBy.value) {
+      case 'name':
+        centers.sort((a, b) => a.name.compareTo(b.name));
+        break;
+      case 'rating':
+        centers.sort(
+            (a, b) => (b.averageRating ?? 0).compareTo(a.averageRating ?? 0));
+        break;
+      case 'newest':
+        // already sorted from server, preserve order
+        break;
+      case 'distance':
+      default:
+        centers.removeWhere((c) => c.distance == null);
+        centers.sort((a, b) => a.distance!.compareTo(b.distance!));
+        break;
+    }
+
     return centers.take(5).toList();
   }
 
+  // Distance helpers (unit/words localized; numeric value stays Latin)
+  String _distanceText(double? d) => d != null
+      ? '${localizedNumber(d.toStringAsFixed(1))} ${l10n.km}'
+      : l10n.notApplicable;
+
+  String _distanceAway(double d) =>
+      '${localizedNumber(d.toStringAsFixed(1))} ${l10n.km} ${l10n.away}';
+
   @override
   Widget build(BuildContext context) {
-    final locale = Localizations.localeOf(context);
-    final lang = locale.languageCode;
-    final t = translation(context);
+    final lang = Localizations.localeOf(context).languageCode;
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
-          "Service Centers",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          l10n.serviceCenters,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.green[600],
         elevation: 0,
@@ -274,8 +293,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
               setState(() {
                 showMapView = !showMapView;
                 if (showMapView) {
-                  // Expand sheet when switching to map view
-                  Future.delayed(Duration(milliseconds: 300), () {
+                  Future.delayed(const Duration(milliseconds: 300), () {
                     if (mounted) {
                       setState(() {
                         isSheetExpanded = true;
@@ -286,37 +304,36 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
               });
               controller.clearRoute();
             },
-            tooltip: showMapView ? 'List View' : 'Map View',
+            tooltip: showMapView ? l10n.listView : l10n.mapView,
           ),
           IconButton(
-            icon: Icon(Icons.filter_list),
+            icon: const Icon(Icons.filter_list),
             onPressed: () => _showFilterSheet(context, lang),
-            tooltip: 'Filters',
+            tooltip: l10n.filters,
           ),
         ],
       ),
       body: Column(
         children: [
-          _buildSearchAndTypeFilter(lang, t),
+          _buildSearchAndTypeFilter(lang),
           Expanded(
-            child:
-                showMapView ? _buildMapView(lang, t) : _buildListView(lang, t),
+            child: showMapView ? _buildMapView(lang) : _buildListView(lang),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSearchAndTypeFilter(String lang, dynamic t) {
+  Widget _buildSearchAndTypeFilter(String lang) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -326,11 +343,11 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: 'Search service centers...',
+              hintText: l10n.searchServiceCentersHint,
               prefixIcon: Icon(Icons.search, color: Colors.green[600]),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
-                      icon: Icon(Icons.clear, size: 20),
+                      icon: const Icon(Icons.clear, size: 20),
                       onPressed: () {
                         _searchController.clear();
                       },
@@ -343,15 +360,15 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                 borderSide: BorderSide.none,
               ),
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
           ),
 
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
 
           // Type Filter Chips
           Obx(() {
-            if (controller.types.isEmpty) return SizedBox.shrink();
+            if (controller.types.isEmpty) return const SizedBox.shrink();
 
             // Access selectedType here to make Obx track it
             final _ = controller.selectedType.value;
@@ -364,9 +381,9 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                 itemBuilder: (context, index) {
                   if (index == 0) {
                     return Padding(
-                      padding: EdgeInsets.only(right: 8),
+                      padding: const EdgeInsets.only(right: 8),
                       child: FilterChip(
-                        label: Text('All'),
+                        label: Text(l10n.all),
                         selected: controller.selectedType.value == null,
                         onSelected: (selected) {
                           if (selected) {
@@ -390,7 +407,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                       controller.selectedType.value?.id == type.id;
 
                   return Padding(
-                    padding: EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.only(right: 8),
                     child: FilterChip(
                       label: Text(
                         lang == 'ne' && type.nameNe != null
@@ -426,7 +443,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
     );
   }
 
-  Widget _buildMapView(String lang, dynamic t) {
+  Widget _buildMapView(String lang) {
     return Obx(() {
       final centers = controller.serviceCenters;
       final currentPos = controller.currentPosition.value;
@@ -439,7 +456,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
             options: MapOptions(
               initialCenter: currentPos != null
                   ? LatLng(currentPos.latitude, currentPos.longitude)
-                  : LatLng(27.7103, 85.3222),
+                  : const LatLng(27.7103, 85.3222),
               initialZoom: 18,
               minZoom: 5,
               maxZoom: 18,
@@ -448,16 +465,17 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                   selectedMarkerCenter = null;
                   isSheetExpanded = true;
                 });
-                controller.clearRoute(); // Clear route on tap
+                controller.clearRoute();
               },
             ),
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.example.smartKishan',
+                additionalOptions: const {},
               ),
 
-              // Route Polyline (add this BEFORE markers so it appears below)
+              // Route Polyline (before markers so it appears below)
               if (routePoints.isNotEmpty)
                 PolylineLayer(
                   polylines: [
@@ -490,8 +508,6 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                           LatLng(center.latitude, center.longitude),
                           16,
                         );
-
-                        // Get route to selected center
                         await controller.getRouteToCenter(center);
                       },
                       child: Container(
@@ -506,7 +522,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                             BoxShadow(
                               color: Colors.black.withOpacity(0.3),
                               blurRadius: isSelected ? 8 : 4,
-                              offset: Offset(0, 2),
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
@@ -542,8 +558,8 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                             ),
                           ],
                         ),
-                        child:
-                            Icon(Icons.person, color: Colors.white, size: 20),
+                        child: const Icon(Icons.person,
+                            color: Colors.white, size: 20),
                       ),
                     ),
                   ],
@@ -559,7 +575,8 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
               right: 0,
               child: Center(
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(25),
@@ -581,10 +598,10 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                           valueColor: AlwaysStoppedAnimation(Colors.blue[600]),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Text(
-                        'Loading route...',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        l10n.loadingRoute,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
@@ -605,9 +622,10 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                   Icon(CupertinoIcons.location_fill, color: Colors.green[600]),
             ),
           ),
+
           // Persistent Bottom Sheet (Header always visible)
           if (currentPos != null && selectedMarkerCenter == null)
-            _buildPersistentNearbySheet(lang, t),
+            _buildPersistentNearbySheet(lang),
 
           // Selected Center Card
           if (selectedMarkerCenter != null)
@@ -615,7 +633,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
               bottom: 0,
               left: 0,
               right: 0,
-              child: _buildSelectedCenterCard(selectedMarkerCenter!, lang, t),
+              child: _buildSelectedCenterCard(selectedMarkerCenter!, lang),
             ),
 
           // Loading Indicator
@@ -626,7 +644,8 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
               right: 0,
               child: Center(
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(25),
@@ -648,10 +667,10 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                           valueColor: AlwaysStoppedAnimation(Colors.green[600]),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Text(
-                        'Loading...',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        l10n.loading,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
@@ -663,7 +682,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
     });
   }
 
-  Widget _buildPersistentNearbySheet(String lang, dynamic t) {
+  Widget _buildPersistentNearbySheet(String lang) {
     final nearestCenters = _getTop5NearestCenters();
 
     return Positioned(
@@ -673,25 +692,23 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
       child: GestureDetector(
         onVerticalDragUpdate: (details) {
           if (details.primaryDelta! > 10) {
-            // Dragged down - collapse
             setState(() {
               isSheetExpanded = false;
             });
           } else if (details.primaryDelta! < -10) {
-            // Dragged up - expand
             setState(() {
               isSheetExpanded = true;
             });
           }
         },
         child: AnimatedContainer(
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
           height:
               isSheetExpanded ? MediaQuery.of(context).size.height * 0.45 : 80,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(24),
               topRight: Radius.circular(24),
             ),
@@ -699,12 +716,12 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
               BoxShadow(
                 color: Colors.black.withOpacity(0.15),
                 blurRadius: 20,
-                offset: Offset(0, -5),
+                offset: const Offset(0, -5),
               ),
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(24),
               topRight: Radius.circular(24),
             ),
@@ -719,10 +736,9 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                     });
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 16),
+                    color: Colors.white,
                     child: Column(
                       children: [
                         // Handle
@@ -734,27 +750,31 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         // Title - Centered
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.near_me,
                                 color: Colors.green[600], size: 20),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Text(
                               nearestCenters.isEmpty
-                                  ? 'No Service Centers Found'
-                                  : 'Nearest Service Centers',
+                                  ? l10n.noServiceCentersFound
+                                  : controller.sortBy.value == 'distance'
+                                      ? l10n.nearestServiceCenters
+                                      : controller.sortBy.value == 'rating'
+                                          ? l10n.topRatedServiceCenters
+                                          : controller.sortBy.value == 'name'
+                                              ? l10n.serviceCenters
+                                              : l10n.nearestServiceCenters,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey[800],
                               ),
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Icon(
                               isSheetExpanded
                                   ? Icons.keyboard_arrow_down
@@ -770,13 +790,13 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
 
                 // Expandable Content
                 if (isSheetExpanded) ...[
-                  Divider(height: 1),
+                  const Divider(height: 1),
                   if (nearestCenters.isEmpty)
                     Expanded(
                       child: SingleChildScrollView(
                         child: Center(
                           child: Padding(
-                            padding: EdgeInsets.all(40),
+                            padding: const EdgeInsets.all(40),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -785,18 +805,18 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                                   size: 64,
                                   color: Colors.grey[400],
                                 ),
-                                SizedBox(height: 16),
+                                const SizedBox(height: 16),
                                 Text(
-                                  'No service centers found',
+                                  l10n.noServiceCentersFound,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.grey[700],
                                   ),
                                 ),
-                                SizedBox(height: 8),
+                                const SizedBox(height: 8),
                                 Text(
-                                  'Try adjusting your filters or search',
+                                  l10n.tryAdjustingFilters,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey[500],
@@ -813,9 +833,9 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                     Flexible(
                       child: ListView.separated(
                         shrinkWrap: true,
-                        padding: EdgeInsets.symmetric(vertical: 8),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
                         itemCount: nearestCenters.length,
-                        separatorBuilder: (context, index) => Divider(
+                        separatorBuilder: (context, index) => const Divider(
                           height: 1,
                           indent: 68,
                           endIndent: 20,
@@ -825,7 +845,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                           return InkWell(
                             onTap: () => _moveToServiceCenter(center),
                             child: Padding(
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                 horizontal: 20,
                                 vertical: 12,
                               ),
@@ -843,7 +863,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                                     ),
                                     alignment: Alignment.center,
                                     child: Text(
-                                      '${index + 1}',
+                                      localizedNumber(index + 1),
                                       style: TextStyle(
                                         color: index == 0
                                             ? Colors.white
@@ -854,11 +874,11 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                                     ),
                                   ),
 
-                                  SizedBox(width: 12),
+                                  const SizedBox(width: 12),
 
                                   // Icon
                                   Container(
-                                    padding: EdgeInsets.all(8),
+                                    padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
                                       color: _getTypeColor(center.type?.color)
                                           .withOpacity(0.1),
@@ -872,7 +892,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                                     ),
                                   ),
 
-                                  SizedBox(width: 12),
+                                  const SizedBox(width: 12),
 
                                   // Info
                                   Expanded(
@@ -890,7 +910,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
-                                        SizedBox(height: 4),
+                                        const SizedBox(height: 4),
                                         Row(
                                           children: [
                                             Icon(
@@ -898,9 +918,9 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                                               size: 12,
                                               color: Colors.blue[600],
                                             ),
-                                            SizedBox(width: 4),
+                                            const SizedBox(width: 4),
                                             Text(
-                                              '${center.distance?.toStringAsFixed(1) ?? 'N/A'} km',
+                                              _distanceText(center.distance),
                                               style: TextStyle(
                                                 fontSize: 12,
                                                 color: Colors.blue[700],
@@ -909,16 +929,17 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                                             ),
                                             if (center.averageRating != null &&
                                                 center.averageRating! > 0) ...[
-                                              SizedBox(width: 12),
-                                              Icon(
+                                              const SizedBox(width: 12),
+                                              const Icon(
                                                 Icons.star,
                                                 size: 12,
                                                 color: Colors.amber,
                                               ),
-                                              SizedBox(width: 2),
+                                              const SizedBox(width: 2),
                                               Text(
-                                                center.averageRating!
-                                                    .toStringAsFixed(1),
+                                                localizedNumber(center
+                                                    .averageRating!
+                                                    .toStringAsFixed(1)),
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   color: Colors.amber[700],
@@ -954,10 +975,9 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
     );
   }
 
-  Widget _buildSelectedCenterCard(
-      ServiceCenter center, String lang, dynamic t) {
+  Widget _buildSelectedCenterCard(ServiceCenter center, String lang) {
     return Container(
-      margin: EdgeInsets.all(16),
+      margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -965,7 +985,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
           BoxShadow(
             color: Colors.black.withOpacity(0.15),
             blurRadius: 20,
-            offset: Offset(0, -5),
+            offset: const Offset(0, -5),
           ),
         ],
       ),
@@ -973,9 +993,9 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            contentPadding: EdgeInsets.all(16),
+            contentPadding: const EdgeInsets.all(16),
             leading: Container(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _getTypeColor(center.type?.color).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
@@ -988,7 +1008,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
             ),
             title: Text(
               center.getLocalizedName(lang),
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -996,21 +1016,21 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   center.getLocalizedAddress(lang),
-                  style: TextStyle(fontSize: 13),
+                  style: const TextStyle(fontSize: 13),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (center.distance != null) ...[
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
                       Icon(Icons.navigation, size: 14, color: Colors.blue[600]),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text(
-                        '${center.distance!.toStringAsFixed(1)} km away',
+                        _distanceAway(center.distance!),
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.blue[700],
@@ -1021,9 +1041,9 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                   ),
                 ],
                 if (controller.routePoints.isNotEmpty) ...[
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Container(
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: Colors.blue[50],
                       borderRadius: BorderRadius.circular(8),
@@ -1032,9 +1052,9 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                       children: [
                         Icon(Icons.directions,
                             size: 16, color: Colors.blue[700]),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
-                          'Route loaded • ${center.distance?.toStringAsFixed(1) ?? 'N/A'} km',
+                          '${l10n.routeLoaded} • ${_distanceText(center.distance)}',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.blue[700],
@@ -1048,7 +1068,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
               ],
             ),
             trailing: IconButton(
-              icon: Icon(Icons.close),
+              icon: const Icon(Icons.close),
               onPressed: () {
                 setState(() {
                   selectedMarkerCenter = null;
@@ -1058,13 +1078,14 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: Row(
               children: [
                 if (center.averageRating != null &&
                     center.averageRating! > 0) ...[
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: Colors.amber[50],
                       borderRadius: BorderRadius.circular(8),
@@ -1072,19 +1093,20 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.star, color: Colors.amber, size: 16),
-                        SizedBox(width: 4),
+                        const Icon(Icons.star, color: Colors.amber, size: 16),
+                        const SizedBox(width: 4),
                         Text(
-                          center.averageRating!.toStringAsFixed(1),
+                          localizedNumber(
+                              center.averageRating!.toStringAsFixed(1)),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.amber[700],
                           ),
                         ),
                         if (center.totalRatings != null) ...[
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
-                            '(${center.totalRatings})',
+                            '(${localizedNumber(center.totalRatings!)})',
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],
@@ -1094,7 +1116,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                 ],
                 Expanded(
                   child: ElevatedButton.icon(
@@ -1102,8 +1124,8 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
                       controller.selectedServiceCenter.value = center;
                       Get.toNamed(AppRoute.serviceCenterDetailsScreen);
                     },
-                    icon: Icon(Icons.info_outline, size: 18),
-                    label: Text('View Details'),
+                    icon: const Icon(Icons.info_outline, size: 18),
+                    label: Text(l10n.viewDetails),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green[600],
                       foregroundColor: Colors.white,
@@ -1121,10 +1143,10 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
     );
   }
 
-  Widget _buildListView(String lang, dynamic t) {
+  Widget _buildListView(String lang) {
     return Obx(() {
       if (controller.isServiceCentersLoading.value) {
-        return Center(child: CircularProgressIndicator());
+        return const Center(child: CircularProgressIndicator());
       }
 
       final centers = controller.serviceCenters;
@@ -1135,20 +1157,20 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.location_off, size: 80, color: Colors.grey[400]),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
-                'No service centers found',
+                l10n.noServiceCentersFound,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                   color: Colors.grey[600],
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton.icon(
                 onPressed: () => controller.getServiceCenters(),
-                icon: Icon(Icons.refresh),
-                label: Text(t.refresh ?? 'Refresh'),
+                icon: const Icon(Icons.refresh),
+                label: Text(l10n.refresh),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[600],
                 ),
@@ -1161,7 +1183,7 @@ class _ServiceCenterScreenState extends State<ServiceCenterScreen> {
       return RefreshIndicator(
         onRefresh: () => controller.getServiceCenters(),
         child: ListView.builder(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           itemCount: centers.length,
           itemBuilder: (context, index) {
             return ServiceCenterCard(
@@ -1231,19 +1253,18 @@ class ServiceCenterCard extends StatelessWidget {
   final VoidCallback? onViewMap;
 
   const ServiceCenterCard({
-    Key? key,
+    super.key,
     required this.center,
     required this.lang,
     this.onViewMap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<ServiceCenterController>();
-    final t = translation(context);
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       child: Card(
         elevation: 2,
         shape: RoundedRectangleBorder(
@@ -1260,7 +1281,7 @@ class ServiceCenterCard extends StatelessWidget {
             children: [
               // Header
               Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -1268,7 +1289,7 @@ class ServiceCenterCard extends StatelessWidget {
                       _getTypeColor(center.type?.color),
                     ],
                   ),
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(16),
                     topRight: Radius.circular(16),
                   ),
@@ -1276,7 +1297,7 @@ class ServiceCenterCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(12),
@@ -1287,21 +1308,21 @@ class ServiceCenterCard extends StatelessWidget {
                         size: 24,
                       ),
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             center.getLocalizedName(lang),
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           if (center.type != null) ...[
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
                               lang == 'ne' && center.type!.nameNe != null
                                   ? center.type!.nameNe!
@@ -1317,8 +1338,8 @@ class ServiceCenterCard extends StatelessWidget {
                     ),
                     if (center.isFeatured)
                       Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.amber,
                           borderRadius: BorderRadius.circular(12),
@@ -1326,11 +1347,12 @@ class ServiceCenterCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.star, size: 14, color: Colors.white),
-                            SizedBox(width: 4),
+                            const Icon(Icons.star,
+                                size: 14, color: Colors.white),
+                            const SizedBox(width: 4),
                             Text(
-                              'Featured',
-                              style: TextStyle(
+                              l10n.featured,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
@@ -1345,7 +1367,7 @@ class ServiceCenterCard extends StatelessWidget {
 
               // Content
               Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -1355,7 +1377,7 @@ class ServiceCenterCard extends StatelessWidget {
                       children: [
                         Icon(Icons.location_on,
                             size: 18, color: Colors.grey[600]),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             center.getLocalizedAddress(lang),
@@ -1367,12 +1389,12 @@ class ServiceCenterCard extends StatelessWidget {
                     ),
 
                     // Distance & Rating Row
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         if (center.distance != null) ...[
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 6),
                             decoration: BoxDecoration(
                               color: Colors.blue[50],
@@ -1383,9 +1405,9 @@ class ServiceCenterCard extends StatelessWidget {
                               children: [
                                 Icon(Icons.navigation,
                                     size: 14, color: Colors.blue[700]),
-                                SizedBox(width: 4),
+                                const SizedBox(width: 4),
                                 Text(
-                                  '${center.distance!.toStringAsFixed(1)} km',
+                                  '${localizedNumber(center.distance!.toStringAsFixed(1))} ${l10n.km}',
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
@@ -1395,12 +1417,12 @@ class ServiceCenterCard extends StatelessWidget {
                               ],
                             ),
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                         ],
                         if (center.averageRating != null &&
                             center.averageRating! > 0) ...[
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 6),
                             decoration: BoxDecoration(
                               color: Colors.amber[50],
@@ -1409,10 +1431,12 @@ class ServiceCenterCard extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.star, color: Colors.amber, size: 14),
-                                SizedBox(width: 4),
+                                const Icon(Icons.star,
+                                    color: Colors.amber, size: 14),
+                                const SizedBox(width: 4),
                                 Text(
-                                  center.averageRating!.toStringAsFixed(1),
+                                  localizedNumber(
+                                      center.averageRating!.toStringAsFixed(1)),
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.amber[700],
@@ -1420,9 +1444,9 @@ class ServiceCenterCard extends StatelessWidget {
                                   ),
                                 ),
                                 if (center.totalRatings != null) ...[
-                                  SizedBox(width: 4),
+                                  const SizedBox(width: 4),
                                   Text(
-                                    '(${center.totalRatings})',
+                                    '(${localizedNumber(center.totalRatings!)})',
                                     style: TextStyle(
                                       fontSize: 11,
                                       color: Colors.grey[600],
@@ -1438,13 +1462,13 @@ class ServiceCenterCard extends StatelessWidget {
 
                     // Phone & Email
                     if (center.phone != null || center.email != null) ...[
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       if (center.phone != null)
                         Row(
                           children: [
                             Icon(Icons.phone,
                                 size: 16, color: Colors.grey[600]),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Text(
                               center.phone!,
                               style: TextStyle(
@@ -1453,12 +1477,12 @@ class ServiceCenterCard extends StatelessWidget {
                           ],
                         ),
                       if (center.email != null) ...[
-                        SizedBox(height: 6),
+                        const SizedBox(height: 6),
                         Row(
                           children: [
                             Icon(Icons.email,
                                 size: 16, color: Colors.grey[600]),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 center.email!,
@@ -1472,7 +1496,7 @@ class ServiceCenterCard extends StatelessWidget {
                       ],
                     ],
 
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                     // Action Buttons
                     Row(
@@ -1480,8 +1504,8 @@ class ServiceCenterCard extends StatelessWidget {
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: onViewMap,
-                            icon: Icon(Icons.map, size: 18),
-                            label: Text('View on Map'),
+                            icon: const Icon(Icons.map, size: 18),
+                            label: Text(l10n.viewOnMap),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.green[600],
                               side: BorderSide(color: Colors.green[600]!),
@@ -1491,15 +1515,15 @@ class ServiceCenterCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        SizedBox(width: 12),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
                               controller.selectedServiceCenter.value = center;
-                              // Get.toNamed(AppRoute.serviceCenterDetailsScreen);
+                              Get.toNamed(AppRoute.serviceCenterDetailsScreen);
                             },
-                            icon: Icon(Icons.info_outline, size: 18),
-                            label: Text('Details'),
+                            icon: const Icon(Icons.info_outline, size: 18),
+                            label: Text(l10n.details),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green[600],
                               foregroundColor: Colors.white,
@@ -1558,8 +1582,7 @@ class ServiceCenterCard extends StatelessWidget {
 class ServiceCenterFilterSheet extends StatefulWidget {
   final String lang;
 
-  const ServiceCenterFilterSheet({Key? key, required this.lang})
-      : super(key: key);
+  const ServiceCenterFilterSheet({super.key, required this.lang});
 
   @override
   State<ServiceCenterFilterSheet> createState() =>
@@ -1569,19 +1592,56 @@ class ServiceCenterFilterSheet extends StatefulWidget {
 class _ServiceCenterFilterSheetState extends State<ServiceCenterFilterSheet> {
   final controller = Get.find<ServiceCenterController>();
 
+  // Pending (uncommitted) values — only applied on "Apply Filters"
+  late String _sortBy;
+  late double _radius;
+  late bool _featuredOnly;
+
+  @override
+  void initState() {
+    super.initState();
+    _sortBy = controller.sortBy.value;
+    _radius = controller.searchRadius.value;
+    _featuredOnly = controller.showFeaturedOnly.value;
+  }
+
+  void _applyFilters() {
+    controller.setSortBy(_sortBy);
+    controller.setSearchRadius(_radius);
+    if (controller.showFeaturedOnly.value != _featuredOnly) {
+      controller.toggleFeaturedOnly();
+    }
+    Navigator.pop(context);
+  }
+
+  Widget _sortChip(String label, String value) {
+    final selected = _sortBy == value;
+    return ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: (s) {
+        if (s) setState(() => _sortBy = value);
+      },
+      selectedColor: Colors.green[600],
+      checkmarkColor: Colors.white,
+      labelStyle: TextStyle(
+        color: selected ? Colors.white : Colors.grey[800],
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final t = translation(context);
-
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
         ),
       ),
-      padding: EdgeInsets.fromLTRB(20, 12, 20, 20),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1597,137 +1657,102 @@ class _ServiceCenterFilterSheetState extends State<ServiceCenterFilterSheet> {
               ),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Title
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Filters & Sort',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                l10n.filtersAndSort,
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               TextButton(
                 onPressed: () {
-                  controller.clearFilters();
+                  setState(() {
+                    _sortBy = 'distance';
+                    _radius = 599;
+                    _featuredOnly = false;
+                  });
                 },
-                child: Text('Clear All'),
+                child: Text(l10n.clearAll),
               ),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Sort By
           Text(
-            'Sort By',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            l10n.sortBy,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
-          SizedBox(height: 12),
-          Obx(() => Wrap(
-                spacing: 8,
-                children: [
-                  ChoiceChip(
-                    label: Text('Distance'),
-                    selected: controller.sortBy.value == 'distance',
-                    onSelected: (selected) {
-                      if (selected) controller.setSortBy('distance');
-                    },
-                  ),
-                  ChoiceChip(
-                    label: Text('Name'),
-                    selected: controller.sortBy.value == 'name',
-                    onSelected: (selected) {
-                      if (selected) controller.setSortBy('name');
-                    },
-                  ),
-                  ChoiceChip(
-                    label: Text('Rating'),
-                    selected: controller.sortBy.value == 'rating',
-                    onSelected: (selected) {
-                      if (selected) controller.setSortBy('rating');
-                    },
-                  ),
-                  ChoiceChip(
-                    label: Text('Newest'),
-                    selected: controller.sortBy.value == 'newest',
-                    onSelected: (selected) {
-                      if (selected) controller.setSortBy('newest');
-                    },
-                  ),
-                ],
-              )),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            children: [
+              _sortChip(l10n.distance, 'distance'),
+              _sortChip(l10n.name, 'name'),
+              _sortChip(l10n.rating, 'rating'),
+              _sortChip(l10n.newest, 'newest'),
+            ],
+          ),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Search Radius
           Text(
-            'Search Radius',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+            l10n.searchRadius,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 12),
+          Slider(
+            value: _radius,
+            min: 5,
+            max: 599,
+            divisions: 19,
+            activeColor: Colors.green[600],
+            label: '${localizedNumber(_radius.toInt())} ${l10n.km}',
+            onChanged: (value) => setState(() => _radius = value),
+          ),
+          Center(
+            child: Text(
+              '${localizedNumber(_radius.toInt())} ${l10n.km}',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.green[700],
+              ),
             ),
           ),
-          SizedBox(height: 12),
-          Obx(() => Column(
-                children: [
-                  Slider(
-                    value: controller.searchRadius.value,
-                    min: 5,
-                    max: 100,
-                    divisions: 19,
-                    label: '${controller.searchRadius.value.toInt()} km',
-                    onChanged: (value) {
-                      controller.setSearchRadius(value);
-                    },
-                  ),
-                  Text(
-                    '${controller.searchRadius.value.toInt()} km',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.green[700],
-                    ),
-                  ),
-                ],
-              )),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Featured Only
-          Obx(() => SwitchListTile(
-                title: Text('Show Featured Only'),
-                value: controller.showFeaturedOnly.value,
-                onChanged: (value) {
-                  controller.toggleFeaturedOnly();
-                },
-                activeColor: Colors.green[600],
-                contentPadding: EdgeInsets.zero,
-              )),
+          SwitchListTile(
+            title: Text(l10n.showFeaturedOnly),
+            value: _featuredOnly,
+            onChanged: (value) => setState(() => _featuredOnly = value),
+            activeColor: Colors.green[600],
+            contentPadding: EdgeInsets.zero,
+          ),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Apply Button
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: _applyFilters,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green[600],
-                padding: EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
               child: Text(
-                'Apply Filters',
-                style: TextStyle(
+                l10n.applyFilters,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,

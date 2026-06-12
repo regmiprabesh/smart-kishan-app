@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/app_controller.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/languages/langauge_constants.dart';
 import 'package:smart_kishan/languages/language.dart';
 import 'package:smart_kishan/routes/app_routes.dart';
@@ -35,7 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       _selectedLanguageCode = language.languageCode;
     });
-    MyApp.setLocale(context, Locale(_selectedLanguageCode!));
+    MyApp.setLocale(Locale(_selectedLanguageCode!));
     await setLocale(language.languageCode);
   }
 
@@ -220,10 +221,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Icon(Icons.phone, size: 16, color: Colors.green[700]),
                           SizedBox(width: 6),
                           Text(
-                            user != null ? user.phone! : '+9779843XXXXXX',
+                            localizedNumber(
+                                user != null ? user.phone! : '+9779843XXXXXX'),
                             style: TextStyle(
                               fontSize: 15,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                               color: Colors.green[700],
                             ),
                           ),

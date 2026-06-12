@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/src/localization/app_localizations.dart';
 import 'package:get/get.dart';
 import 'package:smart_kishan/constant.dart';
@@ -43,8 +44,8 @@ class _CropInfoListScreenState extends State<CropInfoListScreen> {
     } else {
       filteredCropInfo.value = cropInfoController.cropInfo
           .where((crop) =>
-              crop.name!.toLowerCase().contains(query) ||
-              crop.name_en!.toLowerCase().contains(query))
+              crop.getName('en').toLowerCase().contains(query) ||
+              crop.getName('ne').toLowerCase().contains(query))
           .toList();
     }
   }
@@ -126,7 +127,8 @@ class _CropInfoListScreenState extends State<CropInfoListScreen> {
                                     const EdgeInsets.symmetric(vertical: 5),
                                 child: Center(
                                   child: Text(
-                                    filteredCropInfo[index].name!,
+                                    filteredCropInfo[index]
+                                        .getName(l10n.localeName)!,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                         fontSize: 14,

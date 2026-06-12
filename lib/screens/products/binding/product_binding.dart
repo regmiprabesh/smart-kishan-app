@@ -4,6 +4,8 @@ import 'package:smart_kishan/controllers/product_controller.dart';
 class ProductBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put(ProductController());
+    if (!Get.isRegistered<ProductController>()) {
+      Get.lazyPut<ProductController>(() => ProductController());
+    }
   }
 }

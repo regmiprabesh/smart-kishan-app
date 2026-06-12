@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
 import 'package:smart_kishan/constant.dart';
+import 'package:smart_kishan/helpers/app_http_client.dart';
 
 class RemoteNoteService {
-  var client = http.Client();
+  var client = AppHttpClient();
 
   Future<dynamic> getNotes({required String token}) async {
     var remoteUrl = '$apiUrl/notes';

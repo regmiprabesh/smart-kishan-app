@@ -97,7 +97,7 @@ class _AddSellProductScreenState extends State<AddSellProductScreen> {
                           child: Row(
                             children: [
                               Text(
-                                unit.name!,
+                                unit.getName(Get.locale?.languageCode ?? 'en'),
                                 style: const TextStyle(color: kCardTitleColor),
                               ),
                             ],
@@ -225,7 +225,7 @@ class _AddSellProductScreenState extends State<AddSellProductScreen> {
                           child: Row(
                             children: [
                               Text(
-                                unit.name!,
+                                unit.getName(Get.locale?.languageCode ?? 'en'),
                                 style: const TextStyle(color: kCardTitleColor),
                               ),
                             ],
@@ -359,7 +359,7 @@ class _AddSellProductScreenState extends State<AddSellProductScreen> {
                           child: Row(
                             children: [
                               Text(
-                                unit.name!,
+                                unit.getName(Get.locale?.languageCode ?? 'en'),
                                 style: const TextStyle(color: kCardTitleColor),
                               ),
                             ],

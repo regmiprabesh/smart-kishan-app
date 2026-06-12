@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/subsidy_controller..dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/helpers/nepali_date_helper.dart';
 import 'package:smart_kishan/languages/langauge_constants.dart';
 import 'package:smart_kishan/routes/app_routes.dart';
@@ -29,23 +30,11 @@ class _SubsidyDetailsScreenState extends State<SubsidyDetailsScreen> {
         : Get.put(SubsidyController());
   }
 
-  String formatDate(String? date, {String? nepaliDate}) {
-    final t = translation(context);
-    final locale = Localizations.localeOf(context);
-    final lang = locale.languageCode;
-
-    if (date == null) return t.noInfo;
-
-    if (lang == 'ne' && nepaliDate != null && nepaliDate.isNotEmpty) {
-      return NepaliDateHelper.formatNepaliDate(nepaliDate);
-    }
-
-    try {
-      final dateTime = DateTime.parse(date);
-      return DateFormat('MMMM dd, yyyy').format(dateTime);
-    } catch (e) {
-      return date;
-    }
+  String _formatDate(String? rawDate, String localeName) {
+    if (rawDate == null || rawDate.isEmpty) return '';
+    final dt = DateTime.tryParse(rawDate);
+    if (dt == null) return rawDate;
+    return DateFormat('EEEE, dd MMMM, yyyy', localeName).format(dt);
   }
 
   bool isDeadlinePassed(String? deadline) {
@@ -721,27 +710,27 @@ class _SubsidyDetailsScreenState extends State<SubsidyDetailsScreen> {
         if (subsidy.fiscalYear != null)
           _buildInfoRow(
             t.fiscalYear,
-            subsidy.fiscalYear!,
+            localizedNumber(subsidy.fiscalYear!),
           ),
         if (subsidy.expectedBeneficiaries != null)
           _buildInfoRow(
             t.expectedBeneficiaries,
-            subsidy.expectedBeneficiaries.toString(),
+            localizedNumber(subsidy.expectedBeneficiaries),
           ),
         if (subsidy.budgetPerBeneficiary != null)
           _buildInfoRow(
             t.budgetPerBeneficiary,
-            'रू ${subsidy.budgetPerBeneficiary}',
+            '${l10n.currencySymbol} ${localizedNumber(subsidy.budgetPerBeneficiary)}',
           ),
         if (subsidy.totalBudget != null)
           _buildInfoRow(
             t.totalBudget,
-            'रू ${subsidy.totalBudget}',
+            '${l10n.currencySymbol} ${localizedNumber(subsidy.totalBudget)}',
           ),
         if (subsidy.deadline != null)
           _buildInfoRow(
             t.deadline,
-            formatDate(subsidy.deadline, nepaliDate: subsidy.deadlineNepali),
+            _formatDate(subsidy.deadline, l10n.localeName),
           ),
       ],
     );

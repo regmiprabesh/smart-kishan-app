@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/app_controller.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/routes/app_routes.dart';
 import 'package:smart_kishan/size_config.dart';
 
@@ -13,12 +14,12 @@ class UsersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // backgroundColor: const Color.fromARGB(255, 171, 243, 189),
         appBar: AppBar(
           backgroundColor: kPrimaryColor,
           automaticallyImplyLeading: false,
-          title: const Text('प्रयोगकर्ताहरू',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          title: Text(l10n.users,
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
@@ -44,8 +45,6 @@ class UsersScreen extends StatelessWidget {
                       radius: 50,
                       backgroundColor: kPrimaryColor,
                       foregroundColor: Colors.white,
-                      // backgroundImage: NetworkImage(
-                      //     "https://thumbs.dreamstime.com/b/generative-ai-young-smiling-man-avatar-man-brown-beard-mustache-hair-wearing-yellow-sweater-sweatshirt-d-vector-people-279560903.jpg"),
                       child: Text(userController.users[index].name![0]),
                     ),
                     title: Text(userController.users[index].name!),
@@ -58,14 +57,14 @@ class UsersScreen extends StatelessWidget {
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: Text(
-                                  "मेटाउने पुष्टि गर्नुहोस्",
+                                  l10n.confirmDelete,
                                   style: TextStyle(
                                     fontSize: getProportionateScreenWidth(16),
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 content: Text(
-                                  "तपाईं यो प्रयोगकर्ता मेटाउन निश्चित हुनुहुन्छ?",
+                                  l10n.deleteUserConfirm,
                                   style: TextStyle(
                                       fontSize: getProportionateScreenWidth(14),
                                       fontWeight: FontWeight.w500,
@@ -77,12 +76,12 @@ class UsersScreen extends StatelessWidget {
                                       userController.deleteUser(
                                           userController.users[index].id!);
                                     },
-                                    child: const Text("मेटाउनुहोस्"),
+                                    child: Text(l10n.delete),
                                   ),
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.of(context).pop(false),
-                                    child: const Text("रद्द गर्नुहोस्"),
+                                    child: Text(l10n.cancel),
                                   ),
                                 ],
                               );
@@ -100,9 +99,8 @@ class UsersScreen extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                          'तपाईंले अहिलेसम्म कुनै पनि प्रयोगकर्ता थप्नुभएको छैन !',
-                          style: TextStyle(
+                      Text(l10n.noUsersYet,
+                          style: const TextStyle(
                               fontSize: 14, fontWeight: FontWeight.w500)),
                       SizedBox(
                         height: getProportionateScreenHeight(15),
@@ -116,7 +114,7 @@ class UsersScreen extends StatelessWidget {
                             userController.isEdit(false);
                             Get.toNamed(AppRoute.addUserScreen);
                           },
-                          child: const Text('प्रयोगकर्ता थप गर्नुहोस'))
+                          child: Text(l10n.addUser))
                     ],
                   ),
                 ),

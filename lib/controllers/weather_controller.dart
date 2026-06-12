@@ -8,7 +8,7 @@ import 'package:smart_kishan/models/weather_model.dart';
 import 'package:smart_kishan/screens/weather/services/remote_weather_service.dart';
 
 class WeatherController extends GetxController {
-  static WeatherController instance = Get.find();
+  static WeatherController get instance => Get.find();
   RxBool isWeatherLoading = false.obs;
   Rxn<Weather> currentWeather = Rxn<Weather>();
   RxBool willRainToday = false.obs;

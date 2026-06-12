@@ -118,9 +118,10 @@ class ServiceCenter {
       return ServiceCenter(
         id: json['id'] ?? 0,
         serviceCenterTypeId: json['service_center_type_id'] ?? 0,
-        type: json['type'] != null && json['type'] is Map
-            ? ServiceCenterType.fromJson(json['type'])
-            : null,
+        // type: json['type'] != null && json['type'] is Map
+        //     ? ServiceCenterType.fromJson(
+        //         Map<String, dynamic>.from(json['type']))
+        //     : null,
         name: json['name'] ?? '',
         nameNe: json['name_ne'],
         address: json['address'] ?? '',
@@ -281,40 +282,85 @@ class ServiceCenterRating {
 class Province {
   final int id;
   final String name;
+  final String? nameNe;
 
-  Province({required this.id, required this.name});
+  Province({required this.id, required this.name, this.nameNe});
 
   factory Province.fromJson(Map<String, dynamic> json) {
-    return Province(id: json['id'], name: json['name']);
+    final nameField = json['name'];
+    String name = '';
+    String? nameNe;
+
+    if (nameField is Map) {
+      name = nameField['en']?.toString() ?? '';
+      nameNe = nameField['ne']?.toString();
+    } else {
+      name = nameField?.toString() ?? '';
+    }
+
+    return Province(id: json['id'], name: name, nameNe: nameNe);
   }
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name};
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'name_ne': nameNe};
+
+  String getLocalizedName(String lang) =>
+      lang == 'ne' && nameNe != null ? nameNe! : name;
 }
 
 class District {
   final int id;
   final String name;
+  final String? nameNe;
 
-  District({required this.id, required this.name});
+  District({required this.id, required this.name, this.nameNe});
 
   factory District.fromJson(Map<String, dynamic> json) {
-    return District(id: json['id'], name: json['name']);
+    final nameField = json['name'];
+    String name = '';
+    String? nameNe;
+
+    if (nameField is Map) {
+      name = nameField['en']?.toString() ?? '';
+      nameNe = nameField['ne']?.toString();
+    } else {
+      name = nameField?.toString() ?? '';
+    }
+
+    return District(id: json['id'], name: name, nameNe: nameNe);
   }
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name};
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'name_ne': nameNe};
+
+  String getLocalizedName(String lang) =>
+      lang == 'ne' && nameNe != null ? nameNe! : name;
 }
 
 class Municipality {
   final int id;
   final String name;
+  final String? nameNe;
 
-  Municipality({required this.id, required this.name});
+  Municipality({required this.id, required this.name, this.nameNe});
 
   factory Municipality.fromJson(Map<String, dynamic> json) {
-    return Municipality(id: json['id'], name: json['name']);
+    final nameField = json['name'];
+    String name = '';
+    String? nameNe;
+
+    if (nameField is Map) {
+      name = nameField['en']?.toString() ?? '';
+      nameNe = nameField['ne']?.toString();
+    } else {
+      name = nameField?.toString() ?? '';
+    }
+
+    return Municipality(id: json['id'], name: name, nameNe: nameNe);
   }
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name};
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'name_ne': nameNe};
+
+  String getLocalizedName(String lang) =>
+      lang == 'ne' && nameNe != null ? nameNe! : name;
 }
 
 class User {

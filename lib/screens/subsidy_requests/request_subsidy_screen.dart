@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_kishan/controllers/subsidy_request_controller.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/languages/langauge_constants.dart';
 
 class RequestSubsidyScreen extends StatefulWidget {
@@ -261,8 +262,7 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    t.requestSubsidyHint ??
-                                        'Request a subsidy from government',
+                                    t.requestSubsidyHint,
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
@@ -271,8 +271,7 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
                                   ),
                                   SizedBox(height: 4),
                                   Text(
-                                    t.requestInfo ??
-                                        'Your request will be reviewed by government officials',
+                                    t.requestInfo,
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey[600],
@@ -308,7 +307,7 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
                               // Section: Basic Information
                               _buildSectionHeader(
                                 icon: Icons.edit_document,
-                                title: 'Basic Information',
+                                title: l10n.basicInformation,
                                 color: Colors.green,
                               ),
                               SizedBox(height: 20),
@@ -317,13 +316,12 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
                               _buildTextField(
                                 controller: titleController,
                                 label: t.subsidyTitle,
-                                hint: t.enterTitle ?? 'Enter subsidy title',
+                                hint: t.enterTitle,
                                 icon: Icons.title,
                                 enabled: !isSubmitting,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return t.pleaseEnterTitle ??
-                                        'Please enter title';
+                                    return t.pleaseEnterTitle;
                                   }
                                   return null;
                                 },
@@ -348,8 +346,8 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
                               // Target Crop
                               _buildTextField(
                                 controller: targetCropController,
-                                label: t.targetCrop ?? 'Target Crop/Sector',
-                                hint: t.enterTargetCrop ?? 'e.g., Rice, Wheat',
+                                label: t.targetCrop,
+                                hint: t.enterTargetCrop,
                                 icon: Icons.grass,
                                 enabled: !isSubmitting,
                                 isOptional: true,
@@ -359,7 +357,7 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
                               // Section: Details
                               _buildSectionHeader(
                                 icon: Icons.description,
-                                title: 'Request Details',
+                                title: l10n.requestDetails,
                                 color: Colors.blue,
                               ),
                               SizedBox(height: 20),
@@ -374,8 +372,7 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
                                 maxLines: 4,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return t.pleaseEnterDescription ??
-                                        'Please enter description';
+                                    return t.pleaseEnterDescription;
                                   }
                                   return null;
                                 },
@@ -385,17 +382,14 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
                               // Justification
                               _buildTextField(
                                 controller: justificationController,
-                                label:
-                                    t.justification ?? 'Why do you need this?',
-                                hint: t.justificationHint ??
-                                    'Explain why you need this subsidy',
+                                label: t.justification,
+                                hint: t.justificationHint,
                                 icon: Icons.help_outline,
                                 enabled: !isSubmitting,
                                 maxLines: 5,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return t.pleaseEnterJustification ??
-                                        'Please explain your need';
+                                    return t.pleaseEnterJustification;
                                   }
                                   return null;
                                 },
@@ -405,7 +399,7 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
                               // Section: Request Target
                               _buildSectionHeader(
                                 icon: Icons.location_city,
-                                title: 'Request Target',
+                                title: l10n.requestTarget,
                                 color: Colors.orange,
                               ),
                               SizedBox(height: 20),
@@ -413,7 +407,7 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
                               // Request To Level
                               _buildDropdown(
                                 value: selectedLevel,
-                                label: t.requestTo ?? 'Request To',
+                                label: t.requestTo,
                                 icon: Icons.location_city,
                                 items: levels,
                                 enabled: !isSubmitting,
@@ -459,7 +453,7 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
                   onPressed:
                       isSubmitting ? null : () => Navigator.of(context).pop(),
                   style: OutlinedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -485,7 +479,7 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
                   onPressed: isSubmitting ? null : _submitRequest,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green[600],
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -543,8 +537,8 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
         Text(
           title,
           style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
             color: Colors.grey[800],
           ),
         ),
@@ -574,10 +568,18 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
       enabled: enabled,
       maxLines: maxLines,
       validator: validator,
-      style: TextStyle(fontSize: 15),
+      style: Theme.of(context).textTheme.bodyMedium,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
+        labelStyle: Theme.of(context)
+            .textTheme
+            .bodyMedium!
+            .copyWith(color: Colors.grey[500]),
+        hintStyle: Theme.of(context)
+            .textTheme
+            .bodyMedium!
+            .copyWith(color: Colors.grey[500]),
         prefixIcon: maxLines == 1 ? Icon(icon, color: Colors.green[600]) : null,
         suffixText: isOptional ? 'Optional' : null,
         suffixStyle: TextStyle(fontSize: 11, color: Colors.grey[500]),
@@ -609,7 +611,8 @@ class _RequestSubsidyScreenState extends State<RequestSubsidyScreen> {
     required void Function(String?) onChanged,
   }) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
+      style: Theme.of(context).textTheme.bodyMedium,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: Colors.green[600]),

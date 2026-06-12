@@ -8,10 +8,21 @@ class AppHttpClient extends http.BaseClient {
   final http.Client _inner;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  AppHttpClient([http.Client? inner]) : _inner = inner ?? http.Client();
+  // Short timeout for JSON calls, longer one for file uploads.
+  final Duration _defaultTimeout;
+  final Duration _uploadTimeout;
+
+  AppHttpClient({
+    http.Client? inner,
+    Duration defaultTimeout = const Duration(seconds: 20),
+    Duration uploadTimeout = const Duration(seconds: 90),
+  })  : _inner = inner ?? http.Client(),
+        _defaultTimeout = defaultTimeout,
+        _uploadTimeout = uploadTimeout;
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    // Attach the JWT automatically, unless the caller already set one.
     if (!request.headers.containsKey('Authorization')) {
       final token =
           await _storage.read(key: 'jwt'); // same key LocalAuthService writes
@@ -20,9 +31,12 @@ class AppHttpClient extends http.BaseClient {
       }
     }
 
+    // Multipart uploads get the longer timeout; everything else stays snappy.
+    final timeout =
+        request is http.MultipartRequest ? _uploadTimeout : _defaultTimeout;
+
     try {
-      final response =
-          await _inner.send(request).timeout(const Duration(seconds: 20));
+      final response = await _inner.send(request).timeout(timeout);
       if (response.statusCode == 401 &&
           request.headers.containsKey('Authorization')) {
         handleSessionExpired(); // expired/invalid token
@@ -38,8 +52,6 @@ class AppHttpClient extends http.BaseClient {
       handleOffline();
       rethrow;
     } catch (e) {
-      // For any other exceptions, we can choose to handle them or rethrow.
-      // Here, we'll just rethrow after logging.
       handleOffline();
       rethrow;
     }

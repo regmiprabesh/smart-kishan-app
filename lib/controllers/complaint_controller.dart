@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:smart_kishan/models/complaint.dart';
-import 'package:smart_kishan/screens/auth/services/local_auth_service.dart';
 import 'package:smart_kishan/screens/complaints/services/remote_complaint_service.dart';
 
 class ComplaintController extends GetxController {
@@ -15,12 +14,10 @@ class ComplaintController extends GetxController {
   RxBool isSubmitting = false.obs;
   RxBool isAddingComment = false.obs;
   RxBool isLoadingDetails = false.obs;
-  final LocalAuthService _localAuthService = LocalAuthService();
 
   @override
   void onInit() async {
     super.onInit();
-    await _localAuthService.init();
     getMyComplaints();
   }
 
@@ -34,9 +31,7 @@ class ComplaintController extends GetxController {
   Future<void> getMyComplaints() async {
     try {
       isLoading(true);
-      String? token = await _localAuthService.getToken();
-      var result =
-          await RemoteComplaintService().getMyComplaints(token: token!);
+      var result = await RemoteComplaintService().getMyComplaints();
 
       if (result != null && result.statusCode == 200) {
         var body = jsonDecode(result.body);
@@ -53,9 +48,7 @@ class ComplaintController extends GetxController {
   Future<void> getComplaintDetails(int complaintId) async {
     try {
       isLoadingDetails(true);
-      String? token = await _localAuthService.getToken();
       var result = await RemoteComplaintService().getComplaintDetails(
-        token: token!,
         complaintId: complaintId,
       );
 
@@ -84,10 +77,8 @@ class ComplaintController extends GetxController {
   }) async {
     try {
       isSubmitting(true);
-      String? token = await _localAuthService.getToken();
 
       var result = await RemoteComplaintService().submitComplaint(
-        token: token!,
         title: title,
         description: description,
         category: category,
@@ -118,10 +109,8 @@ class ComplaintController extends GetxController {
   }) async {
     try {
       isAddingComment(true);
-      String? token = await _localAuthService.getToken();
 
       var result = await RemoteComplaintService().addComment(
-        token: token!,
         complaintId: complaintId,
         comment: comment,
       );
@@ -142,10 +131,7 @@ class ComplaintController extends GetxController {
   // Cancel/Delete a pending complaint
   Future<bool> cancelComplaint(int complaintId) async {
     try {
-      String? token = await _localAuthService.getToken();
-
       var result = await RemoteComplaintService().cancelComplaint(
-        token: token!,
         complaintId: complaintId,
       );
 

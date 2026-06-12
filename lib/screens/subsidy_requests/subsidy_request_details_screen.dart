@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/subsidy_request_controller.dart';
 import 'package:smart_kishan/languages/langauge_constants.dart';
-import 'package:smart_kishan/size_config.dart';
 import 'package:intl/intl.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 
 class SubsidyRequestDetailsScreen extends StatefulWidget {
   const SubsidyRequestDetailsScreen({super.key});
@@ -24,14 +24,11 @@ class _SubsidyRequestDetailsScreenState
     requestController = Get.find<SubsidyRequestController>();
   }
 
-  String _formatDate(String? date) {
-    if (date == null) return '';
-    try {
-      final dateTime = DateTime.parse(date);
-      return DateFormat('MMMM dd, yyyy HH:mm').format(dateTime);
-    } catch (e) {
-      return date;
-    }
+  String _formatDate(String? rawDate, String localeName) {
+    if (rawDate == null || rawDate.isEmpty) return '';
+    final dt = DateTime.tryParse(rawDate);
+    if (dt == null) return rawDate;
+    return DateFormat('EEEE, dd MMMM, yyyy', localeName).format(dt);
   }
 
   String _getCategoryName(String? type, BuildContext context) {
@@ -86,15 +83,15 @@ class _SubsidyRequestDetailsScreenState
 
     switch (status.toLowerCase()) {
       case 'pending':
-        return t.pending ?? 'Pending';
+        return t.pending;
       case 'under_review':
-        return t.underReview ?? 'Under Review';
+        return t.underReview;
       case 'approved':
-        return t.approved ?? 'Approved';
+        return t.approved;
       case 'rejected':
-        return t.rejected ?? 'Rejected';
+        return t.rejected;
       case 'converted':
-        return t.converted ?? 'Converted to Subsidy';
+        return t.converted;
       default:
         return status;
     }
@@ -125,15 +122,14 @@ class _SubsidyRequestDetailsScreenState
 
     return Obx(() {
       final request = requestController.selectedRequest.value;
-      print(request!.adminNotes);
       if (request == null) {
         return Scaffold(
           appBar: AppBar(
             backgroundColor: kPrimaryColor,
-            title: Text(t.requestDetails ?? 'Request Details'),
+            title: Text(t.requestDetails),
           ),
           body: Center(
-            child: Text(t.noRequestSelected ?? 'No request selected'),
+            child: Text(t.noRequestSelected),
           ),
         );
       }
@@ -145,7 +141,7 @@ class _SubsidyRequestDetailsScreenState
         appBar: AppBar(
           backgroundColor: statusColor,
           title: Text(
-            t.requestDetails ?? 'Request Details',
+            t.requestDetails,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         ),
@@ -312,8 +308,7 @@ class _SubsidyRequestDetailsScreenState
                     ],
 
                     // Request Info Grid
-                    _buildSectionTitle(
-                        t.requestInformation ?? 'Request Information'),
+                    _buildSectionTitle(t.requestInformation),
                     SizedBox(height: 10),
                     _buildInfoGrid(request, lang, t),
 
@@ -322,7 +317,7 @@ class _SubsidyRequestDetailsScreenState
                     // Admin Notes (if any)
                     if (request.adminNotes != null &&
                         request.adminNotes!.get(lang).isNotEmpty) ...[
-                      _buildSectionTitle(t.adminNotes ?? 'Admin Notes'),
+                      _buildSectionTitle(t.adminNotes),
                       SizedBox(height: 10),
                       Container(
                         width: double.infinity,
@@ -373,8 +368,7 @@ class _SubsidyRequestDetailsScreenState
                         request.district != null ||
                         request.municipality != null ||
                         request.ward != null) ...[
-                      _buildSectionTitle(
-                          t.locationDetails ?? 'Location Details'),
+                      _buildSectionTitle(t.locationDetails),
                       SizedBox(height: 10),
                       _buildLocationCard(request, lang, t),
                       SizedBox(height: 20),
@@ -402,7 +396,7 @@ class _SubsidyRequestDetailsScreenState
                             ),
                             SizedBox(height: 12),
                             Text(
-                              t.requestConverted ?? 'Request Converted!',
+                              t.requestConverted,
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -411,7 +405,7 @@ class _SubsidyRequestDetailsScreenState
                             ),
                             SizedBox(height: 8),
                             Text(
-                              '${t.convertedToSubsidy ?? "Your request has been converted to"} Subsidy #${request.subsidyId}',
+                              '${t.convertedToSubsidy ?? "Your request has been converted to"} ${t.subsidyRelated} #${localizedNumber(request.subsidyId != null ? request.subsidyId! : 0)}',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.purple[800],
@@ -427,7 +421,7 @@ class _SubsidyRequestDetailsScreenState
                               },
                               icon: Icon(Icons.arrow_forward, size: 18),
                               label: Text(
-                                t.viewSubsidy ?? 'View Subsidy',
+                                t.viewSubsidy,
                                 style: TextStyle(fontWeight: FontWeight.w600),
                               ),
                               style: ElevatedButton.styleFrom(
@@ -463,7 +457,7 @@ class _SubsidyRequestDetailsScreenState
                           onPressed: () => _showCancelDialog(context, request),
                           icon: Icon(Icons.cancel),
                           label: Text(
-                            t.cancelRequest ?? 'Cancel Request',
+                            t.cancelRequest,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -497,34 +491,34 @@ class _SubsidyRequestDetailsScreenState
     return Column(
       children: [
         _buildInfoRow(
-          t.requestId ?? 'Request ID',
-          '#${request.id}',
+          t.requestId,
+          '#${localizedNumber(request.id)}',
         ),
         _buildInfoRow(
-          t.subsidyType ?? 'Subsidy Type',
+          t.subsidyType,
           _getCategoryName(request.subsidyType, context),
         ),
         _buildInfoRow(
-          t.requestedTo ?? 'Requested To',
+          t.requestedTo,
           _getLevelName(request.requestedToLevel, context),
         ),
         _buildInfoRow(
-          t.status ?? 'Status',
+          t.status,
           _getStatusName(request.status, context),
         ),
         _buildInfoRow(
-          t.submittedOn ?? 'Submitted On',
-          _formatDate(request.createdAt),
+          t.submittedOn,
+          _formatDate(request.createdAt, l10n.localeName),
         ),
         if (request.reviewedAt != null)
           _buildInfoRow(
             t.reviewedOn ?? 'Reviewed On',
-            _formatDate(request.reviewedAt),
+            _formatDate(request.reviewedAt, l10n.localeName),
           ),
         if (request.subsidyId != null)
           _buildInfoRow(
             t.subsidyId ?? 'Subsidy ID',
-            '#${request.subsidyId}',
+            '#${localizedNumber(request.subsidyId)}',
           ),
       ],
     );
@@ -579,7 +573,7 @@ class _SubsidyRequestDetailsScreenState
             _buildLocationItem(
               Icons.map,
               t.province ?? 'Province',
-              request.province!.provinceName ?? '',
+              request.province!.name?.get(lang) ?? '',
             ),
           if (request.district != null)
             _buildLocationItem(
@@ -664,7 +658,7 @@ class _SubsidyRequestDetailsScreenState
               ),
               SizedBox(height: 24),
               Text(
-                t.confirmCancel ?? 'Cancel Request',
+                t.confirmCancel,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -674,8 +668,7 @@ class _SubsidyRequestDetailsScreenState
               ),
               SizedBox(height: 12),
               Text(
-                t.cancelRequestConfirm ??
-                    'Are you sure you want to cancel this request? This action cannot be undone.',
+                t.cancelRequestConfirm,
                 style: TextStyle(
                   fontSize: 15,
                   color: Colors.grey[600],
@@ -724,8 +717,7 @@ class _SubsidyRequestDetailsScreenState
                                   Icon(Icons.check_circle, color: Colors.white),
                                   SizedBox(width: 12),
                                   Text(
-                                    t.requestCancelled ??
-                                        'Request cancelled successfully',
+                                    t.requestCancelled,
                                     style:
                                         TextStyle(fontWeight: FontWeight.w600),
                                   ),
@@ -742,8 +734,7 @@ class _SubsidyRequestDetailsScreenState
                         } else if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(
-                                  t.cannotCancel ?? 'Cannot cancel request'),
+                              content: Text(t.cannotCancel),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -758,7 +749,7 @@ class _SubsidyRequestDetailsScreenState
                         ),
                       ),
                       child: Text(
-                        t.yesCancel ?? 'Yes, Cancel',
+                        t.yesCancel,
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,

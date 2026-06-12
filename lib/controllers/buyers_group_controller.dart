@@ -1,13 +1,10 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/models/buyersgroup.dart';
 import 'package:smart_kishan/screens/auth/services/local_auth_service.dart';
-import 'package:smart_kishan/screens/buyers_group/services/local_buyers_group_service.dart';
 import 'package:smart_kishan/screens/buyers_group/services/remote_buyers_group_service.dart';
-import 'package:smart_kishan/sync_service.dart';
 import 'package:http/http.dart' as http;
 
 class BuyersGroupController extends GetxController {
@@ -15,11 +12,6 @@ class BuyersGroupController extends GetxController {
 
   RxList<BuyersGroup> buyersGroups =
       List<BuyersGroup>.empty(growable: true).obs;
-
-  RxList<BuyersGroup> offlineBuyersGroups =
-      List<BuyersGroup>.empty(growable: true).obs;
-
-  final _localBuyersGroupService = LocalBuyersGroupService();
 
   RxBool isEdit = false.obs;
 
@@ -30,7 +22,7 @@ class BuyersGroupController extends GetxController {
   RxBool isValidateBuyerLoading = false.obs;
 
   final LocalAuthService _localAuthService = LocalAuthService();
-  final SyncService _syncService = SyncService();
+
   RxString selectedBuyersGroupImage = ''.obs;
   RxString networkBuyersGroupImage = ''.obs;
 
@@ -38,230 +30,118 @@ class BuyersGroupController extends GetxController {
   void onInit() async {
     super.onInit();
     await _localAuthService.init();
-    await _localBuyersGroupService.init();
-    await _syncService.init();
     getBuyersGroups();
-    // getBuyersGroupsOffline();
   }
-
-  Comparator<BuyersGroup> sortById = (a, b) => b.id!.compareTo(a.id!);
 
   void getBuyersGroups() async {
-    // try {
-    isBuyersGroupsLoading(true);
-    String? token = await _localAuthService.getToken();
-    var result =
-        await RemoteBuyersGroupService().getBuyersGroups(token: token!);
-    if (result != null) {
-      var body = jsonDecode(result.body);
-      print(body);
-      buyersGroups.assignAll(buyersGroupListFromJson(jsonEncode(body['data'])));
-      // var data = await _localBuyersGroupService.readBuyersGroups();
-      // offlineBuyersGroups.assignAll(buyersGroupListFromJson(jsonEncode(data)));
-    }
-    // } catch (e) {
-    // print(e);
-    print('No Internet Connection');
-    // getBuyersGroupsOffline();
-    // } finally {
-    //   isBuyersGroupsLoading(false);
-    // }
-  }
-
-  getBuyersGroupsOffline() async {
     try {
-      var data = await _localBuyersGroupService.readBuyersGroups();
-      buyersGroups.assignAll(buyersGroupListFromJson(jsonEncode(data)));
-      offlineBuyersGroups.assignAll(buyersGroupListFromJson(jsonEncode(data)));
-      // You can sort the list by id like this
-      buyersGroups.sort(sortById);
+      isBuyersGroupsLoading(true);
+      final token = await _localAuthService.getToken();
+      final result =
+          await RemoteBuyersGroupService().getBuyersGroups(token: token!);
+      if (result != null && result.statusCode == 200) {
+        final body = jsonDecode(result.body);
+        buyersGroups
+            .assignAll(buyersGroupListFromJson(jsonEncode(body['data'])));
+      }
     } catch (e) {
-      print(e);
-    } finally {}
+      debugPrint('getBuyersGroups error: $e');
+    } finally {
+      isBuyersGroupsLoading(false);
+    }
   }
 
   Future<Buyers?> validateBuyer(String phone) async {
-    isBuyersGroupsLoading(true);
-    String? token = await _localAuthService.getToken();
     try {
+      isBuyersGroupsLoading(true);
+      final token = await _localAuthService.getToken();
       final result = await RemoteBuyersGroupService()
           .validateBuyer(token: token!, phone: '+977$phone');
       if (result.statusCode == 200) {
-        Map<String, dynamic> body = jsonDecode(result.body);
-        Buyers buyer = Buyers.fromJson(body['buyer']);
-        return buyer;
+        final body = jsonDecode(result.body);
+        return Buyers.fromJson(body['buyer']);
       } else {
-        // ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-        //     backgroundColor: kErrorColor,
-        //     content: Text(
-        //       'खरिदकर्ता प्रमाणीकरण असफल भयो ! फेरि प्रयास गर्नुहोस',
-        //       style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-        //     )));
         throw Exception('User validation failed: ${result.body}');
       }
     } catch (e) {
-      print(e);
+      debugPrint('validateBuyer error: $e');
+    } finally {
+      isBuyersGroupsLoading(false);
     }
-  }
-
-  Future<bool> addBuyersGroup(BuyersGroup buyersGroup, bool isSync) async {
-    // try {
-    isBuyersGroupsLoading(true);
-    String? token = await _localAuthService.getToken();
-    var image;
-    if (buyersGroup.image != null) {
-      image = await http.MultipartFile.fromPath('image', buyersGroup.image!);
-    }
-    var result = await RemoteBuyersGroupService().addBuyersGroup(
-        token: token!, data: buyersGroup.toJson(), image: image);
-    print(result.body);
-    if (result.statusCode == 200) {
-      var body = jsonDecode(result.body);
-      var newBuyersGroup = BuyersGroup.fromJson(body['data']);
-      buyersGroups.add(newBuyersGroup);
-      Get.back();
-      return true;
-    } else {
-      return false;
-    }
-    // } catch (e) {
-    // if (isSync) {
-    //   return false;
-    // }
-    // int? buyersGroupId = await addBuyersGroupOffline(buyersGroup);
-    // Sync data =
-    //     Sync(objectID: buyersGroupId!, objectType: 'BuyersGroup', changeType: 'create');
-    // _syncService.addSyncData(data);
-    // return false;
-    // } finally {
-    //   isBuyersGroupsLoading(false);
-    // }
-  }
-
-  Future<int?>? addBuyersGroupOffline(BuyersGroup buyersGroup) async {
-    try {
-      var result = await _localBuyersGroupService.saveBuyersGroup(buyersGroup);
-      // print(result);
-      if (result > 0) {
-        Get.back();
-        await getBuyersGroupsOffline();
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kSuccessColor,
-            content: Text(
-              'नोट सफलतापूर्वक थपियो!',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
-        return result;
-      }
-    } catch (e) {
-      print(e);
-    } finally {}
     return null;
   }
 
-  Future<bool?> updateBuyersGroup(BuyersGroup buyersGroup) async {
+  Future<bool> addBuyersGroup(BuyersGroup buyersGroup) async {
     try {
       isBuyersGroupsLoading(true);
-      String? token = await _localAuthService.getToken();
-      var image;
+      final token = await _localAuthService.getToken();
+      http.MultipartFile? image;
       if (buyersGroup.image != null) {
         image = await http.MultipartFile.fromPath('image', buyersGroup.image!);
       }
-      var result = await RemoteBuyersGroupService().updateBuyersGroup(
+      final result = await RemoteBuyersGroupService().addBuyersGroup(
+          token: token!, data: buyersGroup.toJson(), image: image);
+      if (result.statusCode == 200) {
+        final body = jsonDecode(result.body);
+        buyersGroups.add(BuyersGroup.fromJson(body['data']));
+        Get.back();
+        return true;
+      }
+    } catch (e) {
+      debugPrint('addBuyersGroup error: $e');
+    } finally {
+      isBuyersGroupsLoading(false);
+    }
+    return false;
+  }
+
+  Future<bool> updateBuyersGroup(BuyersGroup buyersGroup) async {
+    try {
+      isBuyersGroupsLoading(true);
+      final token = await _localAuthService.getToken();
+      http.MultipartFile? image;
+      if (buyersGroup.image != null) {
+        image = await http.MultipartFile.fromPath('image', buyersGroup.image!);
+      }
+      final result = await RemoteBuyersGroupService().updateBuyersGroup(
           token: token!,
           data: buyersGroup.toJson(),
           id: buyersGroup.id!,
           image: image);
       if (result.statusCode == 200) {
-        var body = jsonDecode(result.body);
-        BuyersGroup updatedData = BuyersGroup.fromJson(body['data']);
-        buyersGroups[buyersGroups.indexWhere(
-            (element) => element.id == updatedData.id)] = updatedData;
-        // updateBuyersGroupOffline(buyersGroup);
+        final body = jsonDecode(result.body);
+        final updatedData = BuyersGroup.fromJson(body['data']);
+        final i = buyersGroups.indexWhere((e) => e.id == updatedData.id);
+        if (i != -1) buyersGroups[i] = updatedData;
         Get.back();
         return true;
-      } else {
-        return false;
       }
     } catch (e) {
-      // updateBuyersGroupOffline(buyersGroup);
+      debugPrint('updateBuyersGroup error: $e');
     } finally {
       isBuyersGroupsLoading(false);
     }
-  }
-
-  updateBuyersGroupOffline(BuyersGroup buyersGroup, [bool? isSync]) async {
-    try {
-      var result =
-          await _localBuyersGroupService.updateBuyersGroup(buyersGroup);
-      if (result > 0) {
-        Get.back();
-        await getBuyersGroupsOffline();
-        if (isSync != null && isSync) {
-          return;
-        }
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kSuccessColor,
-            content: Text(
-              'नोट सफलतापूर्वक अद्यावधिक गरियो!',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
-      }
-    } catch (e) {
-      print(e);
-    } finally {}
+    return false;
   }
 
   void deleteBuyersGroup(int id) async {
     try {
       isBuyersGroupsLoading(true);
-      String? token = await _localAuthService.getToken();
-      var result = await RemoteBuyersGroupService()
+      final token = await _localAuthService.getToken();
+      final result = await RemoteBuyersGroupService()
           .deleteBuyersGroup(token: token!, id: id);
-      print(result.body);
       if (result.statusCode == 200) {
-        buyersGroups.removeWhere((element) => element.id == id);
-        // deleteBuyersGroupOffline(id);
+        buyersGroups.removeWhere((e) => e.id == id);
         Get.back();
       }
     } catch (e) {
-      // deleteBuyersGroupOffline(id);
+      debugPrint('deleteBuyersGroup error: $e');
     } finally {
       isBuyersGroupsLoading(false);
     }
   }
 
-  deleteBuyersGroupOffline(int id) async {
-    try {
-      var result = await _localBuyersGroupService.deleteBuyersGroup(id);
-      if (result > 0) {
-        Get.back();
-        getBuyersGroupsOffline();
-        ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(const SnackBar(
-            backgroundColor: kSuccessColor,
-            content: Text(
-              'नोट सफलतापूर्वक मेटाइयो!',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            )));
-      }
-    } catch (e) {
-    } finally {}
-  }
-
   Future<Map<String, double>?> getMyLatLng() async {
-    double lat = 27.650085;
-    double lng = 85.619474;
-    return {'lat': lat, 'lng': lng};
-  }
-
-  void reset() {
-    buyersGroups.clear();
-    offlineBuyersGroups.clear();
-    isEdit(false);
-    selectedBuyersGroup(null);
-    isBuyersGroupsLoading(false);
-    selectedBuyersGroupImage('');
-    networkBuyersGroupImage('');
-    isValidateBuyerLoading(false);
+    return {'lat': 27.650085, 'lng': 85.619474};
   }
 }

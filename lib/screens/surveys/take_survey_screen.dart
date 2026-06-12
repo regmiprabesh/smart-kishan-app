@@ -4,7 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/survey_controller.dart';
-import 'package:smart_kishan/languages/langauge_constants.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/models/survey.dart';
 import 'package:smart_kishan/size_config.dart';
 import 'package:smart_kishan/utils/custom_snackbar.dart';
@@ -89,8 +89,8 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
 
         if (fileSizeInBytes > maxSizeInBytes) {
           CustomSnackbar.error(
-            title: 'File Too Large',
-            message: 'Maximum file size is 5 MB',
+            title: l10n.fileTooLarge,
+            message: l10n.maximumFileSize('5'),
           );
           return;
         }
@@ -101,15 +101,15 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
         });
 
         CustomSnackbar.success(
-          title: 'Uploaded',
-          message: 'File uploaded successfully',
+          title: l10n.uploaded,
+          message: l10n.fileUploaded,
           duration: Duration(seconds: 2),
         );
       }
     } catch (e) {
       CustomSnackbar.error(
-        title: 'Error',
-        message: 'Failed to pick file: ${e.toString()}',
+        title: l10n.error,
+        message: l10n.failedToPickFile,
       );
     }
   }
@@ -127,12 +127,11 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
     });
 
     final survey = surveyController.selectedSurvey.value!;
-    final t = translation(context);
 
     if (survey.questions == null || survey.questions!.isEmpty) {
       CustomSnackbar.error(
-        title: t.error ?? 'Error',
-        message: 'No questions found in this survey',
+        title: l10n.error,
+        message: l10n.noQuestionsFound,
       );
       return;
     }
@@ -143,8 +142,8 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
 
       if (question.isRequired == true && !answers.containsKey(question.id)) {
         CustomSnackbar.warning(
-          title: t.required ?? 'Required Question',
-          message: 'Please answer all required questions',
+          title: l10n.requiredQuestion,
+          message: l10n.answerAllRequired,
         );
         return;
       }
@@ -161,19 +160,19 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
       if (success) {
         Get.back();
         CustomSnackbar.success(
-          title: t.success ?? 'Success',
-          message: 'Survey submitted successfully',
+          title: l10n.success,
+          message: l10n.surveySubmittedSuccess,
         );
       } else {
         CustomSnackbar.error(
-          title: t.failed ?? 'Failed',
-          message: 'Failed to submit survey',
+          title: l10n.failed,
+          message: l10n.surveySubmitFailed,
         );
       }
     } else {
       CustomSnackbar.warning(
-        title: 'Validation Error',
-        message: 'Please check all required fields',
+        title: l10n.validationError,
+        message: l10n.checkRequiredFields,
       );
     }
   }
@@ -183,18 +182,17 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
     final survey = surveyController.selectedSurvey.value;
     final locale = Localizations.localeOf(context);
     final lang = locale.languageCode;
-    final t = translation(context);
 
     if (survey == null) {
       return Scaffold(
         appBar: AppBar(
           backgroundColor: kPrimaryColor,
           title: Text(
-            'Survey',
+            l10n.survey,
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
         ),
-        body: Center(child: Text('No survey selected')),
+        body: Center(child: Text(l10n.noSurveySelected)),
       );
     }
 
@@ -215,7 +213,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
               CircularProgressIndicator(color: kPrimaryColor),
               SizedBox(height: 16),
               Text(
-                'Loading survey questions...',
+                l10n.loadingSurveyQuestions,
                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
             ],
@@ -243,7 +241,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                 Icon(Icons.error_outline, size: 64, color: Colors.orange),
                 SizedBox(height: 16),
                 Text(
-                  'No questions available for this survey',
+                  l10n.noQuestionsAvailable,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 24),
@@ -256,7 +254,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text('Go Back'),
+                  child: Text(l10n.goBack),
                 ),
               ],
             ),
@@ -293,7 +291,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Simple Survey Info
-              _buildSurveyHeader(survey, lang, t),
+              _buildSurveyHeader(survey, lang),
               Padding(
                 padding: EdgeInsets.all(20),
                 child: Column(
@@ -329,7 +327,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                                 children: [
                                   if (index > 0)
                                     Divider(height: 32, thickness: 1),
-                                  _buildQuestionContent(question, lang, t),
+                                  _buildQuestionContent(question, lang),
                                 ],
                               );
                             }).toList(),
@@ -366,7 +364,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                                     color: kPrimaryColor, size: 20),
                                 SizedBox(width: 8),
                                 Text(
-                                  'File Uploads',
+                                  l10n.fileUploads,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -385,7 +383,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                                 children: [
                                   if (index > 0)
                                     Divider(height: 32, thickness: 1),
-                                  _buildFileUploadQuestion(question, lang, t),
+                                  _buildFileUploadQuestion(question, lang),
                                 ],
                               );
                             }).toList(),
@@ -422,7 +420,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                                     color: kPrimaryColor, size: 20),
                                 SizedBox(width: 8),
                                 Text(
-                                  'Location Information',
+                                  l10n.locationInformation,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -441,7 +439,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                                 children: [
                                   if (index > 0)
                                     Divider(height: 32, thickness: 1),
-                                  _buildLocationQuestion(question, lang, t),
+                                  _buildLocationQuestion(question, lang),
                                 ],
                               );
                             }).toList(),
@@ -454,12 +452,12 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                     SizedBox(height: getProportionateScreenHeight(8)),
 
                     // Important Note
-                    _buildImportantNote(t),
+                    _buildImportantNote(),
 
                     SizedBox(height: getProportionateScreenHeight(30)),
 
                     // Submit Button
-                    Obx(() => _buildSubmitButton(t)),
+                    Obx(() => _buildSubmitButton()),
 
                     SizedBox(height: getProportionateScreenHeight(20)),
                   ],
@@ -472,7 +470,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
     );
   }
 
-  Widget _buildSurveyHeader(Survey survey, String lang, dynamic t) {
+  Widget _buildSurveyHeader(Survey survey, String lang) {
     return Column(
       children: [
         // Title section with chips overlaid on green background
@@ -506,19 +504,21 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                 children: [
                   _buildInfoChip(
                     Icons.quiz,
-                    '${survey.totalQuestions ?? 0} Questions',
+                    l10n.questionsCount(
+                        localizedNumber(survey.totalQuestions ?? 0)),
                     Colors.white,
                   ),
                   if (survey.estimatedDurationMinutes != null)
                     _buildInfoChip(
                       Icons.timer,
-                      '~${survey.estimatedDurationMinutes} min',
+                      l10n.estimatedMinutes(
+                          localizedNumber(survey.estimatedDurationMinutes!)),
                       Colors.white,
                     ),
                   if (survey.isMandatory == true)
                     _buildInfoChip(
                       Icons.star,
-                      'Required',
+                      l10n.requiredLabel,
                       Colors.white,
                     ),
                 ],
@@ -551,7 +551,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
               children: [
                 // Description title
                 Text(
-                  'विवरण',
+                  l10n.description,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -574,7 +574,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
 
                 // Eligibility criteria section
                 Text(
-                  'Instruction',
+                  l10n.instruction,
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -589,8 +589,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    survey.instructions?.get(lang) ??
-                        '२ हेक्टर सम्मको जोत भएका साना र सीमान्त किसानहरु',
+                    survey.instructions?.get(lang) ?? l10n.defaultEligibility,
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.grey[800],
@@ -632,8 +631,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
     );
   }
 
-  Widget _buildQuestionContent(
-      SurveyQuestion question, String lang, dynamic t) {
+  Widget _buildQuestionContent(SurveyQuestion question, String lang) {
     // Determine border color for validation
     bool showError = hasAttemptedSubmit &&
         question.isRequired == true &&
@@ -697,12 +695,12 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
         SizedBox(height: 16),
 
         // Question input
-        _buildQuestionInput(question, lang, t),
+        _buildQuestionInput(question, lang),
       ],
     );
   }
 
-  Widget _buildQuestionInput(SurveyQuestion question, String lang, dynamic t) {
+  Widget _buildQuestionInput(SurveyQuestion question, String lang) {
     switch (question.questionType) {
       case 'text':
       case 'textarea':
@@ -734,7 +732,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
       maxLines: question.questionType == 'textarea' ? 4 : 1,
       maxLength: question.maxLength,
       decoration: InputDecoration(
-        hintText: 'Enter your answer',
+        hintText: l10n.enterYourAnswer,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -755,12 +753,13 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
       ),
       validator: (value) {
         if (question.isRequired == true && (value == null || value.isEmpty)) {
-          return 'This field is required';
+          return l10n.fieldRequired;
         }
         if (question.minLength != null &&
             value != null &&
             value.length < question.minLength!) {
-          return 'Minimum ${question.minLength} characters required';
+          return l10n
+              .minCharactersRequired(localizedNumber(question.minLength!));
         }
         return null;
       },
@@ -781,7 +780,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
         }
       },
       decoration: InputDecoration(
-        hintText: 'Enter a number',
+        hintText: l10n.enterNumber,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -802,18 +801,18 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
       ),
       validator: (value) {
         if (question.isRequired == true && (value == null || value.isEmpty)) {
-          return 'This field is required';
+          return l10n.fieldRequired;
         }
         if (value != null && value.isNotEmpty) {
           final num = question.questionType == 'decimal'
               ? double.tryParse(value)
               : int.tryParse(value);
-          if (num == null) return 'Please enter a valid number';
+          if (num == null) return l10n.enterValidNumber;
           if (question.minValue != null && num < question.minValue!) {
-            return 'Minimum value is ${question.minValue}';
+            return l10n.minValueIs(localizedNumber(question.minValue!));
           }
           if (question.maxValue != null && num > question.maxValue!) {
-            return 'Maximum value is ${question.maxValue}';
+            return l10n.maxValueIs(localizedNumber(question.maxValue!));
           }
         }
         return null;
@@ -925,7 +924,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
           vertical: getProportionateScreenHeight(12),
         ),
       ),
-      hint: Text('Select an option'),
+      hint: Text(l10n.selectOption),
       items: question.options!.map((option) {
         return DropdownMenuItem<String>(
           value: option.value,
@@ -939,7 +938,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
       },
       validator: (value) {
         if (question.isRequired == true && value == null) {
-          return 'Please select an option';
+          return l10n.pleaseSelectOption;
         }
         return null;
       },
@@ -989,8 +988,9 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
             Expanded(
               child: Text(
                 selectedDate != null
-                    ? DateFormat('MMM dd, yyyy').format(selectedDate)
-                    : 'Select a date',
+                    ? DateFormat('MMM dd, yyyy', localeCode)
+                        .format(selectedDate)
+                    : l10n.selectDate,
                 style: TextStyle(
                   fontSize: 15,
                   color:
@@ -1009,11 +1009,12 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
     return Row(
       children: [
         Expanded(
-          child: _buildYesNoButton(question, true, 'Yes', Icons.check_circle),
+          child:
+              _buildYesNoButton(question, true, l10n.yes, Icons.check_circle),
         ),
         SizedBox(width: 12),
         Expanded(
-          child: _buildYesNoButton(question, false, 'No', Icons.cancel),
+          child: _buildYesNoButton(question, false, l10n.no, Icons.cancel),
         ),
       ],
     );
@@ -1093,7 +1094,8 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
           ),
           if (currentRating > 0)
             Text(
-              '$currentRating out of $maxRating',
+              l10n.ratingOutOf(
+                  localizedNumber(currentRating), localizedNumber(maxRating)),
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[600],
@@ -1105,8 +1107,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
     );
   }
 
-  Widget _buildFileUploadQuestion(
-      SurveyQuestion question, String lang, dynamic t) {
+  Widget _buildFileUploadQuestion(SurveyQuestion question, String lang) {
     bool showError = hasAttemptedSubmit &&
         question.isRequired == true &&
         !answers.containsKey(question.id);
@@ -1182,7 +1183,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
           children: [
             Chip(
               label: Text(
-                'PDF, JPG, PNG, DOC',
+                l10n.allowedFileFormats,
                 style: TextStyle(fontSize: 10),
               ),
               backgroundColor: Colors.blue.withOpacity(0.1),
@@ -1190,7 +1191,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
             SizedBox(width: 8),
             Chip(
               label: Text(
-                'Max 5 MB',
+                l10n.maxFileSizeLabel,
                 style: TextStyle(fontSize: 10),
               ),
               backgroundColor: Colors.green.withOpacity(0.1),
@@ -1227,7 +1228,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                 IconButton(
                   icon: Icon(Icons.close, color: Colors.red, size: 20),
                   onPressed: () => _removeFile(question.id!),
-                  tooltip: 'Remove',
+                  tooltip: l10n.remove,
                   padding: EdgeInsets.zero,
                   constraints: BoxConstraints(),
                 ),
@@ -1244,7 +1245,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
             onPressed: () => _pickFile(question),
             icon: Icon(isUploaded ? Icons.refresh : Icons.upload_file),
             label: Text(
-              isUploaded ? 'Change File' : 'Upload File',
+              isUploaded ? l10n.changeFile : l10n.uploadFile,
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             style: ElevatedButton.styleFrom(
@@ -1261,8 +1262,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
     );
   }
 
-  Widget _buildLocationQuestion(
-      SurveyQuestion question, String lang, dynamic t) {
+  Widget _buildLocationQuestion(SurveyQuestion question, String lang) {
     bool showError = hasAttemptedSubmit &&
         question.isRequired == true &&
         !answers.containsKey(question.id);
@@ -1348,7 +1348,10 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Lat: ${selectedLocation['lat']?.toStringAsFixed(6)}, Lng: ${selectedLocation['lng']?.toStringAsFixed(6)}',
+                    l10n.latLngLabel(
+                      selectedLocation['lat']?.toStringAsFixed(6) ?? '',
+                      selectedLocation['lng']?.toStringAsFixed(6) ?? '',
+                    ),
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.green[700],
@@ -1362,7 +1365,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                       answers.remove(question.id);
                     });
                   },
-                  tooltip: 'Remove',
+                  tooltip: l10n.remove,
                   padding: EdgeInsets.zero,
                   constraints: BoxConstraints(),
                 ),
@@ -1387,14 +1390,14 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                     };
                   });
                   CustomSnackbar.success(
-                    title: 'Location Set',
-                    message: 'Current location has been set',
+                    title: l10n.locationSet,
+                    message: l10n.currentLocationSet,
                     duration: Duration(seconds: 2),
                   );
                 },
                 icon: Icon(Icons.my_location, size: 18),
                 label: Text(
-                  'Current Location',
+                  l10n.currentLocation,
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -1413,14 +1416,14 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                 onPressed: () async {
                   // TODO: Implement map picker
                   CustomSnackbar.info(
-                    title: 'Coming Soon',
-                    message: 'Map picker feature coming soon',
+                    title: l10n.comingSoon,
+                    message: l10n.mapPickerComingSoon,
                     duration: Duration(seconds: 2),
                   );
                 },
                 icon: Icon(Icons.map, size: 18),
                 label: Text(
-                  'Choose on Map',
+                  l10n.chooseOnMap,
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                 ),
                 style: OutlinedButton.styleFrom(
@@ -1439,7 +1442,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
     );
   }
 
-  Widget _buildImportantNote(dynamic t) {
+  Widget _buildImportantNote() {
     return Container(
       padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -1460,7 +1463,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Important Note',
+                  l10n.importantNoteLabel,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -1469,7 +1472,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'All required questions must be answered before submission. Your responses will help improve agricultural services.',
+                  l10n.surveyImportantNote,
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.orange[800],
@@ -1484,7 +1487,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
     );
   }
 
-  Widget _buildSubmitButton(dynamic t) {
+  Widget _buildSubmitButton() {
     return SizedBox(
       width: double.infinity,
       height: getProportionateScreenHeight(50),
@@ -1511,7 +1514,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                   ),
                   SizedBox(width: 12),
                   Text(
-                    'Submitting...',
+                    l10n.submitting,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -1525,7 +1528,7 @@ class _TakeSurveyScreenState extends State<TakeSurveyScreen> {
                   Icon(Icons.send, size: 20),
                   SizedBox(width: 8),
                   Text(
-                    'Submit Survey',
+                    l10n.submitSurvey,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

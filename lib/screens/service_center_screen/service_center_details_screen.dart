@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/service_center_controller.dart';
 import 'package:smart_kishan/models/service_center.dart';
-import 'package:smart_kishan/languages/langauge_constants.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -59,9 +58,7 @@ class _ServiceCenterDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
-    final locale = Localizations.localeOf(context);
-    final lang = locale.languageCode;
-    final t = translation(context);
+    final lang = Localizations.localeOf(context).languageCode;
 
     return Scaffold(
       body: Obx(() {
@@ -73,12 +70,12 @@ class _ServiceCenterDetailsScreenState
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
-                SizedBox(height: 16),
-                Text('Service center not found'),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
+                Text(l10n.serviceCenterNotFound),
+                const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => Get.back(),
-                  child: Text('Go Back'),
+                  child: Text(l10n.goBack),
                 ),
               ],
             ),
@@ -101,7 +98,7 @@ class _ServiceCenterDetailsScreenState
                   _buildDescription(center, lang),
                   _buildUserRatingSection(center, lang),
                   _buildReviewsList(center, lang),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -117,25 +114,29 @@ class _ServiceCenterDetailsScreenState
       pinned: true,
       backgroundColor: _getTypeColor(center.type?.color),
       flexibleSpace: FlexibleSpaceBar(
-        title: Text(
-          center.getLocalizedName(lang),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            shadows: [
-              Shadow(
-                offset: Offset(0, 1),
-                blurRadius: 3,
-                color: Colors.black.withOpacity(0.5),
-              ),
-            ],
+        title: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 15,
+          ),
+          child: Text(
+            center.getLocalizedName(lang),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              shadows: [
+                Shadow(
+                  offset: const Offset(0, 1),
+                  blurRadius: 3,
+                  color: Colors.black.withOpacity(0.5),
+                ),
+              ],
+            ),
           ),
         ),
         background: Stack(
           fit: StackFit.expand,
           children: [
-            // If images exist, show them, otherwise show a gradient
             if (center.images != null && center.images!.isNotEmpty)
               Image.network(
                 center.images!.first,
@@ -162,31 +163,6 @@ class _ServiceCenterDetailsScreenState
           ],
         ),
       ),
-      // actions: [
-      //   if (center.isFeatured)
-      //     Padding(
-      //       padding: EdgeInsets.only(right: 8),
-      //       child: Chip(
-      //         label: Row(
-      //           mainAxisSize: MainAxisSize.min,
-      //           children: [
-      //             Icon(Icons.star, size: 14, color: Colors.white),
-      //             SizedBox(width: 4),
-      //             Text(
-      //               'Featured',
-      //               style: TextStyle(
-      //                 color: Colors.white,
-      //                 fontSize: 11,
-      //                 fontWeight: FontWeight.bold,
-      //               ),
-      //             ),
-      //           ],
-      //         ),
-      //         backgroundColor: Colors.amber[600],
-      //         padding: EdgeInsets.symmetric(horizontal: 8),
-      //       ),
-      //     ),
-      // ],
     );
   }
 
@@ -214,14 +190,14 @@ class _ServiceCenterDetailsScreenState
 
   Widget _buildHeaderInfo(ServiceCenter center, String lang) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _getTypeColor(center.type?.color).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
@@ -232,7 +208,7 @@ class _ServiceCenterDetailsScreenState
                   size: 28,
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -248,11 +224,11 @@ class _ServiceCenterDetailsScreenState
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       center.getLocalizedName(lang),
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey[800],
                       ),
@@ -262,11 +238,11 @@ class _ServiceCenterDetailsScreenState
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Row(
             children: [
               Icon(Icons.location_on, size: 18, color: Colors.grey[600]),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   center.getLocalizedAddress(lang),
@@ -276,13 +252,13 @@ class _ServiceCenterDetailsScreenState
             ],
           ),
           if (center.distance != null) ...[
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Row(
               children: [
                 Icon(Icons.navigation, size: 18, color: Colors.blue[600]),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
-                  '${center.distance!.toStringAsFixed(1)} km away',
+                  '${center.distance!.toStringAsFixed(1)} ${l10n.km} ${l10n.away}',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.blue[700],
@@ -299,12 +275,12 @@ class _ServiceCenterDetailsScreenState
 
   Widget _buildRatingOverview(ServiceCenter center, String lang) {
     if (center.averageRating == null || center.averageRating == 0) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
-      padding: EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.amber[50],
         borderRadius: BorderRadius.circular(16),
@@ -315,14 +291,14 @@ class _ServiceCenterDetailsScreenState
           Column(
             children: [
               Text(
-                center.averageRating!.toStringAsFixed(1),
+                localizedNumber(center.averageRating!.toStringAsFixed(1)),
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
                   color: Colors.amber[700],
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Row(
                 children: List.generate(5, (index) {
                   return Icon(
@@ -336,23 +312,23 @@ class _ServiceCenterDetailsScreenState
               ),
             ],
           ),
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (center.totalRatings != null)
                   Text(
-                    '${center.totalRatings} ${center.totalRatings == 1 ? 'rating' : 'ratings'}',
+                    '${localizedNumber(center.totalRatings!)} ${center.totalRatings == 1 ? l10n.ratingSingular : l10n.ratingPlural}',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Colors.grey[800],
                     ),
                   ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  'Based on user reviews',
+                  l10n.basedOnUserReviews,
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.grey[600],
@@ -370,11 +346,11 @@ class _ServiceCenterDetailsScreenState
     if (center.phone == null &&
         center.email == null &&
         center.website == null) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -382,7 +358,7 @@ class _ServiceCenterDetailsScreenState
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -390,9 +366,9 @@ class _ServiceCenterDetailsScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Text(
-              'Contact Information',
+              l10n.contactInformation,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -400,11 +376,11 @@ class _ServiceCenterDetailsScreenState
               ),
             ),
           ),
-          Divider(height: 1),
+          const Divider(height: 1),
           if (center.phone != null)
             ListTile(
               leading: Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.green[50],
                   borderRadius: BorderRadius.circular(8),
@@ -412,17 +388,17 @@ class _ServiceCenterDetailsScreenState
                 child: Icon(Icons.phone, color: Colors.green[600], size: 20),
               ),
               title: Text(center.phone!),
-              subtitle: Text('Phone'),
+              subtitle: Text(l10n.phone),
               trailing: IconButton(
                 icon: Icon(Icons.call, color: Colors.green[600]),
                 onPressed: () => _launchPhone(center.phone!),
               ),
             ),
           if (center.email != null) ...[
-            Divider(height: 1, indent: 68),
+            const Divider(height: 1, indent: 68),
             ListTile(
               leading: Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.blue[50],
                   borderRadius: BorderRadius.circular(8),
@@ -430,7 +406,7 @@ class _ServiceCenterDetailsScreenState
                 child: Icon(Icons.email, color: Colors.blue[600], size: 20),
               ),
               title: Text(center.email!),
-              subtitle: Text('Email'),
+              subtitle: Text(l10n.email),
               trailing: IconButton(
                 icon: Icon(Icons.send, color: Colors.blue[600]),
                 onPressed: () => _launchEmail(center.email!),
@@ -438,10 +414,10 @@ class _ServiceCenterDetailsScreenState
             ),
           ],
           if (center.website != null) ...[
-            Divider(height: 1, indent: 68),
+            const Divider(height: 1, indent: 68),
             ListTile(
               leading: Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.purple[50],
                   borderRadius: BorderRadius.circular(8),
@@ -450,7 +426,7 @@ class _ServiceCenterDetailsScreenState
                     Icon(Icons.language, color: Colors.purple[600], size: 20),
               ),
               title: Text(center.website!),
-              subtitle: Text('Website'),
+              subtitle: Text(l10n.website),
               trailing: IconButton(
                 icon: Icon(Icons.open_in_new, color: Colors.purple[600]),
                 onPressed: () => _launchUrl(center.website!),
@@ -458,10 +434,10 @@ class _ServiceCenterDetailsScreenState
             ),
           ],
           if (center.contactPerson != null) ...[
-            Divider(height: 1, indent: 68),
+            const Divider(height: 1, indent: 68),
             ListTile(
               leading: Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.orange[50],
                   borderRadius: BorderRadius.circular(8),
@@ -470,7 +446,7 @@ class _ServiceCenterDetailsScreenState
               ),
               title: Text(center.contactPerson!),
               subtitle:
-                  Text(center.contactPersonDesignation ?? 'Contact Person'),
+                  Text(center.contactPersonDesignation ?? l10n.contactPerson),
             ),
           ],
         ],
@@ -480,7 +456,7 @@ class _ServiceCenterDetailsScreenState
 
   Widget _buildLocationSection(ServiceCenter center, String lang) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -488,7 +464,7 @@ class _ServiceCenterDetailsScreenState
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -496,12 +472,12 @@ class _ServiceCenterDetailsScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Location',
+                  l10n.location,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -510,21 +486,21 @@ class _ServiceCenterDetailsScreenState
                 ),
                 TextButton.icon(
                   onPressed: () => _openInMaps(center),
-                  icon: Icon(Icons.directions, size: 18),
-                  label: Text('Directions'),
+                  icon: const Icon(Icons.directions, size: 18),
+                  label: Text(l10n.directions),
                 ),
               ],
             ),
           ),
-          Divider(height: 1),
-          Container(
+          const Divider(height: 1),
+          SizedBox(
             height: 200,
             child: FlutterMap(
               mapController: _mapController,
               options: MapOptions(
                 initialCenter: LatLng(center.latitude, center.longitude),
                 initialZoom: 15,
-                interactionOptions: InteractionOptions(
+                interactionOptions: const InteractionOptions(
                   flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
                 ),
               ),
@@ -532,6 +508,7 @@ class _ServiceCenterDetailsScreenState
                 TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.example.smartKishan',
+                  additionalOptions: const {},
                 ),
                 MarkerLayer(
                   markers: [
@@ -558,7 +535,7 @@ class _ServiceCenterDetailsScreenState
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -567,9 +544,9 @@ class _ServiceCenterDetailsScreenState
                   style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                 ),
                 if (center.wardNo != null) ...[
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
-                    'Ward No: ${center.wardNo}',
+                    l10n.wardNo(localizedNumber(center.wardNo!)),
                     style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                   ),
                 ],
@@ -583,11 +560,11 @@ class _ServiceCenterDetailsScreenState
 
   Widget _buildOperatingHours(ServiceCenter center, String lang) {
     if (center.operatingHours == null || center.operatingHours!.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -595,7 +572,7 @@ class _ServiceCenterDetailsScreenState
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -603,9 +580,9 @@ class _ServiceCenterDetailsScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Text(
-              'Operating Hours',
+              l10n.operatingHours,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -613,10 +590,10 @@ class _ServiceCenterDetailsScreenState
               ),
             ),
           ),
-          Divider(height: 1),
+          const Divider(height: 1),
           ...center.operatingHours!.entries.map((entry) {
             return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -638,8 +615,8 @@ class _ServiceCenterDetailsScreenState
                 ],
               ),
             );
-          }).toList(),
-          SizedBox(height: 8),
+          }),
+          const SizedBox(height: 8),
         ],
       ),
     );
@@ -647,11 +624,11 @@ class _ServiceCenterDetailsScreenState
 
   Widget _buildServices(ServiceCenter center, String lang) {
     if (center.services == null || center.services!.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -659,7 +636,7 @@ class _ServiceCenterDetailsScreenState
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -667,9 +644,9 @@ class _ServiceCenterDetailsScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Text(
-              'Services Offered',
+              l10n.servicesOffered,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -677,9 +654,9 @@ class _ServiceCenterDetailsScreenState
               ),
             ),
           ),
-          Divider(height: 1),
+          const Divider(height: 1),
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -711,11 +688,11 @@ class _ServiceCenterDetailsScreenState
         : center.description;
 
     if (description == null || description.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: const EdgeInsets.all(20),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -724,24 +701,24 @@ class _ServiceCenterDetailsScreenState
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'About',
+              l10n.about,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey[800],
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
               description,
               style: TextStyle(
@@ -758,7 +735,7 @@ class _ServiceCenterDetailsScreenState
 
   Widget _buildUserRatingSection(ServiceCenter center, String lang) {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -766,7 +743,7 @@ class _ServiceCenterDetailsScreenState
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -774,9 +751,9 @@ class _ServiceCenterDetailsScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Text(
-              'Your Rating',
+              localizedNumber(l10n.yourRating),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -784,9 +761,9 @@ class _ServiceCenterDetailsScreenState
               ),
             ),
           ),
-          Divider(height: 1),
+          const Divider(height: 1),
           if (isLoadingUserRating)
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(32),
               child: Center(child: CircularProgressIndicator()),
             )
@@ -801,13 +778,13 @@ class _ServiceCenterDetailsScreenState
 
   Widget _buildExistingRating(ServiceCenter center) {
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Rating display
           Container(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.amber[50],
               borderRadius: BorderRadius.circular(12),
@@ -825,9 +802,9 @@ class _ServiceCenterDetailsScreenState
                         size: 28,
                       );
                     }),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Text(
-                      '$userRating/5',
+                      '${localizedNumber(userRating!)}/${localizedNumber(5)}',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -837,7 +814,7 @@ class _ServiceCenterDetailsScreenState
                   ],
                 ),
                 if (userReview != null && userReview!.isNotEmpty) ...[
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Text(
                     userReview!,
                     style: TextStyle(
@@ -847,9 +824,9 @@ class _ServiceCenterDetailsScreenState
                     ),
                   ),
                 ],
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
-                  'You rated this service center',
+                  l10n.youRatedThisCenter,
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey[600],
@@ -860,7 +837,7 @@ class _ServiceCenterDetailsScreenState
             ),
           ),
 
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
 
           // Action buttons
           Row(
@@ -868,31 +845,31 @@ class _ServiceCenterDetailsScreenState
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () => _showEditRatingDialog(center),
-                  icon: Icon(Icons.edit, size: 18),
-                  label: Text('Edit Rating'),
+                  icon: const Icon(Icons.edit, size: 18),
+                  label: Text(l10n.editRating),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.green[600],
                     side: BorderSide(color: Colors.green[600]!),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () => _showDeleteRatingDialog(center),
-                  icon: Icon(Icons.delete_outline, size: 18),
-                  label: Text('Delete'),
+                  icon: const Icon(Icons.delete_outline, size: 18),
+                  label: Text(l10n.delete),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.red[600],
                     side: BorderSide(color: Colors.red[600]!),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
               ),
@@ -905,13 +882,13 @@ class _ServiceCenterDetailsScreenState
 
   Widget _buildNewRatingForm(ServiceCenter center) {
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.grey[50],
               borderRadius: BorderRadius.circular(12),
@@ -923,18 +900,18 @@ class _ServiceCenterDetailsScreenState
                   size: 48,
                   color: Colors.grey[400],
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
-                  'Share Your Experience',
+                  l10n.shareExperience,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey[700],
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  'Help others by rating this service center',
+                  l10n.helpOthersRate,
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.grey[600],
@@ -944,17 +921,17 @@ class _ServiceCenterDetailsScreenState
               ],
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () => _showAddRatingDialog(center),
-              icon: Icon(Icons.rate_review),
-              label: Text('Add Your Rating'),
+              icon: const Icon(Icons.rate_review),
+              label: Text(l10n.addYourRating),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green[600],
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 14),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -975,6 +952,7 @@ class _ServiceCenterDetailsScreenState
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
           return AlertDialog(
+            insetPadding: const EdgeInsets.symmetric(horizontal: 15),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
@@ -982,7 +960,7 @@ class _ServiceCenterDetailsScreenState
             title: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.green[50],
                     shape: BoxShape.circle,
@@ -993,93 +971,100 @@ class _ServiceCenterDetailsScreenState
                     size: 32,
                   ),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
-                  'Rate Service Center',
-                  style: TextStyle(fontSize: 20),
+                  l10n.rateServiceCenter,
+                  style: const TextStyle(fontSize: 20),
                 ),
               ],
             ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    center.name,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 20),
-
-                  // Star rating
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(5, (index) {
-                        return IconButton(
-                          onPressed: () {
-                            setDialogState(() {
-                              selectedRating = index + 1;
-                            });
-                          },
-                          icon: Icon(
-                            index < (selectedRating ?? 0)
-                                ? Icons.star
-                                : Icons.star_border,
-                            color: Colors.amber,
-                            size: 30,
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-
-                  if (selectedRating != null) ...[
+            content: SizedBox(
+              width: double.maxFinite,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Center(
                       child: Text(
-                        _getRatingText(selectedRating!),
+                        l10n.localeName == 'ne' && center.nameNe != null
+                            ? center.nameNe!
+                            : center.name,
                         style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.amber[700],
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w500,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                    // Review text field
-                    Text(
-                      'Write a review (optional)',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[700],
+                    // Star rating
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(5, (index) {
+                          return IconButton(
+                            onPressed: () {
+                              setDialogState(() {
+                                selectedRating = index + 1;
+                              });
+                            },
+                            icon: Icon(
+                              index < (selectedRating ?? 0)
+                                  ? Icons.star
+                                  : Icons.star_border,
+                              color: Colors.amber,
+                              size: 30,
+                            ),
+                          );
+                        }),
                       ),
                     ),
-                    SizedBox(height: 8),
-                    TextField(
-                      maxLines: 4,
-                      maxLength: 500,
-                      decoration: InputDecoration(
-                        hintText: 'Share your experience...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+
+                    if (selectedRating != null) ...[
+                      Center(
+                        child: Text(
+                          _getRatingText(selectedRating!),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.amber[700],
+                          ),
                         ),
-                        filled: true,
-                        fillColor: Colors.grey[50],
-                        counterText: '',
                       ),
-                      onChanged: (value) {
-                        reviewText = value;
-                      },
-                    ),
+                      const SizedBox(height: 20),
+
+                      // Review text field
+                      Text(
+                        l10n.writeReviewOptional,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        maxLines: 4,
+                        maxLength: 500,
+                        decoration: InputDecoration(
+                          hintText: l10n.shareYourExperienceHint,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey[50],
+                          counterText: '',
+                        ),
+                        onChanged: (value) {
+                          reviewText = value;
+                        },
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
             actions: [
@@ -1089,8 +1074,8 @@ class _ServiceCenterDetailsScreenState
                 ),
                 onPressed: () => Navigator.pop(context),
                 child: Text(
-                  'Cancel',
-                  style: TextStyle(color: kPrimaryColor),
+                  l10n.cancel,
+                  style: const TextStyle(color: kPrimaryColor),
                 ),
               ),
               ElevatedButton(
@@ -1112,7 +1097,7 @@ class _ServiceCenterDetailsScreenState
                   ),
                   disabledBackgroundColor: Colors.grey[300],
                 ),
-                child: Text('Submit'),
+                child: Text(l10n.submit),
               ),
             ],
           );
@@ -1130,6 +1115,7 @@ class _ServiceCenterDetailsScreenState
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
           return AlertDialog(
+            insetPadding: const EdgeInsets.symmetric(horizontal: 15),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
@@ -1137,7 +1123,7 @@ class _ServiceCenterDetailsScreenState
             title: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.amber[50],
                     shape: BoxShape.circle,
@@ -1148,94 +1134,101 @@ class _ServiceCenterDetailsScreenState
                     size: 32,
                   ),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
-                  'Edit Your Rating',
-                  style: TextStyle(fontSize: 20),
+                  l10n.editYourRating,
+                  style: const TextStyle(fontSize: 20),
                 ),
               ],
             ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    center.name,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 20),
-
-                  // Star rating
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(5, (index) {
-                        return IconButton(
-                          onPressed: () {
-                            setDialogState(() {
-                              selectedRating = index + 1;
-                            });
-                          },
-                          icon: Icon(
-                            index < (selectedRating ?? 0)
-                                ? Icons.star
-                                : Icons.star_border,
-                            color: Colors.amber,
-                            size: 30,
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-
-                  if (selectedRating != null) ...[
+            content: SizedBox(
+              width: double.maxFinite,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Center(
                       child: Text(
-                        _getRatingText(selectedRating!),
+                        l10n.localeName == 'ne' && center.nameNe != null
+                            ? center.nameNe!
+                            : center.name,
                         style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.amber[700],
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w500,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                    // Review text field
-                    Text(
-                      'Write a review (optional)',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[700],
+                    // Star rating
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(5, (index) {
+                          return IconButton(
+                            onPressed: () {
+                              setDialogState(() {
+                                selectedRating = index + 1;
+                              });
+                            },
+                            icon: Icon(
+                              index < (selectedRating ?? 0)
+                                  ? Icons.star
+                                  : Icons.star_border,
+                              color: Colors.amber,
+                              size: 30,
+                            ),
+                          );
+                        }),
                       ),
                     ),
-                    SizedBox(height: 8),
-                    TextField(
-                      maxLines: 4,
-                      maxLength: 500,
-                      controller: TextEditingController(text: reviewText),
-                      decoration: InputDecoration(
-                        hintText: 'Share your experience...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+
+                    if (selectedRating != null) ...[
+                      Center(
+                        child: Text(
+                          _getRatingText(selectedRating!),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.amber[700],
+                          ),
                         ),
-                        filled: true,
-                        fillColor: Colors.grey[50],
-                        counterText: '',
                       ),
-                      onChanged: (value) {
-                        reviewText = value;
-                      },
-                    ),
+                      const SizedBox(height: 20),
+
+                      // Review text field
+                      Text(
+                        l10n.writeReviewOptional,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        maxLines: 4,
+                        maxLength: 500,
+                        controller: TextEditingController(text: reviewText),
+                        decoration: InputDecoration(
+                          hintText: l10n.shareYourExperienceHint,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey[50],
+                          counterText: '',
+                        ),
+                        onChanged: (value) {
+                          reviewText = value;
+                        },
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
             actions: [
@@ -1245,8 +1238,8 @@ class _ServiceCenterDetailsScreenState
                 ),
                 onPressed: () => Navigator.pop(context),
                 child: Text(
-                  'Cancel',
-                  style: TextStyle(color: kPrimaryColor),
+                  l10n.cancel,
+                  style: const TextStyle(color: kPrimaryColor),
                 ),
               ),
               ElevatedButton(
@@ -1268,7 +1261,7 @@ class _ServiceCenterDetailsScreenState
                   ),
                   disabledBackgroundColor: Colors.grey[300],
                 ),
-                child: Text('Update'),
+                child: Text(l10n.update),
               ),
             ],
           );
@@ -1288,7 +1281,7 @@ class _ServiceCenterDetailsScreenState
         title: Column(
           children: [
             Container(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.red[50],
                 shape: BoxShape.circle,
@@ -1299,15 +1292,15 @@ class _ServiceCenterDetailsScreenState
                 size: 32,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
-              'Delete Rating?',
-              style: TextStyle(fontSize: 20),
+              l10n.deleteRatingQuestion,
+              style: const TextStyle(fontSize: 20),
             ),
           ],
         ),
         content: Text(
-          'Are you sure you want to delete your rating and review? This action cannot be undone.',
+          l10n.deleteRatingReviewConfirm,
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.grey[700]),
         ),
@@ -1318,8 +1311,8 @@ class _ServiceCenterDetailsScreenState
             ),
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
-              style: TextStyle(color: kPrimaryColor),
+              l10n.cancel,
+              style: const TextStyle(color: kPrimaryColor),
             ),
           ),
           ElevatedButton(
@@ -1331,9 +1324,9 @@ class _ServiceCenterDetailsScreenState
                   userRating = null;
                   userReview = null;
                 });
-                _showSnackBar('Rating deleted successfully!');
+                _showSnackBar(l10n.ratingDeleted);
               } else {
-                _showSnackBar('Failed to delete rating', isError: true);
+                _showSnackBar(l10n.ratingDeleteFailed, isError: true);
               }
             },
             style: ElevatedButton.styleFrom(
@@ -1343,7 +1336,7 @@ class _ServiceCenterDetailsScreenState
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -1352,6 +1345,7 @@ class _ServiceCenterDetailsScreenState
 
   Future<void> _submitRating(
       ServiceCenter center, int rating, String? review) async {
+    final wasUpdate = userRating != null;
     final success = await controller.rateServiceCenter(
       center.id,
       rating,
@@ -1360,25 +1354,25 @@ class _ServiceCenterDetailsScreenState
 
     if (success) {
       _showSnackBar(
-          'Rating ${userRating != null ? 'updated' : 'submitted'} successfully!');
+          wasUpdate ? l10n.ratingUpdatedSuccess : l10n.ratingSubmittedSuccess);
       await _loadUserRating();
     } else {
-      _showSnackBar('Failed to submit rating', isError: true);
+      _showSnackBar(l10n.ratingFailed, isError: true);
     }
   }
 
   String _getRatingText(int rating) {
     switch (rating) {
       case 1:
-        return 'Poor';
+        return l10n.poor;
       case 2:
-        return 'Fair';
+        return l10n.fair;
       case 3:
-        return 'Good';
+        return l10n.good;
       case 4:
-        return 'Very Good';
+        return l10n.veryGood;
       case 5:
-        return 'Excellent';
+        return l10n.excellent;
       default:
         return '';
     }
@@ -1388,11 +1382,11 @@ class _ServiceCenterDetailsScreenState
     final reviews = center.ratings ?? [];
 
     if (reviews.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -1400,7 +1394,7 @@ class _ServiceCenterDetailsScreenState
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -1408,12 +1402,12 @@ class _ServiceCenterDetailsScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Recent Reviews',
+                  l10n.recentReviews,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -1421,7 +1415,7 @@ class _ServiceCenterDetailsScreenState
                   ),
                 ),
                 Text(
-                  '${reviews.length} ${reviews.length == 1 ? 'review' : 'reviews'}',
+                  '${localizedNumber(reviews.length)} ${reviews.length == 1 ? l10n.reviewSingular : l10n.reviewPlural}',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -1430,13 +1424,13 @@ class _ServiceCenterDetailsScreenState
               ],
             ),
           ),
-          Divider(height: 1),
+          const Divider(height: 1),
           ListView.separated(
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            padding: EdgeInsets.all(16),
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16),
             itemCount: reviews.length > 5 ? 5 : reviews.length,
-            separatorBuilder: (context, index) => Divider(height: 24),
+            separatorBuilder: (context, index) => const Divider(height: 24),
             itemBuilder: (context, index) {
               final review = reviews[index];
               return _buildReviewItem(review);
@@ -1444,15 +1438,16 @@ class _ServiceCenterDetailsScreenState
           ),
           if (reviews.length > 5)
             Padding(
-              padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: TextButton(
                 onPressed: () {
                   // TODO: Show all reviews in a new screen or bottom sheet
                 },
-                child: Text('View all ${reviews.length} reviews'),
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.green[600],
                 ),
+                child: Text(
+                    l10n.viewAllReviews((localizedNumber(reviews.length)))),
               ),
             ),
         ],
@@ -1476,20 +1471,20 @@ class _ServiceCenterDetailsScreenState
                 ),
               ),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    review.user?.name ?? 'Anonymous',
+                    review.user?.name ?? l10n.anonymous,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Colors.grey[800],
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Row(
                     children: [
                       ...List.generate(5, (index) {
@@ -1501,7 +1496,7 @@ class _ServiceCenterDetailsScreenState
                           size: 14,
                         );
                       }),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
                         _formatDate(review.createdAt.toString()),
                         style: TextStyle(
@@ -1517,7 +1512,7 @@ class _ServiceCenterDetailsScreenState
           ],
         ),
         if (review.review != null && review.review!.isNotEmpty) ...[
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Text(
             review.review!,
             style: TextStyle(
@@ -1539,16 +1534,18 @@ class _ServiceCenterDetailsScreenState
 
       if (difference.inDays == 0) {
         if (difference.inHours == 0) {
-          return '${difference.inMinutes} min ago';
+          return '${localizedNumber(difference.inMinutes)} ${l10n.minUnit} ${l10n.ago}';
         }
-        return '${difference.inHours} hr ago';
+        return '${localizedNumber(difference.inHours)} ${l10n.hrUnit} ${l10n.ago}';
       } else if (difference.inDays < 7) {
-        return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
+        final unit = difference.inDays == 1 ? l10n.dayUnit : l10n.daysUnit;
+        return '${localizedNumber(difference.inDays)} $unit ${l10n.ago}';
       } else if (difference.inDays < 30) {
         final weeks = (difference.inDays / 7).floor();
-        return '$weeks week${weeks > 1 ? 's' : ''} ago';
+        final unit = weeks == 1 ? l10n.weekUnit : l10n.weeksUnit;
+        return '${localizedNumber(weeks)} $unit ${l10n.ago}';
       } else {
-        return DateFormat('MMM d, yyyy').format(date);
+        return DateFormat('MMM d, yyyy', localeCode).format(date);
       }
     } catch (e) {
       return '';

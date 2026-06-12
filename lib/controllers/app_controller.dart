@@ -28,16 +28,19 @@ import 'package:smart_kishan/controllers/vendor_dashboard_controller.dart';
 
 OTPController otpController = OTPController.instance;
 AuthController authController = AuthController.instance;
-ProductController productController = ProductController.instance;
-DailyActivityController dailyActivityController =
+
+NoteController get noteController => NoteController.instance;
+ProductController get productController => ProductController.instance;
+DailyActivityController get dailyActivityController =>
     DailyActivityController.instance;
-IncomeController incomeController = IncomeController.instance;
-ExpenseController expenseController = ExpenseController.instance;
-ChartController chartController = ChartController.instance;
-NoteController noteController = NoteController.instance;
+IncomeController get incomeController => IncomeController.instance;
+ExpenseController get expenseController => ExpenseController.instance;
+ChartController get chartController => ChartController.instance;
+FarmlandController get farmlandController => FarmlandController.instance;
+WeatherController get weatherController => WeatherController.instance;
+SubsidyController get subsidyController => SubsidyController.instance;
+
 UserController userController = UserController.instance;
-WeatherController weatherController = WeatherController.instance;
-FarmlandController farmlandController = FarmlandController.instance;
 CropInfocontroller cropInfoController = CropInfocontroller.instance;
 BuyersGroupController buyersGroupController = BuyersGroupController.instance;
 SellProductController sellProductController = SellProductController.instance;
@@ -59,4 +62,3 @@ VendorHomeController vendorHomeController = VendorHomeController.instance;
 VendorOrdersController vendorOrdersController = VendorOrdersController.instance;
 KalimatiPriceController kalimatiPriceController =
     KalimatiPriceController.instance;
-SubsidyController subsidyController = SubsidyController.instance;

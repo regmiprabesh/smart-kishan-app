@@ -783,7 +783,8 @@ class _ApplySubsidyScreenState extends State<ApplySubsidyScreen> {
           height: 10,
         ),
         DropdownButtonFormField<String>(
-          value: _formFieldValues[field.fieldKey],
+          initialValue: _formFieldValues[field.fieldKey],
+          style: Theme.of(context).textTheme.bodyMedium,
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),

@@ -196,6 +196,527 @@ class AppLocalizationsNe extends AppLocalizations {
   String get chart => 'लेखा चित्र';
 
   @override
+  String get incomeAnalysis => 'आम्दानी विश्लेषण';
+
+  @override
+  String get incomeChartDaily => 'दैनिक आमदानी चार्ट';
+
+  @override
+  String get incomeChartMonthly => 'मासिक आमदानी चार्ट';
+
+  @override
+  String get incomeChartYearly => 'वार्षिक आमदानी चार्ट';
+
+  @override
+  String get last7Days => 'पछिल्लो ७ दिन';
+
+  @override
+  String get last7Months => 'पछिल्लो ७ महिना';
+
+  @override
+  String get last5Years => 'पछिल्लो ५ वर्ष';
+
+  @override
+  String get expenseAnalysis => 'खर्च विश्लेषण';
+
+  @override
+  String get expenseChartDaily => 'दैनिक खर्च चार्ट';
+
+  @override
+  String get expenseChartMonthly => 'मासिक खर्च चार्ट';
+
+  @override
+  String get expenseChartYearly => 'वार्षिक खर्च चार्ट';
+
+  @override
+  String get chartScreenTitle => 'लेखा चित्र';
+
+  @override
+  String get chartTitleDaily => 'दैनिक आय/व्यय लेखा चित्र';
+
+  @override
+  String get chartTitleMonthly => 'मासिक आय/व्यय लेखा चित्र';
+
+  @override
+  String get chartTitleYearly => 'वार्षिक आय/व्यय लेखा चित्र';
+
+  @override
+  String get currencySymbol => 'रू.';
+
+  @override
+  String get filterDaily => 'दैनिक';
+
+  @override
+  String get filterMonthly => 'मासिक';
+
+  @override
+  String get filterYearly => 'वार्षिक';
+
+  @override
+  String get productListTitle => 'जिन्सी समान';
+
+  @override
+  String get stockLabel => 'स्टक';
+
+  @override
+  String get noProductsFound => 'तपाईंसँग हाल कुनै उत्पादन छैन !';
+
+  @override
+  String get noDateFound => 'मिति फेला परेन';
+
+  @override
+  String get loadingCity => 'सहर लोड हुँदैछ...';
+
+  @override
+  String get goodDayForPesticide => 'कीटनाशक प्रयोग गर्न आजको दिन राम्रो छ।';
+
+  @override
+  String get badDayForPesticide => 'कीटनाशक प्रयोग गर्न आजको दिन राम्रो छैन।';
+
+  @override
+  String get weatherThunderstorm => 'चट्याङसहितको वर्षा';
+
+  @override
+  String get weatherDrizzle => 'सिमसिम पानी';
+
+  @override
+  String get weatherRain => 'वर्षा';
+
+  @override
+  String get weatherSnow => 'हिमपात';
+
+  @override
+  String get weatherClear => 'सफा आकाश';
+
+  @override
+  String get weatherClouds => 'बदली';
+
+  @override
+  String get weatherMist => 'तुवाँलो';
+
+  @override
+  String get weatherHaze => 'धुम्म';
+
+  @override
+  String get weatherFog => 'कुहिरो';
+
+  @override
+  String get newNote => 'नयाँ नोट';
+
+  @override
+  String get addNote => 'नोट थप्नुहोस्';
+
+  @override
+  String get updateNote => 'नोट अपडेट गर्नुहोस्';
+
+  @override
+  String get add => 'थप्नुहोस्';
+
+  @override
+  String get update => 'अपडेट गर्नुहोस्';
+
+  @override
+  String get edit => 'सम्पादन गर्नुहोस्';
+
+  @override
+  String get notesEmptyDescription =>
+      'आफ्ना महत्त्वपूर्ण विचार र जानकारी सुरक्षित राख्न नोट थप्नुहोस्';
+
+  @override
+  String get deleteNoteConfirm =>
+      'तपाईं यो नोट मेटाउन निश्चित हुनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन।';
+
+  @override
+  String get today => 'आज';
+
+  @override
+  String get yesterday => 'हिजो';
+
+  @override
+  String daysAgo(String count) {
+    return '$count दिन अघि';
+  }
+
+  @override
+  String get noteTitle => 'नोटको शीर्षक';
+
+  @override
+  String get enterNoteTitle => 'नोटको शीर्षक प्रविष्ट गर्नुहोस्';
+
+  @override
+  String get pleaseEnterNoteTitle =>
+      'कृपया आफ्नो नोटको शीर्षक प्रविष्ट गर्नुहोस्';
+
+  @override
+  String get noteTitleMinLength => 'नोटको शीर्षक कम्तिमा ३ अक्षरको हुनुपर्छ';
+
+  @override
+  String get noteDescription => 'नोटको विवरण';
+
+  @override
+  String get enterNoteDescription => 'नोटको विवरण प्रविष्ट गर्नुहोस्';
+
+  @override
+  String get notePriority => 'नोटको प्राथमिकता';
+
+  @override
+  String get enterNotePriority => 'नोटको प्राथमिकता प्रविष्ट गर्नुहोस्';
+
+  @override
+  String get governmentServices => 'सरकारी सेवाहरू';
+
+  @override
+  String get quickActions => 'द्रुत कार्यहरू';
+
+  @override
+  String get homeGovOfficesTitle => 'सरकारी कार्यालयहरू';
+
+  @override
+  String get homeGovOfficesSubtitle =>
+      'नजिकका कृषि कार्यालय र प्रयोगशाला खोज्नुहोस्';
+
+  @override
+  String get homeGovOfficesBadge => 'स्थानहरू';
+
+  @override
+  String get homeSubsidiesTitle => 'अनुदान तथा\nसुविधाहरू';
+
+  @override
+  String get homeSubsidiesSubtitle => 'सरकारी अनुदानहरू अन्वेषण गर्नुहोस्';
+
+  @override
+  String get homeSubsidiesBadge => 'सरकारी सहयोग';
+
+  @override
+  String get homeComplaintsTitle => 'गुनासो\nदर्ता गर्नुहोस्';
+
+  @override
+  String get homeComplaintsSubtitle => 'आफ्ना समस्याहरू रिपोर्ट गर्नुहोस्';
+
+  @override
+  String get homeComplaintsBadge => 'समस्या रिपोर्ट';
+
+  @override
+  String get homeSurveysTitle => 'सर्वेक्षणहरू';
+
+  @override
+  String get homeSurveysSubtitle => 'आफ्नो प्रतिक्रिया साझा गर्नुहोस्';
+
+  @override
+  String get homeSurveysBadge => 'प्रतिक्रिया';
+
+  @override
+  String get serviceCenters => 'सेवा केन्द्रहरू';
+
+  @override
+  String get listView => 'सूची दृश्य';
+
+  @override
+  String get mapView => 'नक्सा दृश्य';
+
+  @override
+  String get filters => 'फिल्टरहरू';
+
+  @override
+  String get currentLocationNotAvailable => 'हालको स्थान उपलब्ध छैन';
+
+  @override
+  String get searchServiceCentersHint => 'सेवा केन्द्र खोज्नुहोस्...';
+
+  @override
+  String get loadingRoute => 'मार्ग लोड हुँदैछ...';
+
+  @override
+  String get nearestServiceCenters => 'नजिकका सेवा केन्द्रहरू';
+
+  @override
+  String get noServiceCentersFound => 'कुनै सेवा केन्द्र भेटिएन';
+
+  @override
+  String get tryAdjustingFilters => 'आफ्ना फिल्टर वा खोजी समायोजन गर्नुहोस्';
+
+  @override
+  String get km => 'कि.मि.';
+
+  @override
+  String get away => 'टाढा';
+
+  @override
+  String get routeLoaded => 'मार्ग लोड भयो';
+
+  @override
+  String get notApplicable => 'उपलब्ध छैन';
+
+  @override
+  String get featured => 'विशेष';
+
+  @override
+  String get viewOnMap => 'नक्सामा हेर्नुहोस्';
+
+  @override
+  String get details => 'विवरण';
+
+  @override
+  String get filtersAndSort => 'फिल्टर र क्रमबद्धता';
+
+  @override
+  String get clearAll => 'सबै हटाउनुहोस्';
+
+  @override
+  String get distance => 'दूरी';
+
+  @override
+  String get name => 'नाम';
+
+  @override
+  String get rating => 'रेटिङ';
+
+  @override
+  String get newest => 'नवीनतम';
+
+  @override
+  String get searchRadius => 'खोज दायरा';
+
+  @override
+  String get showFeaturedOnly => 'केवल विशेष देखाउनुहोस्';
+
+  @override
+  String get applyFilters => 'फिल्टर लागू गर्नुहोस्';
+
+  @override
+  String get serviceCenterNotFound => 'सेवा केन्द्र भेटिएन';
+
+  @override
+  String get basedOnUserReviews => 'प्रयोगकर्ताका समीक्षामा आधारित';
+
+  @override
+  String get ratingSingular => 'रेटिङ';
+
+  @override
+  String get ratingPlural => 'रेटिङहरू';
+
+  @override
+  String get reviewSingular => 'समीक्षा';
+
+  @override
+  String get reviewPlural => 'समीक्षाहरू';
+
+  @override
+  String get contactInformation => 'सम्पर्क जानकारी';
+
+  @override
+  String get phone => 'फोन';
+
+  @override
+  String get website => 'वेबसाइट';
+
+  @override
+  String get contactPerson => 'सम्पर्क व्यक्ति';
+
+  @override
+  String get directions => 'दिशा';
+
+  @override
+  String wardNo(String no) {
+    return 'वडा नं: $no';
+  }
+
+  @override
+  String get operatingHours => 'कार्य समय';
+
+  @override
+  String get servicesOffered => 'प्रदान गरिएका सेवाहरू';
+
+  @override
+  String get yourRating => 'तपाईंको रेटिङ';
+
+  @override
+  String get editRating => 'रेटिङ सम्पादन गर्नुहोस्';
+
+  @override
+  String get helpOthersRate =>
+      'यो सेवा केन्द्रलाई रेटिङ दिएर अरूलाई मद्दत गर्नुहोस्';
+
+  @override
+  String get addYourRating => 'आफ्नो रेटिङ थप्नुहोस्';
+
+  @override
+  String get rateServiceCenter => 'सेवा केन्द्रलाई रेटिङ दिनुहोस्';
+
+  @override
+  String get writeReviewOptional => 'समीक्षा लेख्नुहोस् (वैकल्पिक)';
+
+  @override
+  String get shareYourExperienceHint => 'आफ्नो अनुभव साझा गर्नुहोस्...';
+
+  @override
+  String get submit => 'पेश गर्नुहोस्';
+
+  @override
+  String get editYourRating => 'आफ्नो रेटिङ सम्पादन गर्नुहोस्';
+
+  @override
+  String get deleteRatingQuestion => 'रेटिङ मेटाउने?';
+
+  @override
+  String get deleteRatingReviewConfirm =>
+      'के तपाईं आफ्नो रेटिङ र समीक्षा मेटाउन निश्चित हुनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन।';
+
+  @override
+  String get ratingSubmittedSuccess => 'रेटिङ सफलतापूर्वक पेश गरियो!';
+
+  @override
+  String get ratingUpdatedSuccess => 'रेटिङ सफलतापूर्वक अपडेट गरियो!';
+
+  @override
+  String get youRatedThisCenter => 'तपाईंले यो सेवा केन्द्रलाई रेटिङ दिनुभयो';
+
+  @override
+  String get recentReviews => 'हालका समीक्षाहरू';
+
+  @override
+  String viewAllReviews(String count) {
+    return 'सबै $count समीक्षाहरू हेर्नुहोस्';
+  }
+
+  @override
+  String get anonymous => 'अज्ञात';
+
+  @override
+  String get ago => 'अघि';
+
+  @override
+  String get minUnit => 'मिनेट';
+
+  @override
+  String get hrUnit => 'घण्टा';
+
+  @override
+  String get dayUnit => 'दिन';
+
+  @override
+  String get daysUnit => 'दिन';
+
+  @override
+  String get weekUnit => 'हप्ता';
+
+  @override
+  String get weeksUnit => 'हप्ता';
+
+  @override
+  String get topRatedServiceCenters =>
+      'उच्च मूल्याङ्कन प्राप्त सेवा केन्द्रहरू';
+
+  @override
+  String get basicInformation => 'आधारभूत जानकारी';
+
+  @override
+  String get requestDetails => 'अनुरोध विवरण';
+
+  @override
+  String get requestTarget => 'अनुरोधको लक्ष्य';
+
+  @override
+  String get actionCannotBeUndone => 'यो कार्य पूर्ववत् गर्न सकिँदैन।';
+
+  @override
+  String get kalimatiPriceList => 'कालिमाटी मूल्य सूची';
+
+  @override
+  String get commodity => 'वस्तु';
+
+  @override
+  String get unit => 'एकाइ';
+
+  @override
+  String get minPrice => 'न्यूनतम मूल्य';
+
+  @override
+  String get maxPrice => 'अधिकतम मूल्य';
+
+  @override
+  String get avgPrice => 'औसत मूल्य';
+
+  @override
+  String get tapAnyFileToViewOrDownload =>
+      'हेर्न वा डाउनलोड गर्न कुनै पनि फाइलमा ट्याप गर्नुहोस्।';
+
+  @override
+  String get addUser => 'प्रयोगकर्ता थप गर्नुहोस्';
+
+  @override
+  String get noUsersYet =>
+      'तपाईंले अहिलेसम्म कुनै पनि प्रयोगकर्ता थप्नुभएको छैन !';
+
+  @override
+  String get deleteUserConfirm =>
+      'तपाईं यो प्रयोगकर्ता मेटाउन निश्चित हुनुहुन्छ?';
+
+  @override
+  String get addUserTitle => 'प्रयोगकर्ता थप्नुहोस्';
+
+  @override
+  String get updateUserTitle => 'प्रयोगकर्ता अपडेट गर्नुहोस्';
+
+  @override
+  String get userFullName => 'प्रयोगकर्ताको पूरा नाम';
+
+  @override
+  String get enterUserFullName => 'प्रयोगकर्ताको पूरा नाम प्रविष्टि गर्नुहोस्';
+
+  @override
+  String get pleaseEnterUserFullName =>
+      'कृपया प्रयोगकर्ताको पूरा नाम प्रविष्टि गर्नुहोस्';
+
+  @override
+  String get pleaseEnterValidUserName =>
+      'कृपया प्रयोगकर्ताको मान्य नाम प्रविष्ट गर्नुहोस्';
+
+  @override
+  String get userPhoneNumber => 'प्रयोगकर्ताको फोन नम्बर';
+
+  @override
+  String get enterUserPhoneNumber =>
+      'प्रयोगकर्ताको फोन नम्बर प्रविष्टि गर्नुहोस्';
+
+  @override
+  String get pleaseEnterUserPhone =>
+      'कृपया प्रयोगकर्ताको फोन नम्बर प्रविष्टि गर्नुहोस्';
+
+  @override
+  String get pleaseEnterValidUserPhone =>
+      'कृपया प्रयोगकर्ताको मान्य फोन नम्बर प्रविष्टि गर्नुहोस्';
+
+  @override
+  String get userEmail => 'प्रयोगकर्ताको ई - मेल ठेगाना';
+
+  @override
+  String get enterUserEmail =>
+      'प्रयोगकर्ताको ई - मेल ठेगाना प्रविष्टि गर्नुहोस्';
+
+  @override
+  String get userPassword => 'प्रयोगकर्ताको पासवर्ड';
+
+  @override
+  String get enterUserPassword => 'प्रयोगकर्ताको पासवर्ड प्रविष्टि गर्नुहोस्';
+
+  @override
+  String get pleaseEnterUserPassword =>
+      'कृपया प्रयोगकर्ताको पासवर्ड प्रविष्ट गर्नुहोस्';
+
+  @override
+  String get passwordMinLength => 'पासवर्ड कम्तिमा ८ वर्ण लामो हुनुपर्छ';
+
+  @override
+  String get userConfirmPassword => 'प्रयोगकर्ताको पुन पासवर्ड';
+
+  @override
+  String get confirmUserPassword => 'प्रयोगकर्ताको पासवर्ड सुनिश्चित गर्नुहोस';
+
+  @override
+  String get confirmPasswordEmpty => 'पुन पासवर्ड फिल्ड खाली हुन सक्दैन';
+
+  @override
   String get users => 'प्रयोगकर्ताहरू';
 
   @override
@@ -1399,9 +1920,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get myRequests => 'मेरो अनुरोधहरू';
 
   @override
-  String get requestDetails => 'अनुरोध विवरण';
-
-  @override
   String get noRequests => 'कुनै अनुरोध छैन';
 
   @override
@@ -1756,6 +2274,9 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
+  String get comments => 'टिप्पणीहरू';
+
+  @override
   String commentsCount(int count) {
     return 'टिप्पणीहरू ($count)';
   }
@@ -1777,4 +2298,226 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get send => 'पठाउनुहोस्';
+
+  @override
+  String get surveys => 'सर्वेक्षणहरू';
+
+  @override
+  String get survey => 'सर्वेक्षण';
+
+  @override
+  String get available => 'उपलब्ध';
+
+  @override
+  String get completed => 'सम्पन्न';
+
+  @override
+  String get startSurvey => 'सर्वेक्षण सुरु गर्नुहोस्';
+
+  @override
+  String get takeAgain => 'फेरि भर्नुहोस्';
+
+  @override
+  String get canRetake => 'पुनः भर्न सकिन्छ';
+
+  @override
+  String questionsCount(String count) {
+    return '$count प्रश्नहरू';
+  }
+
+  @override
+  String respondedTimes(String count) {
+    return '$count पटक जवाफ दिइयो';
+  }
+
+  @override
+  String estimatedMinutes(String min) {
+    return '~$min मिनेट';
+  }
+
+  @override
+  String endsOn(String date) {
+    return 'अन्त्य: $date';
+  }
+
+  @override
+  String get noAvailableSurveys => 'कुनै उपलब्ध सर्वेक्षण छैन';
+
+  @override
+  String get checkBackLater => 'नयाँ सर्वेक्षणका लागि पछि फेरि हेर्नुहोस्';
+
+  @override
+  String get noCompletedSurveys => 'कुनै सम्पन्न सर्वेक्षण छैन';
+
+  @override
+  String get completeSurveysToSee => 'यहाँ देख्न सर्वेक्षणहरू पूरा गर्नुहोस्';
+
+  @override
+  String get noSurveysAvailable => 'कुनै सर्वेक्षण उपलब्ध छैन';
+
+  @override
+  String get noSurveysAvailableDesc =>
+      'अहिले तपाईंका लागि कुनै सर्वेक्षण उपलब्ध छैन';
+
+  @override
+  String get pullDownToRefresh => 'ताजा गर्न तल तान्नुहोस्';
+
+  @override
+  String get surveyTypeCropProduction => 'बाली उत्पादन';
+
+  @override
+  String get surveyTypeLivestockCensus => 'पशुधन गणना';
+
+  @override
+  String get surveyTypeLandUsage => 'भूमि उपयोग';
+
+  @override
+  String get surveyTypeFarmerSatisfaction => 'किसान सन्तुष्टि';
+
+  @override
+  String get surveyTypeSubsidyImpact => 'अनुदान प्रभाव';
+
+  @override
+  String get surveyTypeTrainingNeeds => 'तालिम आवश्यकता';
+
+  @override
+  String get surveyTypeMarketAccess => 'बजार पहुँच';
+
+  @override
+  String get surveyTypeGeneral => 'सामान्य सर्वेक्षण';
+
+  @override
+  String get noQuestionsFound => 'यस सर्वेक्षणमा कुनै प्रश्न फेला परेन';
+
+  @override
+  String get answerAllRequired =>
+      'कृपया सबै अनिवार्य प्रश्नहरूको जवाफ दिनुहोस्';
+
+  @override
+  String get surveySubmittedSuccess => 'सर्वेक्षण सफलतापूर्वक पेश भयो';
+
+  @override
+  String get surveySubmitFailed => 'सर्वेक्षण पेश गर्न असफल भयो';
+
+  @override
+  String get validationError => 'प्रमाणीकरण त्रुटि';
+
+  @override
+  String get checkRequiredFields =>
+      'कृपया सबै अनिवार्य फिल्डहरू जाँच गर्नुहोस्';
+
+  @override
+  String get requiredQuestion => 'अनिवार्य प्रश्न';
+
+  @override
+  String get noSurveySelected => 'कुनै सर्वेक्षण चयन गरिएको छैन';
+
+  @override
+  String get loadingSurveyQuestions => 'सर्वेक्षण प्रश्नहरू लोड हुँदैछ...';
+
+  @override
+  String get noQuestionsAvailable =>
+      'यस सर्वेक्षणका लागि कुनै प्रश्न उपलब्ध छैन';
+
+  @override
+  String get fileUploads => 'फाइल अपलोडहरू';
+
+  @override
+  String get locationInformation => 'स्थान जानकारी';
+
+  @override
+  String get instruction => 'निर्देशन';
+
+  @override
+  String get requiredLabel => 'अनिवार्य';
+
+  @override
+  String get defaultEligibility =>
+      '२ हेक्टर सम्मको जोत भएका साना र सीमान्त किसानहरु';
+
+  @override
+  String get fileUploaded => 'फाइल सफलतापूर्वक अपलोड भयो';
+
+  @override
+  String get enterYourAnswer => 'तपाईंको जवाफ लेख्नुहोस्';
+
+  @override
+  String get fieldRequired => 'यो फिल्ड अनिवार्य छ';
+
+  @override
+  String minCharactersRequired(String count) {
+    return 'कम्तिमा $count अक्षर आवश्यक छ';
+  }
+
+  @override
+  String get enterNumber => 'एउटा संख्या लेख्नुहोस्';
+
+  @override
+  String get enterValidNumber => 'कृपया मान्य संख्या लेख्नुहोस्';
+
+  @override
+  String minValueIs(String value) {
+    return 'न्यूनतम मान $value हो';
+  }
+
+  @override
+  String maxValueIs(String value) {
+    return 'अधिकतम मान $value हो';
+  }
+
+  @override
+  String get selectOption => 'एउटा विकल्प छान्नुहोस्';
+
+  @override
+  String get pleaseSelectOption => 'कृपया एउटा विकल्प छान्नुहोस्';
+
+  @override
+  String get selectDate => 'मिति छान्नुहोस्';
+
+  @override
+  String ratingOutOf(String rating, String max) {
+    return '$max मध्ये $rating';
+  }
+
+  @override
+  String get allowedFileFormats => 'PDF, JPG, PNG, DOC';
+
+  @override
+  String get maxFileSizeLabel => 'अधिकतम ५ MB';
+
+  @override
+  String get currentLocation => 'हालको स्थान';
+
+  @override
+  String get currentLocationSet => 'हालको स्थान सेट गरिएको छ';
+
+  @override
+  String get locationSet => 'स्थान सेट भयो';
+
+  @override
+  String get chooseOnMap => 'नक्सामा छान्नुहोस्';
+
+  @override
+  String get comingSoon => 'चाँडै आउँदैछ';
+
+  @override
+  String get mapPickerComingSoon => 'नक्सा छान्ने सुविधा चाँडै आउँदैछ';
+
+  @override
+  String latLngLabel(String lat, String lng) {
+    return 'अक्षांश: $lat, देशान्तर: $lng';
+  }
+
+  @override
+  String get importantNoteLabel => 'महत्त्वपूर्ण टिप्पणी';
+
+  @override
+  String get surveyImportantNote =>
+      'पेश गर्नु अघि सबै अनिवार्य प्रश्नहरूको जवाफ दिनुपर्छ। तपाईंको जवाफले कृषि सेवाहरू सुधार गर्न मद्दत गर्नेछ।';
+
+  @override
+  String get submitting => 'पेश गर्दैछ...';
+
+  @override
+  String get submitSurvey => 'सर्वेक्षण पेश गर्नुहोस्';
 }

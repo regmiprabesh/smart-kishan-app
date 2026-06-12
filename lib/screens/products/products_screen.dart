@@ -300,7 +300,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   String _getUnitName(int unitId) {
     try {
       final unit = productController.units.firstWhere((u) => u.id == unitId);
-      return unit.name ?? '';
+      return unit.getName(Get.locale?.languageCode ?? 'en');
     } catch (e) {
       return '';
     }

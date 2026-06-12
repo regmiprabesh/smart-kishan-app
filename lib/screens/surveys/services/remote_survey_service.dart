@@ -2,36 +2,32 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:smart_kishan/constant.dart';
+import 'package:smart_kishan/helpers/app_http_client.dart';
 
 class RemoteSurveyService {
-  var client = http.Client();
+  var client = AppHttpClient();
 
   // Get all available surveys for farmer based on their location
-  Future<dynamic> getSurveys({required String token}) async {
+  Future<dynamic> getSurveys() async {
     var remoteUrl = '$apiUrl/farmer/surveys';
     var response = await client.get(
       Uri.parse(remoteUrl),
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
     );
     return response;
   }
 
   // Get survey details with questions
-  Future<dynamic> getSurveyDetails({
-    required String token,
-    required int surveyId,
-  }) async {
+  Future<dynamic> getSurveyDetails({required int surveyId}) async {
     var remoteUrl = '$apiUrl/farmer/surveys/$surveyId';
     var response = await client.get(
       Uri.parse(remoteUrl),
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
     );
     return response;
@@ -39,7 +35,6 @@ class RemoteSurveyService {
 
   // Submit survey response with file upload support
   Future<dynamic> submitResponse({
-    required String token,
     required int surveyId,
     required Map<int, dynamic> answers,
     required DateTime startedAt,
@@ -50,15 +45,13 @@ class RemoteSurveyService {
     // Create multipart request for file uploads
     var request = http.MultipartRequest('POST', Uri.parse(remoteUrl));
 
-    // Add headers
+    // Only Accept — Authorization is injected by AppHttpClient.send()
     request.headers.addAll({
       'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
     });
 
     // Format answers for backend
     List<Map<String, dynamic>> formattedAnswers = [];
-    List<File> filesToUpload = [];
     Map<int, String> fileQuestionIds = {};
 
     answers.forEach((questionId, answer) {
@@ -72,8 +65,6 @@ class RemoteSurveyService {
         answerData['text_answer'] = answer;
       } else if (answer is String && answer.startsWith('/')) {
         // This is a file path
-        File file = File(answer);
-        filesToUpload.add(file);
         fileQuestionIds[questionId] = answer;
         // Don't add to formattedAnswers yet, will be handled by backend
       } else if (answer is int) {
@@ -119,14 +110,15 @@ class RemoteSurveyService {
     print('Completed at: ${completedAt.toIso8601String()}');
     print('Answers count: ${formattedAnswers.length}');
     print('Files count: ${request.files.length}');
-    print('Files:');
     for (var file in request.files) {
       print('  - ${file.field}: ${file.filename}');
     }
     print('================================');
 
     try {
-      var streamedResponse = await request.send();
+      // Route through AppHttpClient so the token is injected
+      // and 401 / offline handling applies.
+      var streamedResponse = await client.send(request);
       var response = await http.Response.fromStream(streamedResponse);
 
       print('Response status: ${response.statusCode}');

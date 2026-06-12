@@ -1,21 +1,21 @@
 import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:smart_kishan/constant.dart';
 import 'package:path/path.dart' as path;
+import 'package:smart_kishan/helpers/app_http_client.dart';
+import 'package:http/http.dart' as http;
 
 class RemoteComplaintService {
-  var client = http.Client();
+  var client = AppHttpClient();
 
   // Get user's complaints
-  Future<dynamic> getMyComplaints({required String token}) async {
+  Future<dynamic> getMyComplaints() async {
     var remoteUrl = '$apiUrl/complaints/my-complaints';
     var response = await client.get(
       Uri.parse(remoteUrl),
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
     );
     return response;
@@ -23,7 +23,6 @@ class RemoteComplaintService {
 
   // Submit new complaint with file upload
   Future<dynamic> submitComplaint({
-    required String token,
     required String title,
     required String description,
     required String category,
@@ -42,7 +41,6 @@ class RemoteComplaintService {
       // Add headers
       request.headers.addAll({
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       });
 
       // Add text fields
@@ -84,7 +82,7 @@ class RemoteComplaintService {
       print('Fields: ${request.fields}');
       print('Files: ${request.files.map((f) => f.filename)}');
 
-      var streamedResponse = await request.send();
+      var streamedResponse = await client.send(request);
       var response = await http.Response.fromStream(streamedResponse);
 
       print('Response status: ${response.statusCode}');
@@ -100,7 +98,6 @@ class RemoteComplaintService {
 
   // Get single complaint details
   Future<dynamic> getComplaintDetails({
-    required String token,
     required int complaintId,
   }) async {
     var remoteUrl = '$apiUrl/complaints/$complaintId';
@@ -109,7 +106,6 @@ class RemoteComplaintService {
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
     );
     return response;
@@ -117,7 +113,6 @@ class RemoteComplaintService {
 
   // Add comment to complaint
   Future<dynamic> addComment({
-    required String token,
     required int complaintId,
     required String comment,
   }) async {
@@ -127,7 +122,6 @@ class RemoteComplaintService {
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
         'comment': comment,
@@ -138,7 +132,6 @@ class RemoteComplaintService {
 
   // Cancel/Delete complaint
   Future<dynamic> cancelComplaint({
-    required String token,
     required int complaintId,
   }) async {
     var remoteUrl = '$apiUrl/complaints/$complaintId';
@@ -147,7 +140,6 @@ class RemoteComplaintService {
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
       },
     );
     return response;

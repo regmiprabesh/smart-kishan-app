@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
-import 'package:smart_kishan/controllers/product_controller.dart';
+import 'package:smart_kishan/controllers/note_controller.dart';
 
 class NoteBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put(ProductController());
+    if (!Get.isRegistered<NoteController>()) {
+      Get.lazyPut<NoteController>(() => NoteController());
+    }
   }
 }

@@ -1,9 +1,12 @@
 import 'package:get/get.dart';
 import 'package:smart_kishan/controllers/user_controller.dart';
 
+// user_binding.dart
 class UserBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put(UserController());
+    if (!Get.isRegistered<UserController>()) {
+      Get.lazyPut<UserController>(() => UserController());
+    }
   }
 }

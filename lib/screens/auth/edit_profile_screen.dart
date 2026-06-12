@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_kishan/constant.dart';
 import 'package:smart_kishan/controllers/auth_controller.dart';
+import 'package:smart_kishan/helpers/l10n.dart';
 import 'package:smart_kishan/languages/langauge_constants.dart';
 import 'package:smart_kishan/size_config.dart';
 
@@ -57,10 +58,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       if (result) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: kSuccessColor,
             content: Text(
-              'Profile updated successfully',
+              l10n.profileUpdatedSuccessfully,
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
             ),
           ),
@@ -73,10 +74,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         // Get.offAllNamed(AppRoute.profileScreen);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: kErrorColor,
             content: Text(
-              'Failed to update profile',
+              l10n.profileUpdateFailed,
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
             ),
           ),
@@ -84,10 +85,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: kErrorColor,
           content: Text(
-            'An error occurred',
+            l10n.genericError,
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
           ),
         ),

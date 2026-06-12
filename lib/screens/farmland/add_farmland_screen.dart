@@ -319,52 +319,46 @@ class _AddFarmlandScreenState extends State<AddFarmlandScreen> {
                         ));
                       } else {
                         farmlandController.addFarmland(
-                            Farmland(
-                              title: _farmlandTitleController.text,
-                              description: _farmlandDescriptionController.text,
-                              image: farmlandController
-                                      .selectedFarmlandImage.value.isNotEmpty
-                                  ? farmlandController
-                                      .selectedFarmlandImage.value
-                                  : null,
-                              lat: _farmlandLatController.text.isNotEmpty
-                                  ? double.tryParse(_farmlandLatController.text)
-                                  : null,
-                              lng: _farmlandLngController.text.isNotEmpty
-                                  ? double.tryParse(_farmlandLngController.text)
-                                  : null,
-                              nitrogen: _farmlandSoilNController.text.isNotEmpty
-                                  ? double.tryParse(
-                                      _farmlandSoilNController.text)
-                                  : null,
-                              phosphate:
-                                  _farmlandSoilPController.text.isNotEmpty
-                                      ? double.tryParse(
-                                          _farmlandSoilPController.text)
-                                      : null,
-                              potassium:
-                                  _farmlandSoilKController.text.isNotEmpty
-                                      ? double.tryParse(
-                                          _farmlandSoilKController.text)
-                                      : null,
-                              pH: _farmlandSoilPHController.text.isNotEmpty
-                                  ? double.tryParse(
-                                      _farmlandSoilPHController.text)
-                                  : null,
-                              organicMatter:
-                                  _farmlandSoilOrganicController.text.isNotEmpty
-                                      ? double.tryParse(
-                                          _farmlandSoilOrganicController.text)
-                                      : null,
-                              temperature:
-                                  double.tryParse(_farmlandTempController.text),
-                              humidity: double.tryParse(
-                                  _farmlandHumidityController.text),
-                              rainfall: double.tryParse(
-                                  _farmlandRainfallController.text),
-                              date: DateTime.now().toString(),
-                            ),
-                            false);
+                          Farmland(
+                            title: _farmlandTitleController.text,
+                            description: _farmlandDescriptionController.text,
+                            image: farmlandController
+                                    .selectedFarmlandImage.value.isNotEmpty
+                                ? farmlandController.selectedFarmlandImage.value
+                                : null,
+                            lat: _farmlandLatController.text.isNotEmpty
+                                ? double.tryParse(_farmlandLatController.text)
+                                : null,
+                            lng: _farmlandLngController.text.isNotEmpty
+                                ? double.tryParse(_farmlandLngController.text)
+                                : null,
+                            nitrogen: _farmlandSoilNController.text.isNotEmpty
+                                ? double.tryParse(_farmlandSoilNController.text)
+                                : null,
+                            phosphate: _farmlandSoilPController.text.isNotEmpty
+                                ? double.tryParse(_farmlandSoilPController.text)
+                                : null,
+                            potassium: _farmlandSoilKController.text.isNotEmpty
+                                ? double.tryParse(_farmlandSoilKController.text)
+                                : null,
+                            pH: _farmlandSoilPHController.text.isNotEmpty
+                                ? double.tryParse(
+                                    _farmlandSoilPHController.text)
+                                : null,
+                            organicMatter:
+                                _farmlandSoilOrganicController.text.isNotEmpty
+                                    ? double.tryParse(
+                                        _farmlandSoilOrganicController.text)
+                                    : null,
+                            temperature:
+                                double.tryParse(_farmlandTempController.text),
+                            humidity: double.tryParse(
+                                _farmlandHumidityController.text),
+                            rainfall: double.tryParse(
+                                _farmlandRainfallController.text),
+                            date: DateTime.now().toString(),
+                          ),
+                        );
                       }
                     }
                   },
