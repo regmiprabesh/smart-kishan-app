@@ -1636,6 +1636,20 @@
       ]
     },
     {
+      "name": "tuple",
+      "version": "2.0.2",
+      "dependencies": []
+    },
+    {
+      "name": "provider",
+      "version": "6.1.5+1",
+      "dependencies": [
+        "collection",
+        "flutter",
+        "nested"
+      ]
+    },
+    {
       "name": "package_info_plus",
       "version": "9.0.0",
       "dependencies": [

@@ -47,6 +47,7 @@ class ProductController extends GetxController {
         units.assignAll(unitListFromJson(jsonEncode(body['data'])));
       }
     } catch (e) {
+      print('test');
       debugPrint('getUnits error: $e');
     }
   }
